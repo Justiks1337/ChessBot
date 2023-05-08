@@ -1,18 +1,36 @@
-from asyncio import sleep, get_event_loop
-from datetime import timedelta
+from time import sleep
+from threading import Thread
 
 
 class Timer:
-	def __init__(self):
-		self.timer = get_event_loop().run_until_complete(self.start_timer())
+    def __init__(self, color: bool):
+        self.seconds: int = 900
+        self.expires: bool = color
+        self.color = lambda x: "белых" if color else "чёрных"
+        Thread(target=self.start_timer).start()
 
-	async def start_timer(self):
-		self.timer = 900
-		while bool(self.timer):
-			self.timer = self.timer - 1
-			await sleep(1)
+    def start_timer(self):
+        """Запускает цикл событий"""
 
-	def to_time(self):
-		return timedelta(seconds=self.timer)
+        self.update_timer()
 
+    def update_timer(self):
+        """Ведёт время отсчёта"""
 
+        while self.seconds:
+            if self.expires:
+                print(self.seconds)
+                self.seconds -= 1
+                sleep(1)
+
+        assert self.seconds, f"Закончилось время у {self.color}. Противоположный игрок победил"
+
+    def flip_the_timer(self):
+        """Меняет положение таймера (активный/деактивный)"""
+
+        self.expires = not self.expires
+
+    def get_timeset(self) -> str:
+        """:return время в виде таймера на электронных часах"""
+
+        return f"{round(self.seconds / 60)}:{self.seconds % 60}"

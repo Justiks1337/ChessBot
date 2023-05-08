@@ -11,7 +11,7 @@ class Game:
 		self.player_2: User = User(users_ids[1], False)
 		self.turn: bool = self.board.turn
 
-	def move(self, start_cell: str, end_cell: str):
+	async def move(self, start_cell: str, end_cell: str):
 		""":raise AssertionError если возникает какая либо ошибка."""
 		try:
 			self.board.push_san("".join([start_cell, end_cell]))
