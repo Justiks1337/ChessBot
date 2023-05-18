@@ -1,24 +1,31 @@
-import aiogram
-
+from aiogram import Bot, Dispatcher
 from config import tg_bot_token
+from aiogram.types import Message
+from Queue import Queue
+from telegram_manage import start, profile, queue_leave
 
-bot = aiogram.Bot(tg_bot_token)
-dp = aiogram.Dispatcher(bot)
+
+bot = Bot(token=tg_bot_token)
+dp = Dispatcher(bot)
+main_queue = Queue()
 
 
 @dp.message_handler(commands=['start'])
-async def start_command(message):
-	await message.answer(text="Тест пон типа да")
+async def start_command_handler(message: Message):
+	"""Добавляет человека в очередь"""
+
+	await start(message)
 
 
-@dp.message_handler(commands=['top'])
-async def start_command(message):
-	await message.answer(text="Тест пон типа да")
+@dp.message_handler(commands=['profile'])
+async def profile_command_handler(message: Message):
+	"""Сендит профиль автора сообщения"""
+
+	await profile(message)
 
 
-@dp.callback_query_handler()
-async def send_welcome(callback_query: aiogram.types.CallbackQuery):
-	await bot.answer_callback_query(callback_query.id, url="127.0.0.1:8000")
+@dp.message_handler(commands=['queue_leave'])
+async def profile_command_handler(message: Message):
+	"""Убирает автора команды из очереди"""
 
-
-aiogram.executor.start_polling(dp)
+	await queue_leave(message)
