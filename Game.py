@@ -1,6 +1,7 @@
 from User import User
 import chess
 from DatabaseAssistant import request
+from BaseErrors import ChessError
 
 
 class Game:
@@ -9,32 +10,39 @@ class Game:
 		self.board: chess.Board = chess.Board()
 		self.player_1: User = User(users_ids[0], True)
 		self.player_2: User = User(users_ids[1], False)
-		self.turn: bool = self.board.turn
 
 	async def move(self, start_cell: str, end_cell: str):
-		""":raise AssertionError если возникает какая либо ошибка."""
+		""":raise ChessError если возникает какая либо ошибка."""
+
 		try:
 			self.board.push_san("".join([start_cell, end_cell]))
 			self.checkmate()
 			self.check_stalemate()
+
 		except chess.IllegalMoveError:
-			assert False, "Такой ход не возможен!"
+			raise ChessError("Такой ход не возможен!", local=True, color=self.board.turn)
 
 	def checkmate(self):
-		""":raise AssertionError если есть на доске мат"""
-		assert not self.board.is_checkmate(), f"Мат! Победил {self.get_winner_color()} цвет!"
+		""":raise ChessError если есть на доске мат"""
+		try:
+			assert not self.board.is_checkmate(), f"Мат! Победил {self.get_winner_color()} цвет!"
+		except AssertionError:
+			raise ChessError(f"Мат! Победил игрок играющий за {self.get_winner_color()} цвет!")
 
 	def check_stalemate(self):
-		""":raise AssertionError если на доске пат"""
-		assert not self.board.is_stalemate(), "Игра окончена! Ничья, оба участника остаются без баллов..."
+		""":raise ChessError если на доске пат"""
+		try:
+			assert not self.board.is_stalemate()
+		except AssertionError:
+			raise ChessError("Игра окончена! Ничья, оба участника остаются без баллов...")
 
 	def get_winner_color(self) -> str:
 		""":return Возвращает цвет победителя (При мате)"""
-		return "белый" if self.turn else "чёрный"
+		return "белый" if self.board.turn else "чёрный"
 
 	def get_winner(self) -> User:
 		""":return User - object """
-		return self.player_1 if not self.player_1.color is self.turn else self.player_2
+		return self.player_1 if not self.player_1.color is self.board.turn else self.player_2
 
 	@staticmethod
 	async def give_points(user: User):

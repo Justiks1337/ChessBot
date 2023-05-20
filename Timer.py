@@ -1,5 +1,6 @@
 from time import sleep
 from threading import Thread
+from BaseErrors import ChessError
 
 
 class Timer:
@@ -19,11 +20,12 @@ class Timer:
 
         while self.seconds:
             if self.expires:
-                print(self.seconds)
                 self.seconds -= 1
                 sleep(1)
-
-        assert self.seconds, f"Закончилось время у {self.color}. Противоположный игрок победил"
+        try:
+            assert self.seconds
+        except AssertionError:
+            raise ChessError(f"Закончилось время у {self.color}. Победил игрок играющий за противоположный цвет")
 
     def flip_the_timer(self):
         """Меняет положение таймера (активный/деактивный)"""

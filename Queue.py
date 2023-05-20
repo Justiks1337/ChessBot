@@ -3,7 +3,7 @@ from Game import Game
 
 class Queue:
 	"""Класс - очередь (единственный экземпляр создаётся в main.py"""
-	
+
 	def __init__(self):
 		self.users = []
 
