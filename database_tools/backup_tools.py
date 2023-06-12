@@ -26,6 +26,3 @@ async def backup():
 		) as response:
 			async with session.put((await response.json())['href'], data=open(backup_name, "rb")) as resp:
 				return await resp.json(content_type=None)
-
-
-run(backup())
