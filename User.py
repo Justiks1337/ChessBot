@@ -1,5 +1,5 @@
 import uuid
-from DatabaseAssistant import request
+from database_tools.Connection import connect
 from Timer import Timer
 
 
@@ -16,7 +16,7 @@ class User:
 		return str(uuid.uuid4())
 
 	async def database_fill(self):
-		await request("UPDATE users SET games = games - 1 WHERE user_id = ?", (self.telegram_id, ))
+		await connect.request("UPDATE users SET games = games - 1 WHERE user_id = ?", (self.telegram_id, ))
 
 	def get_color(self):
 		return "белых" if self.color else "чёрных"

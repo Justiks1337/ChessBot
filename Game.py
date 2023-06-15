@@ -1,6 +1,6 @@
 from User import User
 import chess
-from DatabaseAssistant import request
+from database_tools.Connection import connect
 from BaseErrors import ChessError
 
 
@@ -47,7 +47,7 @@ class Game:
 	@staticmethod
 	async def give_points(user: User):
 		"""Добавляет баллы в базу данных"""
-		await request("UPDATE users SET points = points + 1 WHERE user_id = ?", (user.telegram_id, ))
+		await connect.request("UPDATE users SET points = points + 1 WHERE user_id = ?", (user.telegram_id, ))
 
 	async def on_end_game(self):
 		"""Коро хендлер срабатывающий после окончания игры"""
