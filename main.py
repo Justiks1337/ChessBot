@@ -1,11 +1,11 @@
 from aiogram import Bot, Dispatcher
-from config import tg_bot_token
+from config.ConfigValues import ConfigValues
 from aiogram.types import Message
 from Queue import Queue
 from telegram_manage import start, profile, queue_leave
 
 
-bot = Bot(token=tg_bot_token)
+bot = Bot(token=ConfigValues.telegram_token)
 dp = Dispatcher(bot)
 main_queue = Queue()
 

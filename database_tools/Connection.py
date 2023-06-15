@@ -1,7 +1,7 @@
 import sqlite3
 import aiosqlite
 from asyncio import new_event_loop
-from config import db_name, transactions_to_backup
+from config.ConfigValues import ConfigValues
 from backup_tools import backup
 
 
@@ -9,7 +9,7 @@ class Connection:
 	"""Class connection - центр управления базой данных"""
 
 	def __init__(self):
-		self.connection: aiosqlite.Connection = new_event_loop().run_until_complete(aiosqlite.connect(db_name))
+		self.connection: aiosqlite.Connection = new_event_loop().run_until_complete(aiosqlite.connect(ConfigValues.db_name))
 		self.__transactions: int = 0
 
 	async def __on_request(self, sql_request: str):
@@ -21,7 +21,7 @@ class Connection:
 			return
 
 		self.__transactions += 1
-		if self.__transactions == transactions_to_backup:
+		if self.__transactions == ConfigValues.transactions_to_backup:
 			self.__transactions = 0
 			await backup()
 

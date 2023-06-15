@@ -1,9 +1,9 @@
-from configparser import ConfigParser
+from configparser import ConfigParser as _ConfigParser
 
 
 class ConfigValues:
 
-	__config_file = ConfigParser()
+	__config_file = _ConfigParser()
 	__config_file.read('config.ini')
 
 	# database section
