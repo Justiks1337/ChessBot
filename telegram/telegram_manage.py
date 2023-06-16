@@ -3,6 +3,7 @@ from Queue import main_queue
 from aiogram.types.message import Message
 from aiogram.bot.bot import Bot
 from aiogram.utils.exceptions import ChatNotFound
+from config.ConfigValues import ConfigValues
 
 
 async def start(bot: Bot, message: Message):
@@ -20,7 +21,7 @@ async def profile(bot: Bot, message: Message):
 
 	await bot.send_message(
 		message.chat.id,
-		f"Ваш профиль 📊📈: \n \n Осталось игр: {stats_values[0]} ⚔️ \n Очков: {stats_values[1]} 💠")
+		ConfigValues.profile_message.replace('{games_amount}', stats_values[0]).replace('{points_amount}', stats_values[1]))
 
 
 async def queue_join(bot: Bot, message: Message):
@@ -28,11 +29,7 @@ async def queue_join(bot: Bot, message: Message):
 
 	main_queue.add_new_user(message.from_id)
 
-	await bot.send_message(
-		message.chat.id,
-		"Вы успешно зашли в очередь, ожидайте своего противника и уведомления в этом чате! \n \n \
-		Напоминаю, противник не будет долго вас ждать"
-	)
+	await bot.send_message(message.chat.id, ConfigValues.on_queue_join_message)
 
 
 async def queue_leave(bot: Bot, message: Message):
@@ -40,7 +37,7 @@ async def queue_leave(bot: Bot, message: Message):
 
 	main_queue.leave_from_queue(message.from_id)
 
-	await bot.send_message(message.chat.id, "Вы успешно покинули очередь!")
+	await bot.send_message(message.chat.id, ConfigValues.on_queue_leave_message)
 
 
 async def get_top(bot: Bot, message: Message):
@@ -56,7 +53,7 @@ async def get_top(bot: Bot, message: Message):
 	if amount == "all":
 		amount = len(top)
 
-	msg: str = f"🏆⭐️ Топ {amount} по победам в шахматах: \n \n"
+	msg: str = ConfigValues.dashboard_title.replace('{amount}', amount)
 
 	try:
 		position = 0
@@ -66,13 +63,16 @@ async def get_top(bot: Bot, message: Message):
 				player_name = (await bot.get_chat_member(player[0], player[0])).user.username
 				position += 1
 
-				msg = msg + f"{position}. @{player_name}: {player[1]} очков \n"
+				msg = msg + ConfigValues.dashboard_object.replace(
+					'{position}', position).replace(
+					'{player_name}', player_name).replace(
+					'{points_amount}', player[1])
 
 			except ChatNotFound:
 				continue
 
 	except IndexError:
-		await message.reply(f"Вы указали неверный диапазон участников! (Всего {len(top)} участников)")
+		await bot.send_message(message.chat.id, ConfigValues.dashboard_on_range_error.replace('{amount}', len(top)))
 
 	await bot.send_message(message.chat.id, msg)
 

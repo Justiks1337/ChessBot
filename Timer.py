@@ -1,11 +1,12 @@
 from time import sleep
 from threading import Thread
 from BaseErrors import ChessError
+from config.ConfigValues import ConfigValues
 
 
 class Timer:
     def __init__(self, color: bool):
-        self.seconds: int = 900
+        self.seconds: int = ConfigValues.game_time
         self.expires: bool = color
         self.color = lambda x: "белых" if color else "чёрных"
         Thread(target=self.start_timer).start()
@@ -25,7 +26,7 @@ class Timer:
         try:
             assert self.seconds
         except AssertionError:
-            raise ChessError(f"Закончилось время у {self.color}. Победил игрок играющий за противоположный цвет")
+            raise ChessError(ConfigValues.on_end_time.replace('{color}', self.color))
 
     def flip_the_timer(self):
         """Меняет положение таймера (активный/деактивный)"""
