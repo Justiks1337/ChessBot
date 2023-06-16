@@ -1,57 +1,75 @@
-from DatabaseAssistant import request
-from main import main_queue
-from typing import Optional
+from database_tools.Connection import connect
+from Queue import main_queue
 from aiogram.types.message import Message
+from aiogram.bot.bot import Bot
 
 
-async def start(message: Message):
+async def start(bot: Bot, message: Message):
+	pass
+
+
+async def queue_join(bot: Bot, message: Message):
 	"""Добавляет пользователя в очередь"""
 
-	main_queue.on_new_user(message.from_id)
+	main_queue.add_new_user(message.from_id)
 
-	await message.reply(
-			"Вы успешно зашли в очередь, ожидайте своего противника и уведомления в этом чате! Напоминаю, противник не будет долго вас ждать"
+	await bot.send_message(
+		message.chat.id,
+		"Вы успешно зашли в очередь, ожидайте своего противника и уведомления в этом чате! \n \n \
+		Напоминаю, противник не будет долго вас ждать"
 	)
 
 
-async def profile(message: Message):
+async def profile(bot: Bot, message: Message):
 	"""Отправляет в чат статистику пользователя"""
 
 	stats_values = await (
-		await request(
+		await connect.request(
 			"SELECT games, points FROM users WHERE user_id = ?",
 			(message.from_id, ))
 		).fetchone()
 
-	await message.reply(f"""Ваш профиль 📊📈:
-						Осталось игр: {stats_values[0]} ⚔️
-						Очков: {stats_values[1]} 💠""")
+	await bot.send_message(
+		message.chat.id,
+		f"Ваш профиль 📊📈: \n \n Осталось игр: {stats_values[0]} ⚔️ \n Очков: {stats_values[1]} 💠")
 
 
-async def queue_leave(message: Message):
+async def queue_leave(bot: Bot, message: Message):
 	"""Удаляет пользователя из очереди"""
 
 	main_queue.leave_from_queue(message.from_id)
 
-	await message.reply("Вы успешно покинули очередь!")
+	await bot.send_message(message.chat.id, "Вы успешно покинули очередь!")
 
 
-async def get_top(message: Message, amount: Optional[int] = None):
+async def get_top(bot: Bot, message: Message):
 
-	top = await (await request("SELECT user_id, points FROM users ORDER BY points DESC")).fetchall()
+	amount = message.get_args()
+
+	top = await (await connect.request("SELECT user_id, points FROM users ORDER BY points DESC")).fetchall()
 
 	if not amount:
+		amount = 10
+
+	if amount == "all":
 		amount = len(top)
 
-	send_message: str = f"🏆⭐️ Топ {amount} по победам в шахматах: "
+	msg: str = f"🏆⭐️ Топ {amount} по победам в шахматах: \n \n"
 
 	try:
-		for player in top[:amount+1]:
-			player_name = message.get_
-			send_message = send_message + f""
+		position = 0
+		for player in top[:int(amount)]:
+
+			position += 1
+			player_name = (await bot.get_chat_member(player[0], player[0])).user.username
+
+			msg = msg + f"{position}. @{player_name}: {player[1]} очков \n"
 
 	except IndexError:
 		await message.reply(f"Вы указали неверный диапазон участников! (Всего {len(top)} участников)")
 
+	await bot.send_message(message.chat.id, msg)
 
 
+async def authorization(bot: Bot, message: Message):
+	pass

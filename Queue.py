@@ -28,3 +28,6 @@ class Queue:
 		"""Удаляет участника из очереди"""
 
 		self.users.remove(user_id)
+
+
+main_queue = Queue()

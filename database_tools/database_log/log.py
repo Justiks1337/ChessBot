@@ -1,6 +1,6 @@
 from logging import getLogger, FileHandler, Formatter
 
-log = getLogger('django_log')
+log = getLogger('database_log')
 log.setLevel('DEBUG')
 
 log_handler = FileHandler('main.log', 'a+')

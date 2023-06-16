@@ -3,7 +3,7 @@ from aiohttp import ClientSession
 from os import system
 from datetime import datetime
 from time import time
-from database_log.log import log
+from database_tools.database_log.log import log
 
 
 async def __dump() -> str:

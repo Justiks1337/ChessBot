@@ -2,15 +2,17 @@ import sqlite3
 import aiosqlite
 from asyncio import new_event_loop
 from config.ConfigValues import ConfigValues
-from backup_tools import backup
-from database_log.log import log
+from database_tools.backup_tools import backup
+from database_tools.database_log.log import log
+import os
 
 
 class Connection:
 	"""Class connection - центр управления базой данных"""
 
 	def __init__(self):
-		self.connection: aiosqlite.Connection = new_event_loop().run_until_complete(aiosqlite.connect(ConfigValues.db_name))
+		self.connection: aiosqlite.Connection = new_event_loop().run_until_complete(
+			aiosqlite.connect(os.path.join(os.path.dirname(__file__), ConfigValues.db_name)))
 		self.__transactions: int = 0
 
 		log.info(f'successful connect to {ConfigValues.db_name}')

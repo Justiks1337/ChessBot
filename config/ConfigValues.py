@@ -1,10 +1,11 @@
 from configparser import ConfigParser as _ConfigParser
+import os
 
 
 class ConfigValues:
 
 	__config_file = _ConfigParser()
-	__config_file.read('config.ini')
+	__config_file.read(os.path.join(os.path.dirname(__file__), 'config.ini'))
 
 	# database section
 	db_name = __config_file.get('database', 'db_name')
