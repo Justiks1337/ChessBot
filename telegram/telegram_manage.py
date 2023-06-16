@@ -2,22 +2,11 @@ from database_tools.Connection import connect
 from Queue import main_queue
 from aiogram.types.message import Message
 from aiogram.bot.bot import Bot
+from aiogram.utils.exceptions import ChatNotFound
 
 
 async def start(bot: Bot, message: Message):
 	pass
-
-
-async def queue_join(bot: Bot, message: Message):
-	"""Добавляет пользователя в очередь"""
-
-	main_queue.add_new_user(message.from_id)
-
-	await bot.send_message(
-		message.chat.id,
-		"Вы успешно зашли в очередь, ожидайте своего противника и уведомления в этом чате! \n \n \
-		Напоминаю, противник не будет долго вас ждать"
-	)
 
 
 async def profile(bot: Bot, message: Message):
@@ -32,6 +21,18 @@ async def profile(bot: Bot, message: Message):
 	await bot.send_message(
 		message.chat.id,
 		f"Ваш профиль 📊📈: \n \n Осталось игр: {stats_values[0]} ⚔️ \n Очков: {stats_values[1]} 💠")
+
+
+async def queue_join(bot: Bot, message: Message):
+	"""Добавляет пользователя в очередь"""
+
+	main_queue.add_new_user(message.from_id)
+
+	await bot.send_message(
+		message.chat.id,
+		"Вы успешно зашли в очередь, ожидайте своего противника и уведомления в этом чате! \n \n \
+		Напоминаю, противник не будет долго вас ждать"
+	)
 
 
 async def queue_leave(bot: Bot, message: Message):
@@ -60,11 +61,15 @@ async def get_top(bot: Bot, message: Message):
 	try:
 		position = 0
 		for player in top[:int(amount)]:
+			try:
 
-			position += 1
-			player_name = (await bot.get_chat_member(player[0], player[0])).user.username
+				player_name = (await bot.get_chat_member(player[0], player[0])).user.username
+				position += 1
 
-			msg = msg + f"{position}. @{player_name}: {player[1]} очков \n"
+				msg = msg + f"{position}. @{player_name}: {player[1]} очков \n"
+
+			except ChatNotFound:
+				continue
 
 	except IndexError:
 		await message.reply(f"Вы указали неверный диапазон участников! (Всего {len(top)} участников)")
