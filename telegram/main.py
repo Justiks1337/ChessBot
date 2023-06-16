@@ -3,11 +3,13 @@ from config.ConfigValues import ConfigValues
 from aiogram.types import Message
 from Queue import Queue
 from telegram_manage import start, profile, queue_leave
+from telegram_log.log import log
 
 
 bot = Bot(token=ConfigValues.telegram_token)
 dp = Dispatcher(bot)
 main_queue = Queue()
+log.info('bot successful started!')
 
 
 @dp.message_handler(commands=['start'])
