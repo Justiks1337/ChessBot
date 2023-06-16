@@ -3,6 +3,7 @@ import os
 
 
 class ConfigValues:
+	"""Get values from config"""
 
 	__config_file = _ConfigParser()
 	__config_file.read(os.path.join(os.path.dirname(__file__), 'config.ini'))
@@ -16,3 +17,5 @@ class ConfigValues:
 
 	# Telegram section
 	telegram_token = __config_file.get('Telegram', 'telegram_token')
+
+	# Messages

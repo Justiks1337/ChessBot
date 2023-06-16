@@ -7,6 +7,9 @@ from database_tools.database_log.log import log
 
 
 async def __dump() -> str:
+	"""Делает бекап базы данных sqlite
+	:return dump filename
+							"""
 	start_time = time()
 
 	backup_file_name = "mydatabase_backup_" + datetime.now().strftime("%Y%m%d%H%M%S") + '.sql'
@@ -19,6 +22,8 @@ async def __dump() -> str:
 
 
 async def backup():
+	"""backup to Yadisk"""
+
 	backup_name = await __dump()
 
 	async with ClientSession() as session:

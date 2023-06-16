@@ -43,6 +43,7 @@ async def queue_leave(bot: Bot, message: Message):
 
 
 async def get_top(bot: Bot, message: Message):
+	"""send message with dashboard"""
 
 	amount = message.get_args()
 
@@ -72,4 +73,6 @@ async def get_top(bot: Bot, message: Message):
 
 
 async def authorization(bot: Bot, message: Message):
+	"""Authorization command"""
+
 	pass
