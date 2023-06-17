@@ -16,7 +16,7 @@ log.info('bot successful started!')
 async def start_command_handler(message: Message):
 	"""Send manual to chat"""
 
-	pass
+	await start(bot, message)
 
 
 @dp.message_handler(Command('profile'))
