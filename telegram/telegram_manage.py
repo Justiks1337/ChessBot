@@ -7,7 +7,11 @@ from config.ConfigValues import ConfigValues
 
 
 async def start(bot: Bot, message: Message):
-	pass
+	if await (await connect.request("SELECT user_id FROM users WHERE user_id = ?", (message.from_id, ))).fetchone():
+		await bot.send_message(message.chat.id, ConfigValues.game_instructions)
+		return
+
+	await bot.send_message(message.chat.id, ConfigValues.authorization_instructions)
 
 
 async def profile(bot: Bot, message: Message):
@@ -53,7 +57,7 @@ async def get_top(bot: Bot, message: Message):
 	if amount == "all":
 		amount = len(top)
 
-	msg: str = ConfigValues.dashboard_title.replace('{amount}', amount)
+	msg: str = ConfigValues.dashboard_title.replace('{amount}', str(amount))
 
 	try:
 		position = 0
@@ -64,9 +68,9 @@ async def get_top(bot: Bot, message: Message):
 				position += 1
 
 				msg = msg + ConfigValues.dashboard_object.replace(
-					'{position}', position).replace(
+					'{position}', str(position)).replace(
 					'{player_name}', player_name).replace(
-					'{points_amount}', player[1])
+					'{points_amount}', str(player[1]))
 
 			except ChatNotFound:
 				continue
