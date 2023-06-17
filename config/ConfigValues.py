@@ -19,7 +19,7 @@ class ConfigValues:
 	telegram_token = __config_file.get('Telegram', 'telegram_token')
 
 	# Messages
-	authorization_instructions = __config_file.get('Messages', 'authorization_instructions').replace('\n', '\n')
+	authorization_instructions = __config_file.get('Messages', 'authorization_instructions').replace('\\n', '\n')
 	game_instructions = __config_file.get('Messages', 'game_instructions').replace('\\n', '\n')
 	on_queue_join_message = __config_file.get('Messages', 'on_queue_join_message').replace('\\n', '\n')
 	on_queue_leave_message = __config_file.get('Messages', 'on_queue_leave_message').replace('\\n', '\n')
