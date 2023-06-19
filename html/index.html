@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1С УЧЕБНЫЙ ЦЕНТР CHESS GAME</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script defer src="../js/chess.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="header__container__nav">
+
+            <div class="header__logo">
+                <a rel="noopener" class="link__logo" href="https://uc1.1c.ru/" target="_blank">
+                    <img src="../img/1clogo.png" alt="">
+                </a>
+            </div>
+    
+            <nav class="header__menu">
+                <a class="header__link" href="">
+                    <button type="menu" class="header__item">Find a Store</button>
+                </a>
+                <a class="header__link" href="">
+                    <button class="header__item">Help</button>
+                </a>
+                <a class="header__link" href="">
+                    <button class="header__item">Join us</button>
+                </a>
+            </nav>
+
+            <div class="header__buttons__form">
+
+                <a class="header__link__reg" href="#">
+                    <button class="header__reg__btn">SIGN UP</button>
+                </a>
+
+                <a class="header__link__log">
+                    <button class="header__log_btn">LOGIN</button>
+                </a>
+
+            </div>
+
+        </div>
+
+    </header>
+
+    <main>
+
+      <section>
+        <div class="chess">
+            <div class="chess__buttons">
+ 
+                <div class="chess__btn">
+                    <img class="draw" src="../img/draw.png" alt="">
+                    <button class="chess__draw-btn">НИЧЬЯ</button>
+                </div>
+      
+                <div class="chess__btn">
+                    <img class="give-up" src="../img/give-up.png" alt="">
+                    <button onclick="openModal()" class="chess__giveup-btn">СДАТЬСЯ</button>
+                </div>
+            
+           </div>
+                <div class="chess_game__container">
+                    
+
+                    <div class="modal">
+                      <div class="modal__content">
+                        <h2>Модальное окно</h2>
+                        <p>Текст модального окна.</p>
+                        <button class="modal__close-button" onclick="closeModal()">Закрыть</button>
+                      </div>
+                    </div>
+
+
+                <div id="chessboard" class="chess__board">
+
+                    <div class="chess_black__field"></div>
+                    <div class="chess_white__field"></div>
+    
+                    <div class="chess_numbers">
+                        <span class="chess_number__item">8</span>
+                        <span class="chess_number__item">7</span>
+                        <span class="chess_number__item">6</span>
+                        <span class="chess_number__item">5</span>
+                        <span class="chess_number__item">4</span>
+                        <span class="chess_number__item">3</span>
+                        <span class="chess_number__item">2</span>
+                        <span class="chess_number__item">1</span>
+                    </div>
+                    <div class="chess___field__letters">
+                        <span class="chess_field__letter">A</span>
+                        <span class="chess_field__letter">B</span>
+                        <span class="chess_field__letter">C</span>
+                        <span class="chess_field__letter">D</span>
+                        <span class="chess_field__letter">E</span>
+                        <span class="chess_field__letter">F</span>
+                        <span class="chess_field__letter">G</span>
+                        <span class="chess_field__letter">H</span>
+                    </div>
+                </div>
+                 
+                <div class="chess__user-info">
+
+                    <div class="user__block">
+                        <span class="user__title">Petr</span>
+                        <img class="user__img" src="">
+                        <div class="timer" id="timer">
+                            <span>10</span>:<span>00</span>
+                        </div>
+                    </div>
+
+                    <div class="user__block">
+                        <span class="user__title">Petr</span>
+                        <img class="user__img" src="">
+                        <div class="timer" id="timerID">
+                            <span>10</span>:<span>00</span>
+                        </div>
+                    </div>
+
+                    <table>
+                        
+                        <thead>
+                            <tr>
+                                <td>#</td>
+                                <td>Raimond Konder (You)</td>
+                                <td>Eliazar Temploa</td>
+
+                            </tr>
+                        </thead>
+
+                        <tfoot>
+                            <tr>
+                                <td>11</td>
+                                <td>12</td>
+                                <td>13</td>
+                                <td>14у</td>
+
+                            </tr>
+                        </tfoot>
+
+                    </table>
+
+                </div>
+
+            </div>
+        </div>
+
+      </section>
+
+    </main>
+
+    <footer>
+        <section class="socials__info">
+            <div class="footer__container">
+                <div class="col1">
+                   <img class="footer__logo" src="../img/1clogo.png" alt="">
+                   <div class="socials">
+                       <img class="social__item" src="../img/Facebook.png" alt="">
+                       <img class="social__item" src="../img/Twitter.png" alt="">
+                       <img class="social__item" src="../img/Instagram.png" alt="">
+                       <img class="social__item" src="../img/Linkedln.png" alt="">
+                       <img class="social__item" src="../img/TikTok.png" alt="">
+                       <img class="social__item" src="../img/Telegram.png" alt="">
+                  </div>
+                </div>
+    
+                <div class="col2">
+                   <h3 class="col2__title">Get help</h3>
+                   <div class="col2__links">
+                       <a class="col2__link" href="#">Order Status</a>
+                       <a class="col2__link" href="#">Shipping and Delivery</a>
+                       <a class="col2__link" href="#">Returns</a>
+                       <a class="col2__link" href="#">Payment Options</a>
+                       <a class="col2__link" href="#">Contact Us</a>
+                   </div>
+                </div>
+    
+                <div class="col3">
+                    <h3 class="col3__title">ABOUT</h3>
+                    <div class="col3__links">
+                        <a class="col3__link" href="">News</a>
+                        <a class="col3__link" href="">Careers</a>
+                        <a class="col3__link" href="">Investors</a>
+                        <a class="col3__link" href="">Sustainability</a>
+                    </div>
+                </div>
+    
+                <div class="col4">
+                    <h3 class="col4__title">CONTACTS</h3>
+                    <div class="col4__links">
+                        <a class="col4__link" href="">sasaprigoda6@gmail.com</a>
+                        <a class="col4__link" href="">Gadyach city, Hetmanska street 58</a>
+                        <a class="col4__link" href="">+380663880963</a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="extra__info">
+            <div class="extra__info-wrap">
+                <span class="extra__title">© 2023 1с учебный центр, All Rights Reserved</span>
+                <div class="extra__info-links">
+                    <a class="extra__info-link_item" href="#">Terms of Use</a>
+                    <a class="extra__info-link_item" href="#">Terms of Sale</a>
+                    <a class="extra__info-link_item" href="#">Privacy & Cookie Policy</a>
+                    <a class="extra__info-link_item" href="#">Cookie Settings</a>
+                </div>
+            </div>
+
+        </section>
+    </footer>
+</body>
+</html>
