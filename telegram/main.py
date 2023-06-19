@@ -2,7 +2,7 @@ from aiogram import Bot, Dispatcher, executor
 from config.ConfigValues import ConfigValues
 from aiogram.types import Message
 from telegram_manage import start, profile, queue_leave, get_top, queue_join, authorization
-from telegram_log.log import log
+from telegram.telegram_log.log import log
 from aiogram.dispatcher.filters import Command
 
 
