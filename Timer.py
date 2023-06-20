@@ -15,7 +15,7 @@ class Timer:
 		self.thread.start()
 
 	def timer(self):
-		"""Течение таймера"""
+		"""Отсчёт времени"""
 
 		while self.ticking:
 			sleep(1)
