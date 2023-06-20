@@ -1,0 +1,413 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #121212;
+  color: #fff;
+}
+
+/* HEADER CSS */
+header {
+  background: #242424f2;
+  margin-bottom: 70px;
+}
+
+.header__container__nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 21.5px 88px;
+  height: 72px;
+}
+
+.header__menu {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+}
+
+.header__link {
+  text-decoration: none;
+}
+
+.header__item {
+  font-family: "Inter";
+  font-size: 16px;
+  line-height: 24px;
+  text-align: center;
+  width: max-content;
+  color: #a4a4a4;
+  background: none;
+  border: none;
+  transition: ease-out 0.3s;
+}
+
+.header__item:hover {
+  color: #ffffff;
+  border-bottom: 2px solid #ff1f44;
+  margin: 5px;
+  transition: ease-out 0.3s;
+}
+
+.header__item:active {
+  color: #ffffff;
+  border-bottom: 3px solid #ff1f44;
+  padding: 3px;
+  transition: ease-out 0.3s;
+}
+
+.header__buttons__form {
+  display: flex;
+  width: 195px;
+  height: 40px;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+}
+
+.header__link__reg {
+  width: 97px;
+  height: 40px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.001);
+  border: 1px solid #ff1f44;
+}
+
+.header__link__reg:hover {
+  transition: all 0.3s;
+  background: #ff1f44;
+  width: 100px;
+  height: 45px;
+  color: #ffffff;
+  border-radius: 30px;
+}
+
+.header__reg__btn {
+  background: none;
+  border: none;
+  text-align: center;
+  font-family: "Inter";
+  font-size: 16px;
+  line-height: 24px;
+  text-transform: uppercase;
+  color: #ff1f44;
+  width: 65px;
+  height: 24px;
+}
+
+.header__reg__btn:hover {
+  color: #ffffff;
+}
+
+.header__link__log {
+  width: 82px;
+  height: 40px;
+  background: #ff1f44;
+  text-align: center;
+  padding: 8px 16px;
+  line-height: 24px;
+  text-transform: uppercase;
+}
+
+.header__log_btn {
+  background: none;
+  border: none;
+  width: 50px;
+  height: 24px;
+  font-family: "Inter";
+  font-size: 16px;
+  line-height: 24px;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+/* HEADER CSS */
+/* MAIN CSS */
+
+.chess {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chess_game__container {
+  display: flex;
+  padding: 70px 88px;
+  gap: 64px;
+}
+.chess__buttons {
+  display: flex;
+  gap: 16px;
+  width: 1390px;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+  cursor: pointer;
+}
+
+.chess__btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 32px;
+  gap: 8px;
+  flex-basis: 506px;
+  height: 56px;
+  background: #c22a2a;
+}
+
+.chess__draw-btn {
+  font-family: Inter;
+  color: #ffffff;
+  font-size: 16px;
+  line-height: 24px;
+  width: 57px;
+  height: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.chess__giveup-btn {
+  font-family: Inter;
+  color: #ffffff;
+  font-size: 16px;
+  line-height: 24px;
+  background: none;
+  width: 78px;
+  height: 24px;
+  border: none;
+  cursor: pointer;
+}
+
+.chess__board {
+  position: relative;
+  cursor: pointer;
+  width: 800px;
+  height: 800px;
+}
+
+.chess_numbers,
+.chess___field__letters {
+  display: flex;
+  position: absolute;
+  color: rgb(253, 253, 253);
+  justify-content: space-around;
+  top: 0;
+  left: 0;
+}
+
+.chess_numbers {
+  flex-direction: column;
+  flex-wrap: initial;
+  align-items: flex-end;
+  height: 100%;
+  width: 0.8em;
+  font-size: 16px;
+}
+
+.chess___field__letters {
+  flex-direction: row-reverse;
+  flex-wrap: initial;
+  top: 98%;
+  font-size: 13px;
+  width: 100%;
+  height: max-content;
+}
+
+.chess__user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  width: 300px;
+}
+/* MAIN CSS */
+
+/* FOOTER CSS */
+footer {
+  margin-top: 70px;
+  background: #242424;
+}
+
+.socials__info {
+}
+.footer__container {
+  display: flex;
+  gap: 24px;
+  padding: 32px 88px;
+  height: 350px;
+}
+
+.footer__container:nth-child(1) {
+  gap: 154px;
+}
+
+.col1 {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 24px;
+}
+
+.socials {
+  display: grid;
+  grid-template-columns: 24px 24px 24px 24px 24px 24px;
+  column-gap: 12px;
+}
+.col2 {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 16px;
+  width: 370px;
+  height: 230px;
+}
+
+.col2__title {
+  font-family: "Poppins";
+  font-size: 20px;
+  line-height: 30px;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.col2__links {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.col2__link {
+  font-family: "Inter";
+  font-size: 16px;
+  line-height: 24px;
+  color: #818181;
+  text-decoration: none;
+}
+
+.col3 {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 16px;
+  width: 370px;
+  height: 190px;
+}
+
+.col3__links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 16px;
+}
+
+.col3__link {
+  font-family: "Inter";
+  font-size: 16px;
+  line-height: 24px;
+  color: #818181;
+  text-decoration: none;
+}
+
+.col4 {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 16px;
+  width: 370px;
+  height: 150px;
+}
+
+.col4__links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 16px;
+}
+
+.col4__link {
+  font-family: "Inter";
+  font-size: 16px;
+  line-height: 24px;
+  color: #818181;
+  text-decoration: none;
+}
+
+.extra__info {
+  background: #242424;
+  height: 56px;
+}
+
+.extra__info-wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 16px 88px;
+  color: #818181;
+}
+
+.extra__title {
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 24px;
+  font-family: "Inter";
+}
+
+.extra__info-links {
+  display: flex;
+  padding: 0px;
+  gap: 24px;
+  width: 574px;
+  height: 24px;
+}
+
+.extra__info-link_item {
+  font-family: "Inter";
+  text-decoration: none;
+  font-size: 16px;
+  line-height: 24px;
+  color: #818181;
+}
+
+.modal {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  justify-content: center;
+  align-items: flex-start;
+  z-index: 1000;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.modal-content {
+  position: relative;
+  background-color: #fff;
+  margin: 2rem;
+  padding: 2rem;
+  border-radius: 0.25rem;
+  width: 50%;
+  max-height: 75%;
+  overflow: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.modal__close-button {
+  position: absolute;
+  top: 10%;
+  right: 10%;
+}
