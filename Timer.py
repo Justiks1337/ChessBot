@@ -1,7 +1,7 @@
-from threading import Thread
 from time import sleep
-from BaseErrors import ChessError
+from exceptions.BaseErrors import ChessError
 from config.ConfigValues import ConfigValues
+from threading import Thread
 
 
 class Timer:
@@ -9,7 +9,7 @@ class Timer:
 
 	def __init__(self, color: bool):
 		self.color = lambda x: "белых" if color else "чёрных"
-		self.time = ConfigValues.game_time
+		self.time = int(ConfigValues.game_time)
 		self.ticking = color
 		self.thread = Thread(target=self.timer)
 		self.thread.start()
@@ -17,14 +17,19 @@ class Timer:
 	def timer(self):
 		"""Отсчёт времени"""
 
-		while self.ticking:
+		if self.ticking:
+
 			sleep(1)
 			self.time = self.time - 1
+			print(self.time)
 
 			try:
 				assert self.time
 			except AssertionError:
 				raise ChessError(ConfigValues.on_end_time.replace('{color}', self.color))
+
+			self.timer()  # recursion
+
 		return
 
 	def flip_the_timer(self):
@@ -36,3 +41,7 @@ class Timer:
 			Thread(target=self.timer).start()
 			return
 		self.thread.join()
+
+
+Timer(True)
+Timer(True)
