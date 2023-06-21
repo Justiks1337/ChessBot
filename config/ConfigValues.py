@@ -35,4 +35,4 @@ class ConfigValues:
 
 	# Game
 
-	game_time = __config_file.get('Game', 'game_time')  # THE VALUE IS NO MORE THAN 960
+	game_time = __config_file.get('Game', 'game_time')  # THE VALUE IS NO MORE THAN 960!
