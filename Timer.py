@@ -1,47 +1,53 @@
-from time import sleep
-from exceptions.BaseErrors import ChessError
 from config.ConfigValues import ConfigValues
-from threading import Thread
+from asyncio import Event, wait_for, TimeoutError
+from time import time as _time
+from core import on_end_time_error
 
 
 class Timer:
 	"""class Timer"""
 
-	def __init__(self, color: bool):
-		self.color = lambda x: "белых" if color else "чёрных"
-		self.time = int(ConfigValues.game_time)
-		self.ticking = color
-		self.thread = Thread(target=self.timer)
-		self.thread.start()
+	def __init__(
+			self,
+			on_end_time_func=on_end_time_error,
+			time: int = int(ConfigValues.game_time)
+	):
+		self.__function = on_end_time_func
+		self.__initialize = False
 
-	def timer(self):
-		"""Отсчёт времени"""
+		self.time = time
+		self.event = Event()
 
-		if self.ticking:
+	async def __wait_move(self):
+		"""wait move"""
+		last_move_time = _time()
 
-			sleep(1)
-			self.time = self.time - 1
-			print(self.time)
+		await self.event.wait()
+
+		self.time = self.time - (_time() - last_move_time)
+		self.event.clear()
+
+	async def start_timer(self):
+		"""Start the timer"""
+		while self.time > 0:
+			if self.__initialize:
+				await self.event.wait()
+				self.event.clear()
+			else:
+				self.__initialize = True
 
 			try:
-				assert self.time
-			except AssertionError:
-				raise ChessError(ConfigValues.on_end_time.replace('{color}', self.color))
+				await wait_for(self.__wait_move(), timeout=self.time)
+			except TimeoutError:
+				self.__function()
 
-			self.timer()  # recursion
-
-		return
-
-	def flip_the_timer(self):
+	async def flip_the_timer(self):
 		"""Меняет положение таймера (активный/деактивный)"""
 
-		self.ticking = not self.ticking
+		self.event.set()
 
-		if self.ticking:
-			Thread(target=self.timer).start()
-			return
-		self.thread.join()
+	async def stop_the_timer(self):
+		"""Stop the timer"""
 
-
-Timer(True)
-Timer(True)
+		self.time = 0  # timer loop has condition self.time > 0. I'm killing timer loop by changing the condition
+		await self.flip_the_timer()  # back to loop start and kill timer loop
