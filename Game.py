@@ -1,55 +1,60 @@
+import gc
+
 from User import User
 import chess
-from database_tools.Connection import connect
-from BaseErrors import ChessError
-from config.ConfigValues import ConfigValues
+from exceptions.MateError import MateError
+from exceptions.DrawError import DrawError
+from asyncio import create_task
+from uuid import uuid4
 
 
 class Game:
 	"""Класс отвечающий за игру"""
+
 	def __init__(self, users_ids: tuple):
 		self.board: chess.Board = chess.Board()
-		self.player_1: User = User(users_ids[0], True)
-		self.player_2: User = User(users_ids[1], False)
+		self.player_1: User = User(users_ids[0], True, self)
+		self.player_2: User = User(users_ids[1], False, self)
+		self.tag = uuid4()
 
-	async def move(self, start_cell: str, end_cell: str):
-		""":raise ChessError если возникает какая либо ошибка."""
+	async def move(self, text_move):
+		""":raise BaseError если на доске ситуация приводящая к концу игры либо противоречащая её продолжению"""
 
-		try:
-			self.board.push_san("".join([start_cell, end_cell]))
-			self.checkmate()
-			self.check_stalemate()
-
-		except chess.IllegalMoveError:
-			raise ChessError(ConfigValues.illegal_move_error, local=True, color=self.board.turn)
+		self.board.push_san(text_move)
+		self.checkmate()
+		self.check_stalemate()
 
 	def checkmate(self):
-		""":raise ChessError если есть на доске мат"""
-		try:
-			assert not self.board.is_checkmate()
-		except AssertionError:
-			raise ChessError(ConfigValues.on_mate_message.replace('{color}', self.get_winner_color()))
+		""":raise MateError если есть на доске мат"""
+
+		if self.board.is_checkmate():
+			raise MateError(self.get_winner().color_text)
 
 	def check_stalemate(self):
-		""":raise ChessError если на доске пат"""
-		try:
-			assert not self.board.is_stalemate()
-		except AssertionError:
-			raise ChessError(ConfigValues.on_draw_message)
+		""":raise DrawError если на доске пат"""
 
-	def get_winner_color(self) -> str:
-		""":return Возвращает цвет победителя (При мате)"""
-		return "белый" if self.board.turn else "чёрный"
+		if self.board.is_stalemate():
+			raise DrawError()
 
 	def get_winner(self) -> User:
-		""":return User - object """
-		return self.player_1 if not self.player_1.color is self.board.turn else self.player_2
+		""":return User - object"""
 
-	@staticmethod
-	async def give_points(user: User):
-		"""Добавляет баллы в базу данных"""
-		await connect.request("UPDATE users SET points = points + 1 WHERE user_id = ?", (user.telegram_id, ))
+		return self.player_1 if not self.board.turn else self.player_2
+
+	async def prepare_to_game(self):
+		"""actions before start game"""
+
+		first_timer = create_task(self.player_1.start_timer())  # first_timer - invisible reference to timer, for GC
+		second_timer = create_task(self.player_2.start_timer())  # second_timer - invisible reference to timer, for GC
+		self.player_2.timer_continue()
 
 	async def on_end_game(self):
 		"""Коро хендлер срабатывающий после окончания игры"""
-		await self.give_points(self.get_winner())
+
+		self.player_1.stop_timer()
+		self.player_2.stop_timer()
+
+		await self.player_1.remove_games()
+		await self.player_2.remove_games()
+
+		await self.get_winner().give_points()
