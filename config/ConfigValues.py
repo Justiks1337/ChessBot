@@ -32,6 +32,8 @@ class ConfigValues:
 	on_mate_message = __config_file.get('Messages', 'on_mate_message').replace('\\n', '\n')
 	on_draw_message = __config_file.get('Messages', 'on_draw_message').replace('\\n', '\n')
 	on_end_time = __config_file.get('Messages', 'on_end_time').replace('\\n', '\n')
+	on_someone_move = __config_file.get('Messages', 'on_someone_move').replace('\\n', '\n')
+	on_resign = __config_file.get('Messages', 'on_resign').replace('\\n', '\n')
 
 	# Game
 
