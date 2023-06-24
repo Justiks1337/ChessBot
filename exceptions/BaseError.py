@@ -9,4 +9,4 @@ class BaseError(Exception):
 			session=None,
 			page: Optional[str] = None):
 
-		pass
+		self.message = message
