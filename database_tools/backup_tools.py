@@ -41,6 +41,3 @@ async def backup():
 				log.info(f'The database backup has been completed. Database dump is named as {backup_name}')
 
 				return await resp.json(content_type=None)
-
-
-__dump()

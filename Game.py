@@ -1,5 +1,3 @@
-import gc
-
 from User import User
 import chess
 from exceptions.MateError import MateError
