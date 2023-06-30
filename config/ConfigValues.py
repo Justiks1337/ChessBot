@@ -37,6 +37,7 @@ class ConfigValues:
 	authorization_message = __config_file.get('Messages', 'authorization_message').replace('\\n', '\n')
 	success_authorization_message = __config_file.get('Messages', 'success_authorization_message').replace('\\n', '\n')
 	on_duplicate_authorization_code = __config_file.get('Messages', 'on_duplicate_authorization_code').replace('\\n', '\n')
+	on_blacklsit_message = __config_file.get('Messages', 'on_blacklist_message').replace('\\n', '\n')
 
 	# Game
 

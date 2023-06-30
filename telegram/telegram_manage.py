@@ -4,10 +4,11 @@ from aiogram.types.message import Message
 from aiogram.bot.bot import Bot
 from aiogram.utils.exceptions import ChatNotFound
 from config.ConfigValues import ConfigValues
-from telegram_core import download_user_avatar
+from telegram_core import download_user_avatar, in_blacklist
 from uuid import uuid4
 
 
+@in_blacklist
 async def start(bot: Bot, message: Message):
 	"""send start message"""
 
@@ -18,6 +19,7 @@ async def start(bot: Bot, message: Message):
 	await bot.send_message(message.chat.id, ConfigValues.authorization_instructions)
 
 
+@in_blacklist
 async def profile(bot: Bot, message: Message):
 	"""Отправляет в чат статистику пользователя"""
 
@@ -32,6 +34,7 @@ async def profile(bot: Bot, message: Message):
 		ConfigValues.profile_message.replace('{games_amount}', stats_values[0]).replace('{points_amount}', stats_values[1]))
 
 
+@in_blacklist
 async def queue_join(bot: Bot, message: Message):
 	"""Добавляет пользователя в очередь"""
 
@@ -40,6 +43,7 @@ async def queue_join(bot: Bot, message: Message):
 	await bot.send_message(message.chat.id, ConfigValues.on_queue_join_message)
 
 
+@in_blacklist
 async def queue_leave(bot: Bot, message: Message):
 	"""Удаляет пользователя из очереди"""
 
@@ -48,6 +52,7 @@ async def queue_leave(bot: Bot, message: Message):
 	await bot.send_message(message.chat.id, ConfigValues.on_queue_leave_message)
 
 
+@in_blacklist
 async def get_top(bot: Bot, message: Message):
 	"""send message with dashboard"""
 
@@ -85,6 +90,7 @@ async def get_top(bot: Bot, message: Message):
 	await bot.send_message(message.chat.id, msg)
 
 
+@in_blacklist
 async def authorization(bot: Bot, message: Message):
 	"""Authorization command"""
 
