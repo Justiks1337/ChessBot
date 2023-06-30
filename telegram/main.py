@@ -46,4 +46,12 @@ async def dashboard_handler(message: Message):
 
 	await get_top(bot, message)
 
+
+@dp.message_handler(Command('authorization'))
+async def authorization_handler(message: Message):
+	"""Отправляет код авторизации"""
+
+	await authorization(bot, message)
+
+
 executor.start_polling(dp)

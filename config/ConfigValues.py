@@ -17,6 +17,7 @@ class ConfigValues:
 
 	# Telegram section
 	telegram_token = __config_file.get('Telegram', 'telegram_token')
+	admin_ids: list = __config_file.get('Telegram', 'admin_ids').split(', ')
 
 	# Messages
 	authorization_instructions = __config_file.get('Messages', 'authorization_instructions').replace('\\n', '\n')
@@ -27,13 +28,15 @@ class ConfigValues:
 	dashboard_title = __config_file.get('Messages', 'dashboard_title').replace('\\n', '\n')
 	dashboard_object = __config_file.get('Messages', 'dashboard_object').replace('\\n', '\n')
 	dashboard_on_range_error = __config_file.get('Messages', 'dashboard_on_range_error').replace('\\n', '\n')
-	authorization_message = __config_file.get('Messages', 'authorization_message').replace('\\n', '\n')
 	illegal_move_error = __config_file.get('Messages', 'illegal_move_error').replace('\\n', '\n')
 	on_mate_message = __config_file.get('Messages', 'on_mate_message').replace('\\n', '\n')
 	on_draw_message = __config_file.get('Messages', 'on_draw_message').replace('\\n', '\n')
 	on_end_time = __config_file.get('Messages', 'on_end_time').replace('\\n', '\n')
 	on_someone_move = __config_file.get('Messages', 'on_someone_move').replace('\\n', '\n')
 	on_resign = __config_file.get('Messages', 'on_resign').replace('\\n', '\n')
+	authorization_message = __config_file.get('Messages', 'authorization_message').replace('\\n', '\n')
+	success_authorization_message = __config_file.get('Messages', 'success_authorization_message').replace('\\n', '\n')
+	on_duplicate_authorization_code = __config_file.get('Messages', 'on_duplicate_authorization_code').replace('\\n', '\n')
 
 	# Game
 

@@ -4,9 +4,13 @@ from aiogram.types.message import Message
 from aiogram.bot.bot import Bot
 from aiogram.utils.exceptions import ChatNotFound
 from config.ConfigValues import ConfigValues
+from telegram_core import download_user_avatar
+from uuid import uuid4
 
 
 async def start(bot: Bot, message: Message):
+	"""send start message"""
+
 	if await (await connect.request("SELECT user_id FROM users WHERE user_id = ?", (message.from_id, ))).fetchone():
 		await bot.send_message(message.chat.id, ConfigValues.game_instructions)
 		return
@@ -84,4 +88,26 @@ async def get_top(bot: Bot, message: Message):
 async def authorization(bot: Bot, message: Message):
 	"""Authorization command"""
 
-	pass
+	if (
+		await(
+			await connect.request(
+				"SELECT user_id FROM authorization WHERE user_id = ?",
+				(message.from_id, ))
+			).fetchone()):
+
+		await bot.send_message(message.chat.id, ConfigValues.on_duplicate_authorization_code)
+		return
+
+	code = str(uuid4())
+	user_nickname = f'{message.from_user.first_name} {message.from_user.last_name}'
+	user_name = message.from_user.username
+
+	await download_user_avatar(bot, message.from_id)
+
+	await connect.request("INSERT INTO authorization VALUES (?, ?, ?, ?)", (
+		message.from_id,
+		user_nickname,
+		user_name,
+		code))
+
+	await bot.send_message(message.chat.id, ConfigValues.authorization_message.replace('{code}', code), parse_mode='HTML')
