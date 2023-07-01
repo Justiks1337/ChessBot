@@ -27,6 +27,8 @@ class User:
 		task = main_loop.create_task(self.__fill_attributes())
 		main_loop.run_until_complete(task)
 
+		self.own_object.players.append(self)
+
 	async def __fill_attributes(self):
 		"""fill attributes from database"""
 

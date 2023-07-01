@@ -13,7 +13,10 @@ class Game:
 		self.board: chess.Board = chess.Board()
 		self.player_1: User = User(users_ids[0], True, self)
 		self.player_2: User = User(users_ids[1], False, self)
+		self.players: list = []
 		self.tag = uuid4()
+
+		games.append(self)
 
 	async def move(self, text_move):
 		""":raise BaseError если на доске ситуация приводящая к концу игры либо противоречащая её продолжению"""
@@ -56,3 +59,6 @@ class Game:
 		await self.player_2.remove_games()
 
 		await self.get_winner().give_points()
+
+
+games = []
