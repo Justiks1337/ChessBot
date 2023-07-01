@@ -4,8 +4,9 @@ from aiogram.types.message import Message
 from aiogram.bot.bot import Bot
 from aiogram.utils.exceptions import ChatNotFound
 from config.ConfigValues import ConfigValues
-from telegram_core import download_user_avatar, in_blacklist
+from telegram_core import download_user_avatar, in_blacklist, in_admins
 from uuid import uuid4
+from sqlite3 import IntegrityError
 
 
 @in_blacklist
@@ -66,26 +67,28 @@ async def get_top(bot: Bot, message: Message):
 	if amount == "all":
 		amount = len(top)
 
+	try:
+		int(amount)
+
+	except ValueError:
+		await bot.send_message(message.chat.id, ConfigValues.on_invalid_args)
+
 	msg: str = ConfigValues.dashboard_title.replace('{amount}', str(amount))
 
-	try:
-		position = 0
-		for player in top[:int(amount)]:
-			try:
+	position = 0
+	for player in top[:int(amount)+1]:
+		try:
 
-				player_name = (await bot.get_chat_member(player[0], player[0])).user.username
-				position += 1
+			player_name = (await bot.get_chat_member(player[0], player[0])).user.username
+			position += 1
 
-				msg = msg + ConfigValues.dashboard_object.replace(
-					'{position}', str(position)).replace(
-					'{player_name}', player_name).replace(
-					'{points_amount}', str(player[1]))
+			msg = msg + ConfigValues.dashboard_object.replace(
+				'{position}', str(position)).replace(
+				'{player_name}', player_name).replace(
+				'{points_amount}', str(player[1]))
 
-			except ChatNotFound:
-				continue
-
-	except IndexError:
-		await bot.send_message(message.chat.id, ConfigValues.dashboard_on_range_error.replace('{amount}', len(top)))
+		except ChatNotFound:
+			continue
 
 	await bot.send_message(message.chat.id, msg)
 
@@ -117,3 +120,32 @@ async def authorization(bot: Bot, message: Message):
 		code))
 
 	await bot.send_message(message.chat.id, ConfigValues.authorization_message.replace('{code}', code), parse_mode='HTML')
+
+
+@in_admins
+async def add_on_blacklist(bot: Bot, message: Message):
+
+	try:
+		username = message.get_args().replace('@', '')
+		await connect.request("INSERT INTO blacklist VALUES ((SELECT user_id FROM users WHERE username = ?), ?)", (
+			username, username))
+
+	except IntegrityError:
+		await bot.send_message(message.chat.id, ConfigValues.on_invalid_args)
+		return
+
+	await bot.send_message(message.chat.id, ConfigValues.successful_add_to_blacklist.replace('{username}', username))
+
+
+@in_admins
+async def remove_from_blacklist(bot: Bot, message: Message):
+
+	try:
+		user_id = int(message.get_args())
+	except ValueError:
+		await bot.send_message(message.chat.id, ConfigValues.on_invalid_args)
+		return
+
+	await connect.request("DELETE FROM blacklist WHERE user_id = ?", (user_id, ))
+
+	await bot.send_message(message.chat.id, ConfigValues.successful_remove_from_blacklist)

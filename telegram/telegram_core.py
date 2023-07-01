@@ -19,12 +19,24 @@ async def download_user_avatar(bot: Bot, user_id: int):
 
 
 def in_blacklist(func):
+	"""Check user in blacklist"""
 	async def wrapped(*args, **kwargs):
 		if (await (
-				await connect.request("SELECT user_id FROM blacklist WHERE user_id = ?", (args[1].from_id, ))
+				await connect.request("SELECT user_id FROM blacklist WHERE user_id = ?", (args[1].from_user.username, ))
 		).fetchone()):
 			return await args[0].send_message(args[1].chat.id, ConfigValues.on_blacklsit_message)
 
 		return await func(*args, **kwargs)
+
+	return wrapped
+
+
+def in_admins(func):
+	"""Check user in admins"""
+	async def wrapped(*args, **kwargs):
+		if str(args[1].from_id) in ConfigValues.admin_ids:
+			return await func(*args, **kwargs)
+
+		return await args[0].send_message(args[1].chat.id, ConfigValues.on_is_not_admin)
 
 	return wrapped

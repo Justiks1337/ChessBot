@@ -38,6 +38,10 @@ class ConfigValues:
 	success_authorization_message = __config_file.get('Messages', 'success_authorization_message').replace('\\n', '\n')
 	on_duplicate_authorization_code = __config_file.get('Messages', 'on_duplicate_authorization_code').replace('\\n', '\n')
 	on_blacklsit_message = __config_file.get('Messages', 'on_blacklist_message').replace('\\n', '\n')
+	on_is_not_admin = __config_file.get('Messages', 'on_is_not_admin').replace('\\n', '\n')
+	successful_add_to_blacklist = __config_file.get('Messages', 'successful_add_to_blacklist').replace('\\n', '\n')
+	successful_remove_from_blacklist = __config_file.get('Messages', 'successful_remove_from_blacklist').replace('\\n', '\n')
+	on_invalid_args = __config_file.get('Messages', 'on_invalid_args').replace('\\n', '\n')
 
 	# Game
 

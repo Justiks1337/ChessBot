@@ -1,7 +1,7 @@
 from aiogram import Bot, Dispatcher, executor
 from config.ConfigValues import ConfigValues
 from aiogram.types import Message
-from telegram_manage import start, profile, queue_leave, get_top, queue_join, authorization
+from telegram_manage import start, profile, queue_leave, get_top, queue_join, authorization, add_on_blacklist, remove_from_blacklist
 from telegram.telegram_log.log import log
 from aiogram.dispatcher.filters import Command
 
@@ -52,6 +52,20 @@ async def authorization_handler(message: Message):
 	"""Отправляет код авторизации"""
 
 	await authorization(bot, message)
+
+
+@dp.message_handler(Command('add_on_blacklist'))
+async def add_on_blacklist_handler(message: Message):
+	"""Отправляет юзера в бан"""
+
+	await add_on_blacklist(bot, message)
+
+
+@dp.message_handler(Command('remove_from_blacklist'))
+async def add_on_blacklist_handler(message: Message):
+	"""Возвращает юзера из бан"""
+
+	await remove_from_blacklist(bot, message)
 
 
 executor.start_polling(dp)
