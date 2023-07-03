@@ -1,4 +1,7 @@
 from Game import Game
+from aiogram import Bot
+from config.ConfigValues import ConfigValues
+from exceptions.InQueueError import InQueueError
 
 
 class Queue:
@@ -7,10 +10,16 @@ class Queue:
 	def __init__(self):
 		self.users = []
 
-	def add_new_user(self, user_id: int):
+	async def add_new_user(self, bot: Bot, user_id: int):
 		"""Добавляет нового игрока в очередь"""
 
-		self.users.append(user_id)
+		if user_id not in self.users:
+			self.users.append(user_id)
+			await self.on_new_user(bot, user_id)
+			await bot.send_message(user_id, ConfigValues.on_queue_join_message)
+			return
+
+		await bot.send_message(user_id, ConfigValues.if_in_queue)
 
 	def start_game(self):
 		"""Начало игры"""
@@ -18,7 +27,7 @@ class Queue:
 		Game((self.users[0], self.users[1]))
 		self.users.clear()
 
-	def on_new_user(self):
+	async def on_new_user(self, bot: Bot, user_id: int):
 		"""Хандлер срабатывающий при попадании нового пользователя в очередь"""
 
 		if len(self.users) == 2:

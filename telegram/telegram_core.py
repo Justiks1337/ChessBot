@@ -9,7 +9,7 @@ def in_blacklist(func):
 		if (await (
 				await connect.request("SELECT user_id FROM blacklist WHERE username = ?", (args[1].from_user.username, ))
 		).fetchone()):
-			return await args[0].send_message(args[1].chat.id, ConfigValues.on_blacklsit_message)
+			return await args[0].send_message(args[1].chat.id, ConfigValues.on_blacklist_message)
 
 		return await func(*args, **kwargs)
 

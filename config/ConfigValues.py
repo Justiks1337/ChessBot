@@ -24,6 +24,7 @@ class ConfigValues:
 	game_instructions = __config_file.get('Messages', 'game_instructions').replace('\\n', '\n')
 	on_queue_join_message = __config_file.get('Messages', 'on_queue_join_message').replace('\\n', '\n')
 	on_queue_leave_message = __config_file.get('Messages', 'on_queue_leave_message').replace('\\n', '\n')
+	if_in_queue = __config_file.get('Messages', 'if_in_queue').replace('\\n', '\n')
 	profile_message = __config_file.get('Messages', 'profile_message').replace('\\n', '\n')
 	dashboard_title = __config_file.get('Messages', 'dashboard_title').replace('\\n', '\n')
 	dashboard_object = __config_file.get('Messages', 'dashboard_object').replace('\\n', '\n')
@@ -38,13 +39,19 @@ class ConfigValues:
 	success_authorization_message = __config_file.get('Messages', 'success_authorization_message').replace('\\n', '\n')
 	on_duplicate_authorization_code = __config_file.get('Messages', 'on_duplicate_authorization_code').replace('\\n', '\n')
 	on_delete_authorization_code = __config_file.get('Messages', 'on_delete_authorization_code').replace('\\n', '\n')
-	on_blacklsit_message = __config_file.get('Messages', 'on_blacklist_message').replace('\\n', '\n')
+	on_blacklist_message = __config_file.get('Messages', 'on_blacklist_message').replace('\\n', '\n')
 	on_is_not_admin = __config_file.get('Messages', 'on_is_not_admin').replace('\\n', '\n')
 	successful_add_to_blacklist = __config_file.get('Messages', 'successful_add_to_blacklist').replace('\\n', '\n')
 	successful_remove_from_blacklist = __config_file.get('Messages', 'successful_remove_from_blacklist').replace('\\n', '\n')
 	on_invalid_args = __config_file.get('Messages', 'on_invalid_args').replace('\\n', '\n')
+	on_find_enemy = __config_file.get('Messages', 'on_find_enemy').replace('\\n', '\n')
 
 	# Game
 
+	prepare_time = int(__config_file.get('Game', 'prepare_time'))
 	game_time = int(__config_file.get('Game', 'game_time'))
 	games_amount = int(__config_file.get('Game', 'games_amount'))
+
+	# Web
+
+	url_to_playground = __config_file.get('Web', 'url_to_playground').replace('\\n', '\n')
