@@ -1,9 +1,14 @@
 from aiogram import Bot, Dispatcher, executor
 from config.ConfigValues import ConfigValues
 from aiogram.types import Message
-from telegram_manage import start, profile, queue_leave, get_top, queue_join, authorization, add_on_blacklist, remove_from_blacklist
 from telegram.telegram_log.log import log
 from aiogram.dispatcher.filters import Command
+from telegram_authorize import new_token
+from telegram_admin import remove_from_blacklist, add_on_blacklist
+from telegram_queue import queue_join, queue_leave
+from telegram_start import start
+from telegram_profile import profile
+from telegram_dashboard import get_top
 
 
 bot = Bot(token=ConfigValues.telegram_token)
@@ -51,7 +56,7 @@ async def dashboard_handler(message: Message):
 async def authorization_handler(message: Message):
 	"""Отправляет код авторизации"""
 
-	await authorization(bot, message)
+	await new_token(bot, message)
 
 
 @dp.message_handler(Command('add_on_blacklist'))

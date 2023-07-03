@@ -37,6 +37,7 @@ class ConfigValues:
 	authorization_message = __config_file.get('Messages', 'authorization_message').replace('\\n', '\n')
 	success_authorization_message = __config_file.get('Messages', 'success_authorization_message').replace('\\n', '\n')
 	on_duplicate_authorization_code = __config_file.get('Messages', 'on_duplicate_authorization_code').replace('\\n', '\n')
+	on_delete_authorization_code = __config_file.get('Messages', 'on_delete_authorization_code').replace('\\n', '\n')
 	on_blacklsit_message = __config_file.get('Messages', 'on_blacklist_message').replace('\\n', '\n')
 	on_is_not_admin = __config_file.get('Messages', 'on_is_not_admin').replace('\\n', '\n')
 	successful_add_to_blacklist = __config_file.get('Messages', 'successful_add_to_blacklist').replace('\\n', '\n')
@@ -46,3 +47,4 @@ class ConfigValues:
 	# Game
 
 	game_time = __config_file.get('Game', 'game_time')
+	games_amount = int(__config_file.get('Game', 'games_amount'))
