@@ -17,4 +17,4 @@ async def profile(bot: Bot, message: Message):
 
 	await bot.send_message(
 		message.chat.id,
-		ConfigValues.profile_message.replace('{games_amount}', stats_values[0]).replace('{points_amount}', stats_values[1]))
+		ConfigValues.profile_message.replace('{games_amount}', str(stats_values[0])).replace('{points_amount}', str(stats_values[1])))

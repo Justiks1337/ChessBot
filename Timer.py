@@ -9,7 +9,7 @@ class Timer:
 
 	def __init__(
 			self,
-			time: int = int(ConfigValues.game_time),
+			time: int = ConfigValues.game_time,
 			on_end_time_func=on_end_time_error,  # Function should have *args and **kwargs
 			*args,
 			**kwargs
