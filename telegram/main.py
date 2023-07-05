@@ -9,6 +9,7 @@ from telegram_queue import queue_join, queue_leave
 from telegram_start import start
 from telegram_profile import profile
 from telegram_dashboard import get_top
+from telegram_help import send_manual
 
 
 bot = Bot(token=ConfigValues.telegram_token)
@@ -22,6 +23,13 @@ async def start_command_handler(message: Message):
 	"""Send manual to chat"""
 
 	await start(bot, message)
+
+
+@dp.message_handler(Command('help'))
+async def help_command_handler(message: Message):
+	"""Send full manual"""
+
+	await send_manual(bot, message)
 
 
 @dp.message_handler(Command('profile'))

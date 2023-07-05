@@ -4,11 +4,13 @@ from aiogram import Bot
 from aiogram.types import Message
 from config.ConfigValues import ConfigValues
 from database_tools.Connection import connect
+from telegram_core import recharge
 
 
 authorization_tokens = {}
 
 
+@recharge
 async def new_token(bot: Bot, message: Message):
 
 	token = str(uuid4())

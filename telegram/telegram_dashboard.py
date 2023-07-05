@@ -1,10 +1,12 @@
 from aiogram.types import Message
 from aiogram import Bot
 from database_tools.Connection import connect
-from telegram_core import in_blacklist
+from telegram_core import in_blacklist, recharge
 from config.ConfigValues import ConfigValues
 from aiogram.utils.exceptions import ChatNotFound
 
+
+@recharge
 @in_blacklist
 async def get_top(bot: Bot, message: Message):
 	"""send message with dashboard"""

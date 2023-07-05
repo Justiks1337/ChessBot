@@ -2,9 +2,11 @@ from aiogram import Bot
 from aiogram.types import Message
 from Queue import main_queue
 from config.ConfigValues import ConfigValues
-from telegram_core import in_blacklist
+from telegram_core import in_blacklist, authorize, recharge
 
 
+@recharge
+@authorize
 @in_blacklist
 async def queue_join(bot: Bot, message: Message):
 	"""Добавляет пользователя в очередь"""
@@ -12,6 +14,8 @@ async def queue_join(bot: Bot, message: Message):
 	await main_queue.add_new_user(bot, message.from_id)
 
 
+@recharge
+@authorize
 @in_blacklist
 async def queue_leave(bot: Bot, message: Message):
 	"""Удаляет пользователя из очереди"""

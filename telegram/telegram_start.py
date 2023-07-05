@@ -1,10 +1,11 @@
 from aiogram.types import Message
 from aiogram import Bot
 from database_tools.Connection import connect
-from telegram_core import in_blacklist
+from telegram_core import in_blacklist, recharge
 from config.ConfigValues import ConfigValues
 
 
+@recharge
 @in_blacklist
 async def start(bot: Bot, message: Message):
 	"""send start message"""
