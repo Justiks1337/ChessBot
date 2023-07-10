@@ -1,7 +1,7 @@
 from aiogram.types import Message
 from aiogram import Bot
 from database_tools.Connection import connect
-from telegram_core import in_blacklist, authorize, recharge
+from telegram.telegram_core import in_blacklist, authorize, recharge
 from config.ConfigValues import ConfigValues
 
 
@@ -19,4 +19,4 @@ async def profile(bot: Bot, message: Message):
 
         await bot.send_message(
                 message.chat.id,
-                uConfigValues.profile_message.replace('{games_amount}', str(stats_values[0])).replace('{points_amount}', str(stats_values[1])))
+                ConfigValues.profile_message.replace('{games_amount}', str(stats_values[0])).replace('{points_amount}', str(stats_values[1])))

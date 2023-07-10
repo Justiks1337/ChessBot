@@ -1,15 +1,15 @@
-from aiogram import Bot, Dispatcher, executor
+from aiogram import Bot, Dispatcher
 from config.ConfigValues import ConfigValues
 from aiogram.types import Message
 from telegram.telegram_log.log import log
 from aiogram.dispatcher.filters import Command
-from telegram_authorize import new_token
-from telegram_admin import remove_from_blacklist, add_on_blacklist
-from telegram_queue import queue_join, queue_leave
-from telegram_start import start
-from telegram_profile import profile
-from telegram_dashboard import get_top
-from telegram_help import send_manual
+from telegram.telegram_authorize import new_token
+from telegram.telegram_admin import remove_from_blacklist, add_on_blacklist
+from telegram.telegram_queue import queue_join, queue_leave
+from telegram.telegram_start import start
+from telegram.telegram_profile import profile
+from telegram.telegram_dashboard import get_top
+from telegram.telegram_help import send_manual
 
 
 bot = Bot(token=ConfigValues.telegram_token)
@@ -79,6 +79,3 @@ async def add_on_blacklist_handler(message: Message):
 	"""Возвращает юзера из бан"""
 
 	await remove_from_blacklist(bot, message)
-
-
-executor.start_polling(dp)

@@ -4,7 +4,7 @@ from aiogram import Bot
 from aiogram.types import Message
 from config.ConfigValues import ConfigValues
 from database_tools.Connection import connect
-from telegram_core import recharge
+from telegram.telegram_core import recharge
 
 
 authorization_tokens = {}
