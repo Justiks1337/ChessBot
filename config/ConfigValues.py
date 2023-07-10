@@ -59,3 +59,4 @@ class ConfigValues:
 	# Web
 
 	url_to_playground = __config_file.get('Web', 'url_to_playground').replace('\\n', '\n')
+	project_ip = __config_file.get('Web', 'project_ip').replace('\\n', '\n')

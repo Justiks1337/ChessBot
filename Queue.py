@@ -1,11 +1,10 @@
 from Game import Game
 from aiogram import Bot
 from config.ConfigValues import ConfigValues
-from exceptions.InQueueError import InQueueError
 
 
 class Queue:
-	"""Класс - очередь (единственный экземпляр создаётся в main.py"""
+	"""Класс - очередь (единственный экземпляр создаётся в telegram_commands.py"""
 
 	def __init__(self):
 		self.users = []

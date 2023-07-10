@@ -1,5 +1,3 @@
-from aiogram import Bot, Dispatcher
-from config.ConfigValues import ConfigValues
 from aiogram.types import Message
 from telegram.telegram_log.log import log
 from aiogram.dispatcher.filters import Command
@@ -10,10 +8,8 @@ from telegram.telegram_start import start
 from telegram.telegram_profile import profile
 from telegram.telegram_dashboard import get_top
 from telegram.telegram_help import send_manual
+from web_django.manage import bot, dp
 
-
-bot = Bot(token=ConfigValues.telegram_token)
-dp = Dispatcher(bot)
 
 log.info('bot successful started!')
 
