@@ -58,7 +58,6 @@ class Game:
 		await second_timer
 
 
-
 	async def on_end_game(self):
 		"""Коро хендлер срабатывающий после окончания игры"""
 
