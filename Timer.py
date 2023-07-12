@@ -15,7 +15,6 @@ class Timer:
 			**kwargs
 	):
 		self.__function = on_end_time_func
-		self.__initialize = False
 		self.__function_args = args
 		self.__function_kwargs = kwargs
 		self.__event = Event()
@@ -34,11 +33,9 @@ class Timer:
 	async def start_timer(self):
 		"""Start the timer"""
 		while self.time > 0:
-			if self.__initialize:
-				await self.__event.wait()
-				self.__event.clear()
-			else:
-				self.__initialize = True
+
+			await self.__event.wait()
+			self.__event.clear()
 
 			try:
 				await wait_for(self.__wait_move(), timeout=self.time)

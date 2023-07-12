@@ -1,9 +1,12 @@
-from User import User
-import chess
-from exceptions.MateError import MateError
-from exceptions.DrawError import DrawError
 from asyncio import create_task
 from uuid import uuid4
+from time import time
+
+import chess
+
+from User import User
+from exceptions.MateError import MateError
+from exceptions.DrawError import DrawError
 
 
 class Game:
@@ -14,6 +17,7 @@ class Game:
 		self.player_1: User = User(users_ids[0], True, self)
 		self.player_2: User = User(users_ids[1], False, self)
 		self.players: list = []
+		self.start_time = time()
 		self.tag = uuid4()
 
 		games.append(self)
@@ -42,12 +46,18 @@ class Game:
 
 		return self.player_1 if not self.board.turn else self.player_2
 
-	async def prepare_to_game(self):
+	async def start_timers_game(self):
 		"""actions before start game"""
 
 		first_timer = create_task(self.player_1.start_timer())  # first_timer - invisible reference to timer, for GC
 		second_timer = create_task(self.player_2.start_timer())  # second_timer - invisible reference to timer, for GC
-		self.player_2.timer_continue()
+
+		self.player_1.timer.flip_the_timer()
+
+		await first_timer
+		await second_timer
+
+
 
 	async def on_end_game(self):
 		"""Коро хендлер срабатывающий после окончания игры"""

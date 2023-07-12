@@ -59,4 +59,7 @@ class ConfigValues:
 	# Web
 
 	url_to_playground = __config_file.get('Web', 'url_to_playground').replace('\\n', '\n')
-	project_ip = __config_file.get('Web', 'project_ip').replace('\\n', '\n')
+	server_ip = __config_file.get('Web', 'server_ip').replace('\\n', '\n')
+	server_port = int(__config_file.get('Web', 'server_port'))
+	server_authkey = __config_file.get('Web', 'server_authkey')
+
