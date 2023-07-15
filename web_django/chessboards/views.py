@@ -1,6 +1,16 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpRequest
 
 
-def index(request):
-	return HttpResponse('<title>PLAYGROUND</title>')
+def main(request: HttpRequest):
+	pass
+
+
+def player_mode(request: HttpRequest):
+	pass
+
+
+def spectator_mode(request: HttpRequest):
+	pass
+
+
+

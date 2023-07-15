@@ -1,7 +1,9 @@
-from uuid import uuid4
 from asyncio import sleep
+
 from aiogram import Bot
 from aiogram.types import Message
+from aiohttp import ClientSession
+
 from config.ConfigValues import ConfigValues
 from database_tools.Connection import connect
 from telegram.telegram_core import recharge
@@ -13,27 +15,34 @@ authorization_tokens = {}
 @recharge
 async def new_token(bot: Bot, message: Message):
 
-	token = str(uuid4())
+	user_id = message.from_id
 
-	try:
-		authorization_tokens[message.from_id]  # Check in authorization_tokens (if not raise KeyError)
-		await bot.send_message(message.chat.id, ConfigValues.on_duplicate_authorization_code)
-		return
+	async with ClientSession() as session:
+		async with session.post(
+				f"http://{ConfigValues.server_ip}:{ConfigValues.server_port}/api/v1/new_token?user_id={user_id}",
+				headers={"content-type": "application/json", "Authorization": ConfigValues.server_authkey}) as response:
 
-	except KeyError:
-		authorization_tokens[message.from_id] = token
-		await bot.send_message(message.chat.id, ConfigValues.authorization_message.replace('{code}', token), parse_mode='HTML')
+			json = await response.json()
 
-	await sleep(300)
-	delete_token(message.from_id)
-	await bot.send_message(message.chat.id, ConfigValues.on_delete_authorization_code)
+			if json['success']:
+
+				await bot.send_message(message.chat.id, ConfigValues.authorization_message.replace('{code}', json['token']), parse_mode='HTML')
+				await sleep(ConfigValues.authorization_tokens_live_time)
+
+				await delete_token(bot, message)
+				return
+
+			await bot.send_message(message.chat.id, ConfigValues.on_duplicate_authorization_code)
 
 
-def delete_token(user_id):
-	try:
-		del authorization_tokens[user_id]
-	except KeyError:
-		pass  # pass to avoid spam in console
+async def delete_token(bot: Bot, message: Message):
+	async with ClientSession() as session:
+		async with session.post(
+			f"http://{ConfigValues.server_ip}:{ConfigValues.server_port}/api/v1/delete_token?user_id={message.from_id}",
+			headers={'Authorization': ConfigValues.server_authkey, "content-type": "application/json"},
+		) as response:
+			if (await response.json())['success']:
+				await bot.send_message(message.chat.id, ConfigValues.on_delete_authorization_code)
 
 
 async def fill_data(bot: Bot, user_id: int):
@@ -65,5 +74,3 @@ async def __download_user_avatar(bot: Bot, user_id: int):
 
 		file = await bot.get_file(user_profile_photo.photos[0][0].file_id)
 		await bot.download_file(file.file_path, f'../avatars/{user_id}.png')
-
-

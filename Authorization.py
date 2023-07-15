@@ -37,3 +37,6 @@ class Authorization:
 
     def unsuccessful_authorization(self):
         raise UnsuccessfulAuthorization()
+
+
+main_authorization = Authorization()

@@ -19,6 +19,7 @@ class ConfigValues:
 	telegram_token = __config_file.get('Telegram', 'telegram_token')
 	admin_ids: list = __config_file.get('Telegram', 'admin_ids').split(', ')
 	recharge_time = int(__config_file.get('Telegram', 'recharge_time'))
+	authorization_tokens_live_time = int(__config_file.get('Telegram', 'authorization_tokens_live_time'))
 
 	# Messages
 	authorization_instructions = __config_file.get('Messages', 'authorization_instructions').replace('\\n', '\n')
@@ -41,7 +42,8 @@ class ConfigValues:
 	success_authorization_message = __config_file.get('Messages', 'success_authorization_message').replace('\\n', '\n')
 	on_duplicate_authorization_code = __config_file.get('Messages', 'on_duplicate_authorization_code').replace('\\n', '\n')
 	on_delete_authorization_code = __config_file.get('Messages', 'on_delete_authorization_code').replace('\\n', '\n')
-	unauthorithed_message = __config_file.get('Messages', 'unauthorithed_message').replace('//n', '/n')
+	on_unsuccessful_authorization_message = __config_file.get('Messages', 'on_unsuccessful_authorization_message').replace('\\n', '\n')
+	unauthorized_message = __config_file.get('Messages', 'unauthorized_message').replace('\\n', '\n')
 	on_blacklist_message = __config_file.get('Messages', 'on_blacklist_message').replace('\\n', '\n')
 	on_is_not_admin = __config_file.get('Messages', 'on_is_not_admin').replace('\\n', '\n')
 	successful_add_to_blacklist = __config_file.get('Messages', 'successful_add_to_blacklist').replace('\\n', '\n')
@@ -62,4 +64,3 @@ class ConfigValues:
 	server_ip = __config_file.get('Web', 'server_ip').replace('\\n', '\n')
 	server_port = int(__config_file.get('Web', 'server_port'))
 	server_authkey = __config_file.get('Web', 'server_authkey')
-

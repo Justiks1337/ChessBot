@@ -4,7 +4,7 @@ from config.ConfigValues import ConfigValues
 
 
 class Queue:
-	"""Класс - очередь (единственный экземпляр создаётся в telegram_commands.py"""
+	"""Класс - очередь (единственный экземпляр создаётся в main.py"""
 
 	def __init__(self):
 		self.users = []
