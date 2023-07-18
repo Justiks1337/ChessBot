@@ -2,11 +2,20 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import HttpRequest
 
-from .serializers import StartGameSerializer, NewAuthorizeTokenSerializer, DeleteAuthorizeTokenSerializer
-from .responses import StartGameResponse, NewAuthorizeTokenResponse, DeleteAuthorizeTokenResponse
+from .serializers import (StartGameSerializer,
+                          NewAuthorizeTokenSerializer,
+                          DeleteAuthorizeTokenSerializer,
+                          AuthorizeAttemptSerializer)
+
+from .responses import (StartGameResponse,
+                        NewAuthorizeTokenResponse,
+                        DeleteAuthorizeTokenResponse,
+                        AuthorizeAttemptResponse)
+
 from .authorization import authorization
 from Authorization import main_authorization
 from exceptions.DuplicateAuthorizationTokenError import DuplicateAuthorizationTokenError
+from exceptions.UnsuccessfulAuthorization import UnsuccessfulAuthorization
 from chessboards.games_management import game_start
 
 # Create your views here.
@@ -41,10 +50,26 @@ class DeleteAuthorizeTokenView(APIView):
     def post(self, request: HttpRequest):
 
         user_id = request.POST.get('user_id')
-
         try:
             main_authorization.remove_token(user_id)
             return Response(DeleteAuthorizeTokenSerializer(DeleteAuthorizeTokenResponse(True)).data)
 
         except KeyError:
             return Response(DeleteAuthorizeTokenSerializer(DeleteAuthorizeTokenResponse(False)).data)
+
+
+class AuthorizeAttemptView(APIView):
+    def get(self, request: HttpRequest):
+
+        token = request.POST.get('token')
+
+        try:
+            main_authorization.authorization(token)
+            return Response(AuthorizeAttemptSerializer(AuthorizeAttemptResponse(True)).data)
+        except UnsuccessfulAuthorization:
+            return Response(AuthorizeAttemptSerializer(AuthorizeAttemptResponse(False)).data)
+
+
+class ChessboardMoveViews(APIView):
+    async def post(self, request: HttpRequest):
+        pass

@@ -1,7 +1,6 @@
 from database_tools.Connection import connect
 from Timer import Timer
 from typing import Optional
-from asyncio import get_event_loop
 from chess import IllegalMoveError
 from exceptions.OnSomeoneMoveError import OnSomeoneMoveError
 from exceptions.IllegalMoveError import IllegalMoveError as IllegalError
@@ -23,17 +22,15 @@ class User:
 		self.avatar_path: Optional[str] = None
 		self.nickname: Optional[str] = None
 		self.username: Optional[str] = None
-
-		task = main_loop.create_task(self.__fill_attributes())
-		main_loop.run_until_complete(task)
+		self.session_id: Optional[str] = None
 
 		self.own_object.players.append(self)
 
-	async def __fill_attributes(self):
+	async def fill_attributes(self):
 		"""fill attributes from database"""
 
 		info = await (await connect.request(
-			"SELECT games, points, avatar_path, nickname, username FROM users WHERE user_id = ?",
+			"SELECT games, points, avatar_path, nickname, username, session_id FROM users WHERE user_id = ?",
 			(self.user_id,)
 		)).fetchone()
 
@@ -42,6 +39,7 @@ class User:
 		self.avatar_path = info[2]
 		self.nickname = info[3]
 		self.username = info[4]
+		self.session_id = info[5]
 
 	def move(self, start_cell: str, end_cell: str):
 		"""move in board and flip timer"""
@@ -80,6 +78,3 @@ class User:
 		"""add points count after end game"""
 
 		await connect.request("UPDATE users SET points = points + 1 WHERE user_id = ?", (self.user_id, ))
-
-
-main_loop = get_event_loop()

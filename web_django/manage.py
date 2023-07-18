@@ -3,7 +3,14 @@
 
 import os
 import sys
+from asyncio import run
 
+from aiogram import Bot
+
+from config.ConfigValues import ConfigValues
+
+
+bot = None
 
 def main():
     """Run administrative tasks."""
@@ -20,5 +27,17 @@ def main():
     execute_from_command_line(sys.argv)
 
 
+async def on_exit():
+    """"""
+
+    session = await bot.get_session()
+    await session.close()
+
+
 if __name__ == '__main__':
+
+    bot = Bot(token=ConfigValues.telegram_token)
+
     main()
+
+    run(on_exit())

@@ -26,7 +26,7 @@ async def new_token(bot: Bot, message: Message):
 
 			if json['success']:
 
-				await bot.send_message(message.chat.id, ConfigValues.authorization_message.replace('{code}', json['token']), parse_mode='HTML')
+				await bot.send_message(message.chat.id, ConfigValues.authorization_message.replace('{code}', json['token']), parse_mode='MARKDOWN')
 				await sleep(ConfigValues.authorization_tokens_live_time)
 
 				await delete_token(bot, message)
@@ -43,34 +43,3 @@ async def delete_token(bot: Bot, message: Message):
 		) as response:
 			if (await response.json())['success']:
 				await bot.send_message(message.chat.id, ConfigValues.on_delete_authorization_code)
-
-
-async def fill_data(bot: Bot, user_id: int):
-	await __download_user_avatar(bot, user_id)
-
-	data = await bot.get_chat_member(chat_id=user_id, user_id=user_id)
-	user_nickname = f'{data.user.first_name} {data.user.last_name}'
-	username = data.user.username
-
-	await connect.request(
-		"INSERT INTO users VALUES (?, ?, ?, ?, ?)", (
-			user_id,
-			ConfigValues.games_amount,
-			0,
-			user_nickname,
-			username))
-
-
-async def __download_user_avatar(bot: Bot, user_id: int):
-	"""Download user profile photo
-
-	:arg bot - bot object
-	:arg user_id - user id
-	"""
-
-	user_profile_photo = await bot.get_user_profile_photos(user_id)
-
-	if len(user_profile_photo.photos) > 0:
-
-		file = await bot.get_file(user_profile_photo.photos[0][0].file_id)
-		await bot.download_file(file.file_path, f'../avatars/{user_id}.png')

@@ -1,4 +1,4 @@
-from asyncio import create_task
+from asyncio import TaskGroup
 from uuid import uuid4
 from time import time
 
@@ -49,13 +49,10 @@ class Game:
 	async def start_timers_game(self):
 		"""actions before start game"""
 
-		first_timer = create_task(self.player_1.start_timer())  # first_timer - invisible reference to timer, for GC
-		second_timer = create_task(self.player_2.start_timer())  # second_timer - invisible reference to timer, for GC
-
-		self.player_1.timer.flip_the_timer()
-
-		await first_timer
-		await second_timer
+		async with TaskGroup as tasks:
+			for user in self.players:
+				tasks.create_task(user.fill_attributes())
+				tasks.create_task(user.start_timer())
 
 	async def on_end_game(self):
 		"""Коро хендлер срабатывающий после окончания игры"""
