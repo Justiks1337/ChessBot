@@ -1,26 +1,20 @@
 from uuid import uuid4
+from sqlite3 import IntegrityError
+
+from asgiref.sync import sync_to_async
+from django.http import HttpRequest
 
 from config.ConfigValues import ConfigValues
 from database_tools.Connection import connect
-from web_django.manage import bot
+from manage import bot
 
 
 async def fill_data(user_id: int):
-    await __download_user_avatar(user_id)
+    try:
+        return await new_data(user_id)
 
-    data = await bot.get_chat_member(chat_id=user_id, user_id=user_id)
-    user_nickname = f'{data.user.first_name} {data.user.last_name}'
-    username = data.user.username
-    session_id = new_session_id()
-
-    await connect.request(
-        "INSERT INTO users VALUES (?, ?, ?, ?, ?, ?)", (
-            user_id,
-            ConfigValues.games_amount,
-            0,
-            user_nickname,
-            username,
-            session_id))
+    except IntegrityError:
+        pass
 
 
 async def __download_user_avatar(user_id: int):
@@ -37,7 +31,23 @@ async def __download_user_avatar(user_id: int):
         await bot.download_file(file.file_path, f'../avatars/{user_id}.png')
 
 
-def new_session_id():
-    session_id = str(uuid4())
+async def new_data(user_id: int):
+    data = await bot.get_chat_member(chat_id=user_id, user_id=user_id)
+    user_nickname = f'{data.user.first_name} {data.user.last_name}'
+    username = data.user.username
 
-    return session_id
+    await connect.request(
+        "INSERT INTO users VALUES (?, ?, ?, ?, ?, ?)", (
+            user_id,
+            ConfigValues.games_amount,
+            0,
+            user_nickname,
+            username,
+            None))
+
+    await __download_user_avatar(user_id)
+
+
+@sync_to_async()
+def get_session_key(request: HttpRequest):
+    return request.COOKIES.get('sessionid')

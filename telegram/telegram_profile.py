@@ -1,7 +1,7 @@
 from aiogram.types import Message
 from aiogram import Bot
 from database_tools.Connection import connect
-from telegram.telegram_core import in_blacklist, authorize, recharge
+from telegram_core import in_blacklist, authorize, recharge
 from config.ConfigValues import ConfigValues
 
 

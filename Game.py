@@ -1,4 +1,4 @@
-from asyncio import TaskGroup
+import asyncio
 from uuid import uuid4
 from time import time
 
@@ -49,7 +49,7 @@ class Game:
 	async def start_timers_game(self):
 		"""actions before start game"""
 
-		async with TaskGroup as tasks:
+		async with asyncio.TaskGroup() as tasks:
 			for user in self.players:
 				tasks.create_task(user.fill_attributes())
 				tasks.create_task(user.start_timer())

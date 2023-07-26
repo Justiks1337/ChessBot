@@ -1,13 +1,13 @@
 from rest_framework.response import Response
-from django.http import HttpResponse
+from rest_framework.request import Request
 
 from config.ConfigValues import ConfigValues
 
 
 def authorization(func):
-    def wrapper(self, request: HttpResponse):
+    def wrapper(self, request: Request):
         try:
-            if request.headers['Authorization'] == ConfigValues.server_authkey:
+            if request.META.get("HTTP_AUTHORIZATION") == ConfigValues.server_authkey:
                 return func(self, request)
             return Response({'Неверный ключ авторизации!'})
 

@@ -2,7 +2,7 @@ from aiogram import Bot
 from aiogram.types import Message
 from Queue import main_queue
 from config.ConfigValues import ConfigValues
-from telegram.telegram_core import in_blacklist, authorize, recharge
+from telegram_core import in_blacklist, authorize, recharge
 
 
 @recharge

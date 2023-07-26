@@ -10,7 +10,8 @@ from aiogram import Bot
 from config.ConfigValues import ConfigValues
 
 
-bot = None
+bot = Bot(token=ConfigValues.telegram_token)
+
 
 def main():
     """Run administrative tasks."""
@@ -36,8 +37,8 @@ async def on_exit():
 
 if __name__ == '__main__':
 
-    bot = Bot(token=ConfigValues.telegram_token)
-
     main()
 
     run(on_exit())
+
+

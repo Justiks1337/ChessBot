@@ -17,9 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from django.conf import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('playgrounds/', include('chessboards.urls')),
-    path('api/v1/', include('api.urls'))
-    #path('authorization', ...)
-]
+    path('api/v1/', include('api.urls')),
+    path('authorization', include('authorization.urls'))
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

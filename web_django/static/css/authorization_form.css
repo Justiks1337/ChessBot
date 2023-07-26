@@ -1,0 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+
+body {font-family: Montserrat; font-size: 30px; position: relative; background:#E6E6FA;  margin: 0; padding: 0px 0 0 0; height: auto !important;  min-height: 100%; min-width: 320px; text-align: center;}
+.popup .into {padding: 40px; position: relative; width:100%; max-width: 613px; border-radius: 20px; border: 1px solid rgba(0, 0, 0, 0); background: linear-gradient(138deg, #F4F3F0 0%, #F2F0E9 100%); margin-left: auto; margin-right: auto;}
+.popup .into .close {position: absolute; top: 15px; right: 15px; cursor: pointer;}
+input {box-sizing: border-box;}
+label {font-size: 20px; margin-left: auto}
+
+input {
+  display: block;
+  width: 100%;
+  height: calc(2.25rem + 2px);
+  padding: 0.375rem 0.75rem;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #212529;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #bdbdbd;
+  border-radius: 0.25rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+input::placeholder {
+  color: #212529;
+  opacity: 0.4;
+}
+
+button {
+  min-width: 100px;
+  font-family: inherit;
+  appearance: none;
+  border: 0;
+  border-radius: 5px;
+  background: #656964;
+  color: #fff;
+  padding: 8px 16px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #5c5e5c;
+}
+
+button:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px #cbd6ee;
+}

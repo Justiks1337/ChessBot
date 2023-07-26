@@ -3,14 +3,14 @@ from aiogram import Bot, Dispatcher, executor
 from aiogram.dispatcher.filters import Command
 
 from config.ConfigValues import ConfigValues
-from telegram.telegram_log.log import log
-from telegram.telegram_authorize import new_token
-from telegram.telegram_admin import remove_from_blacklist, add_on_blacklist
-from telegram.telegram_queue import queue_join, queue_leave
-from telegram.telegram_start import start
-from telegram.telegram_profile import profile
-from telegram.telegram_dashboard import get_top
-from telegram.telegram_help import send_manual
+from telegram_log.log import log
+from telegram_authorize import new_token
+from telegram_admin import remove_from_blacklist, add_on_blacklist
+from telegram_queue import queue_join, queue_leave
+from telegram_start import start
+from telegram_profile import profile
+from telegram_dashboard import get_top
+from telegram_help import send_manual
 
 
 log.info('bot successful started!')
@@ -81,6 +81,12 @@ async def add_on_blacklist_handler(message: Message):
 	"""Возвращает юзера из бан"""
 
 	await remove_from_blacklist(bot, message)
+
+
+@dp.message_handler(Command('test'))
+async def test(message: Message):
+	photo = await bot.get_user_profile_photos(message.from_user.id)
+	await bot.send_photo(message.chat.id, photo.photos[0][2].file_id)
 
 
 executor.start_polling(dp)

@@ -22,7 +22,7 @@ def authorize(func):
         user = await(
             await connect.request("SELECT user_id FROM users WHERE user_id = ?", (message.from_id,))).fetchone()
         if not user:
-            await bot.send_message(message.chat.id, ConfigValues.unauthorithed_message)
+            await bot.send_message(message.chat.id, ConfigValues.unauthorized_message)
             return
 
         return await func(bot, message)

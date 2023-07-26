@@ -1,6 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.http import HttpRequest
+from rest_framework.request import Request
+from rest_framework.renderers import JSONRenderer
+from adrf.decorators import api_view
 
 from .serializers import (StartGameSerializer,
                           NewAuthorizeTokenSerializer,
@@ -12,8 +14,10 @@ from .responses import (StartGameResponse,
                         DeleteAuthorizeTokenResponse,
                         AuthorizeAttemptResponse)
 
+from database_tools.Connection import connect
 from .authorization import authorization
 from Authorization import main_authorization
+from authorization.core import get_session_key
 from exceptions.DuplicateAuthorizationTokenError import DuplicateAuthorizationTokenError
 from exceptions.UnsuccessfulAuthorization import UnsuccessfulAuthorization
 from chessboards.games_management import game_start
@@ -23,10 +27,10 @@ from chessboards.games_management import game_start
 
 class StartGameView(APIView):
     @authorization
-    def post(self, request: HttpRequest):
+    def post(self, request: Request):
 
-        first_user_id = request.POST.get('first_user_id')
-        second_user_id = request.POST.get('second_user_id')
+        first_user_id = request.query_params.get('first_user_id')
+        second_user_id = request.query_params.get('second_user_id')
 
         token = game_start(first_user_id, second_user_id)
 
@@ -35,10 +39,14 @@ class StartGameView(APIView):
 
 class NewAuthorizeTokenView(APIView):
     @authorization
-    def post(self, request: HttpRequest):
+    def post(self, request: Request):
+
+        user_id = request.query_params.get("user_id")
 
         try:
-            token = main_authorization.new_token(request.POST.get("user_id"))
+
+            token = main_authorization.new_token(user_id)
+
             return Response(NewAuthorizeTokenSerializer(NewAuthorizeTokenResponse(True, token)).data)
 
         except DuplicateAuthorizationTokenError:
@@ -47,9 +55,9 @@ class NewAuthorizeTokenView(APIView):
 
 class DeleteAuthorizeTokenView(APIView):
     @authorization
-    def post(self, request: HttpRequest):
+    def post(self, request: Request):
 
-        user_id = request.POST.get('user_id')
+        user_id = request.query_params.get('user_id')
         try:
             main_authorization.remove_token(user_id)
             return Response(DeleteAuthorizeTokenSerializer(DeleteAuthorizeTokenResponse(True)).data)
@@ -58,18 +66,25 @@ class DeleteAuthorizeTokenView(APIView):
             return Response(DeleteAuthorizeTokenSerializer(DeleteAuthorizeTokenResponse(False)).data)
 
 
-class AuthorizeAttemptView(APIView):
-    def get(self, request: HttpRequest):
+@api_view(['POST'])
+async def authorization_attempt(request: Request):
 
-        token = request.POST.get('token')
+    token = request.query_params.get('token')
 
-        try:
-            main_authorization.authorization(token)
-            return Response(AuthorizeAttemptSerializer(AuthorizeAttemptResponse(True)).data)
-        except UnsuccessfulAuthorization:
-            return Response(AuthorizeAttemptSerializer(AuthorizeAttemptResponse(False)).data)
+    try:
+
+        user_id = await main_authorization.authorization(token)
+
+        session_key = await get_session_key(request)
+
+        await connect.request("UPDATE users SET session_id = ? WHERE user_id = ?", (session_key, user_id))
+
+        return Response(JSONRenderer().render(AuthorizeAttemptSerializer(AuthorizeAttemptResponse(True)).data))
+
+    except UnsuccessfulAuthorization:
+        return Response(JSONRenderer().render(AuthorizeAttemptSerializer(AuthorizeAttemptResponse(False)).data))
 
 
 class ChessboardMoveViews(APIView):
-    async def post(self, request: HttpRequest):
+    async def post(self, request: Request):
         pass

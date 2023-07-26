@@ -1,5 +1,5 @@
 from config.ConfigValues import ConfigValues
-from telegram.telegram_core import recharge
+from telegram_core import recharge
 from aiogram import Bot
 from aiogram.types import Message
 

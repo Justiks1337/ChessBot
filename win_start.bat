@@ -1,2 +1,3 @@
 set PYTHONPATH=.
-python web_django/manage.py runserver --noreload
+python web_django/manage.py runserver
+pause
