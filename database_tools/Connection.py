@@ -1,6 +1,6 @@
 import sqlite3
 import aiosqlite
-from asyncio import new_event_loop
+from asyncio import get_event_loop, set_event_loop
 from config.ConfigValues import ConfigValues
 from database_tools.backup_tools import backup
 from database_tools.database_log.log import log
@@ -11,8 +11,10 @@ class Connection:
 	"""Class connection - центр управления базой данных"""
 
 	def __init__(self):
-		self.connection: aiosqlite.Connection = new_event_loop().run_until_complete(
+		loop = get_event_loop()
+		self.connection: aiosqlite.Connection = loop.run_until_complete(
 			aiosqlite.connect(os.path.join(os.path.dirname(__file__), ConfigValues.db_name)))
+		set_event_loop(loop)
 		self.__transactions: int = 0
 
 		log.info(f'successful connect to {ConfigValues.db_name}')
