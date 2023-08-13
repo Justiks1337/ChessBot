@@ -1,10 +1,6 @@
 from django.urls import path
-from .views import main
+from .views import index
 
 urlpatterns = [
+	path('games/<str:tag>/', index, name="chess_game")
 ]
-
-
-def new_playground(uuid: str):
-	urlpatterns.append(path(f'{uuid}/', main))
-

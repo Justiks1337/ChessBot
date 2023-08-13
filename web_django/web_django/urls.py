@@ -16,13 +16,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-
 from django.conf import settings
 from django.conf.urls.static import static
+from web_django.error_page.views import handler500
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('playgrounds/', include('chessboards.urls')),
-    path('api/v1/', include('api.urls')),
-    path('authorization', include('authorization.urls'))
+    path('playgrounds/', include('web_django.chessboards.urls')),
+    path('api/v1/', include('web_django.api.urls')),
+    path('authorization/', include('web_django.authorization.urls'))
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+
+handler404 = handler500

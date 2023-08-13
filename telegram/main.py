@@ -83,10 +83,4 @@ async def add_on_blacklist_handler(message: Message):
 	await remove_from_blacklist(bot, message)
 
 
-@dp.message_handler(Command('test'))
-async def test(message: Message):
-	photo = await bot.get_user_profile_photos(message.from_user.id)
-	await bot.send_photo(message.chat.id, photo.photos[0][2].file_id)
-
-
 executor.start_polling(dp)

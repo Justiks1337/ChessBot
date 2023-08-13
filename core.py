@@ -1,10 +1,6 @@
 from exceptions.OnEndTimeError import OnEndTimeError
 
 
-def on_end_time_error(*args, **kwargs):
-	raise OnEndTimeError(kwargs["color"])
-
-
 def get(from_list: list, path: str, **kwargs):
 	"""The method allows you to get an object according to the condition set using **kwargs and path
 
@@ -19,7 +15,7 @@ def get(from_list: list, path: str, **kwargs):
 	print(get(games, "players.timer", time=30))
 	# Output: Timer object
 
-	(GOVNOCODE #YANDERECODING #SHITPOST)
+	(#GOVNOCODE #YANDERECODING #SHITPOST)
 
 	"""
 
@@ -35,6 +31,9 @@ def get(from_list: list, path: str, **kwargs):
 			except TypeError:
 				for i in obj:
 					obj = i.__dict__[position]
+					if obj.__dict__[value_name] == kwargs[value_name]:
+						return obj
 
 		if obj.__dict__[value_name] == kwargs[value_name]:
 			return obj
+

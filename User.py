@@ -12,8 +12,9 @@ class User:
 	def __init__(self, user_id: int, color: bool, own_object):
 		self.user_id: int = user_id
 		self.color: bool = color
-		self.timer: Timer = Timer(self.color)
+		self.timer: Timer = Timer(self)
 		self.color_text = lambda x: "бел" if color else "чёрн"
+		self.draw_offer = False
 		self.own_object = own_object
 
 		# attributes from database
@@ -53,6 +54,13 @@ class User:
 
 		except IllegalMoveError:
 			raise IllegalError()
+
+	async def draw(self):
+		self.draw_offer = True
+		await self.own_object.on_draw_offer()
+
+	async def give_up(self):
+		await self.own_object.on_give_up(self.user_id)
 
 	def timer_continue(self):
 		"""return timer to activity"""

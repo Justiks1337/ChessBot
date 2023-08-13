@@ -7,20 +7,32 @@ from adrf.decorators import api_view
 from .serializers import (StartGameSerializer,
                           NewAuthorizeTokenSerializer,
                           DeleteAuthorizeTokenSerializer,
-                          AuthorizeAttemptSerializer)
+                          AuthorizeAttemptSerializer,
+                          ChessboardMoveSerializer,
+                          ChessboardDrawSerializer,
+                          ChessboardGiveUpSerializer)
 
 from .responses import (StartGameResponse,
                         NewAuthorizeTokenResponse,
                         DeleteAuthorizeTokenResponse,
-                        AuthorizeAttemptResponse)
+                        AuthorizeAttemptResponse,
+                        ChessboardMoveResponse,
+                        ChessboardDrawResponse,
+                        ChessboardGiveUpResponse)
 
 from database_tools.Connection import connect
 from .authorization import authorization
 from Authorization import main_authorization
-from authorization.core import get_session_key
+from web_django.authorization.core import get_session_key
 from exceptions.DuplicateAuthorizationTokenError import DuplicateAuthorizationTokenError
 from exceptions.UnsuccessfulAuthorization import UnsuccessfulAuthorization
-from chessboards.games_management import game_start
+from exceptions.OnSomeoneMoveError import OnSomeoneMoveError
+from exceptions.IllegalMoveError import IllegalMoveError
+from web_django.chessboards.games_management import game_start
+from Game import games
+from core import get
+from User import User
+from config.ConfigValues import ConfigValues
 
 # Create your views here.
 
@@ -85,6 +97,50 @@ async def authorization_attempt(request: Request):
         return Response(JSONRenderer().render(AuthorizeAttemptSerializer(AuthorizeAttemptResponse(False)).data))
 
 
-class ChessboardMoveViews(APIView):
-    async def post(self, request: Request):
-        pass
+@api_view(['POST'])
+async def chessboard_move(request: Request):
+
+    player: User = get(games, "players", session_id=request.COOKIES.get('sessionid'))
+
+    if not player:
+        return Response(JSONRenderer().render(ChessboardMoveSerializer(ChessboardMoveResponse(
+            False,
+            message="сурс проекта: https://github.com/Justiks228/ChessBot, чекни его. Попытка была хорошая")).data))
+
+    start_cell = request.query_params.get('start_cell')
+    end_cell = request.query_params.get('end_cell')
+
+    try:
+        player.move(start_cell, end_cell)
+        response = ChessboardMoveResponse(True, board=player.own_object.board.fen(), time=player.timer.time)
+
+    except OnSomeoneMoveError:
+        response = ChessboardMoveResponse(False, message=ConfigValues.on_someone_move)
+
+    except IllegalMoveError:
+        response = ChessboardMoveResponse(False, message=ConfigValues.illegal_move_error)
+
+    return Response(JSONRenderer().render(ChessboardMoveSerializer(response).data))
+
+
+@api_view(['POST'])
+async def chessboard_draw(request: Request):
+
+    player: User = get(games, "players", session_id=request.COOKIES.get('sessionid'))
+
+    if not player:
+        return Response(JSONRenderer().render(ChessboardDrawSerializer(ChessboardDrawResponse(False)).data))
+
+    await player.draw()
+    return Response(JSONRenderer().render(ChessboardDrawSerializer(ChessboardDrawResponse(True)).data))
+
+
+@api_view(['POST'])
+async def chessboard_give_up(request: Request):
+    player: User = get(games, "players", session_id=request.COOKIES.get('sessionid'))
+
+    if not player:
+        return Response(JSONRenderer().render(ChessboardGiveUpSerializer(ChessboardGiveUpResponse(False)).data))
+
+    await player.give_up()
+    return Response(JSONRenderer().render(ChessboardGiveUpSerializer(ChessboardGiveUpResponse(True)).data))

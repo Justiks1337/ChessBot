@@ -28,9 +28,23 @@ class AuthorizeAttemptResponse:
 class ChessboardMoveResponse:
     def __init__(self,
                  success: bool,
-                 board: Optional[str],
-                 message: Optional[str]):
+                 board: Optional[str] = None,
+                 message: Optional[str] = None,
+                 time: Optional[int] = None):
 
         self.success = success
         self.board = board
         self.message = message
+        self.time = time
+
+
+class ChessboardDrawResponse:
+    def __init__(self, success: bool):
+
+        self.success = success
+
+
+class ChessboardGiveUpResponse:
+    def __init__(self, success: bool):
+
+        self.success = success

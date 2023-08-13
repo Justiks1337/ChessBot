@@ -6,7 +6,7 @@ from django.http import HttpRequest
 
 from config.ConfigValues import ConfigValues
 from database_tools.Connection import connect
-from manage import bot
+from web_django.web_django.manage import bot
 
 
 async def fill_data(user_id: int):

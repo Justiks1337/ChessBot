@@ -16,14 +16,18 @@ class DeleteAuthorizeTokenSerializer(Serializer):
 
 class AuthorizeAttemptSerializer(Serializer):
     success = BooleanField()
-    # user_id = IntegerField()
-    # games = IntegerField()
-    # points = IntegerField
-    # nickname = CharField()
-    # username = CharField()
 
 
 class ChessboardMoveSerializer(Serializer):
     success = BooleanField()
     board = CharField()
     message = CharField()
+    time = IntegerField()
+
+
+class ChessboardDrawSerializer(Serializer):
+    success = BooleanField()
+
+
+class ChessboardGiveUpSerializer(Serializer):
+    success = BooleanField()

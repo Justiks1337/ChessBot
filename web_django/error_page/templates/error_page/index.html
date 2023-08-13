@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ошибка</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'error_page/style.css' %}">
+</head>
+<body>
+    <div id="popup">
+        {% load static %}
+        <img src="{%static 'error_page/error.png'%}">
+        <h1>ПРОИЗОШЛА НЕОЖИДАННАЯ ОШИБКА</h1>
+        <h1>КОД ОШИБКИ:{{error_number}}</h1>
+    </div>
+</body>
+</html>

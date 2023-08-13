@@ -1,7 +1,6 @@
 from config.ConfigValues import ConfigValues
 from asyncio import Event, wait_for, TimeoutError
 from time import time as _time
-from core import on_end_time_error
 
 
 class Timer:
@@ -9,16 +8,12 @@ class Timer:
 
 	def __init__(
 			self,
-			time: int = ConfigValues.game_time,
-			on_end_time_func=on_end_time_error,  # Function should have *args and **kwargs
-			*args,
-			**kwargs
+			own_object,
+			time: int = ConfigValues.game_time
 	):
-		self.__function = on_end_time_func
-		self.__function_args = args
-		self.__function_kwargs = kwargs
 		self.__event = Event()
 
+		self.own_object = own_object
 		self.time = time
 
 	async def __wait_move(self):
@@ -40,7 +35,7 @@ class Timer:
 			try:
 				await wait_for(self.__wait_move(), timeout=self.time)
 			except TimeoutError:
-				self.__function(*self.__function_args, **self.__function_kwargs)
+				await self.own_object.own_object.on_end_timer(self.own_object)
 
 	def flip_the_timer(self):
 		"""Меняет положение таймера (активный/деактивный)"""

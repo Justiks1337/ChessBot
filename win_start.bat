@@ -1,3 +1,4 @@
 set PYTHONPATH=.
-python web_django/manage.py runserver
-pause
+set DJANGO_SETTINGS_MODULE=web_django.web_django.settings
+start /b daphne web_django.web_django.asgi:application &
+start /b python telegram/main.py &

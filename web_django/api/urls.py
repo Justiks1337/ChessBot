@@ -4,7 +4,9 @@ from .views import (StartGameView,
                     NewAuthorizeTokenView,
                     DeleteAuthorizeTokenView,
                     authorization_attempt,
-                    ChessboardMoveViews)
+                    chessboard_move,
+                    chessboard_draw,
+                    chessboard_give_up)
 
 
 urlpatterns = [
@@ -12,5 +14,8 @@ urlpatterns = [
     path('new_token', NewAuthorizeTokenView().as_view()),
     path('delete_token', DeleteAuthorizeTokenView().as_view()),
     path('authorize', authorization_attempt),
-    path('move', ChessboardMoveViews().as_view())
+    path('chessboard_move', chessboard_move),
+    path('chessboard_draw', chessboard_draw),
+    path('chessboard_give_up', chessboard_give_up)
+
 ]

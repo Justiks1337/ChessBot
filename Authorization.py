@@ -2,7 +2,7 @@ from uuid import uuid4
 
 from exceptions.UnsuccessfulAuthorization import UnsuccessfulAuthorization
 from exceptions.DuplicateAuthorizationTokenError import DuplicateAuthorizationTokenError
-from authorization.core import fill_data
+from web_django.authorization.core import fill_data
 
 
 class Authorization:

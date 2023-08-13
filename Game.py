@@ -3,10 +3,9 @@ from uuid import uuid4
 from time import time
 
 import chess
+from channels.consumer import get_channel_layer
 
 from User import User
-from exceptions.MateError import MateError
-from exceptions.DrawError import DrawError
 
 
 class Game:
@@ -26,20 +25,29 @@ class Game:
 		""":raise BaseError если на доске ситуация приводящая к концу игры либо противоречащая её продолжению"""
 
 		self.board.push_san(text_move)
-		self.checkmate()
-		self.check_stalemate()
+		await self.checkmate()
+		await self.check_stalemate()
 
-	def checkmate(self):
+	async def checkmate(self):
 		""":raise MateError если есть на доске мат"""
 
 		if self.board.is_checkmate():
-			raise MateError(self.get_winner().color_text)
+			await channel_layer.group_send(
+				self.tag,
+				{
+					'type': "mate",
+					'winner': self.get_winner()
+				})
 
-	def check_stalemate(self):
+	async def check_stalemate(self):
 		""":raise DrawError если на доске пат"""
 
 		if self.board.is_stalemate():
-			raise DrawError()
+			await channel_layer.group_send(
+				self.tag,
+				{
+					'type': "stalemate",
+				})
 
 	def get_winner(self) -> User:
 		""":return User - object"""
@@ -63,7 +71,52 @@ class Game:
 		await self.player_1.remove_games()
 		await self.player_2.remove_games()
 
-		await self.get_winner().give_points()
+	async def on_win(self, winner: User):
+		await winner.give_points()
+
+	async def on_draw_offer(self):
+
+		for player in self.players:
+			if not player.draw_offer:
+
+				await channel_layer.group_send(
+					self.tag,
+					{
+						'type': "draw_offer",
+						'receiver': player.session_id
+					}
+				)
+
+				return
+
+			await self.on_end_game()
+			await channel_layer.group_send(
+				self.tag,
+				{'type': 'draw'}
+			)
+
+		await self.on_end_game()
+
+	async def on_give_up(self, user_id: int):
+		for player in self.players:
+			if player.user_id != user_id:
+				await self.on_win(player)
+
+		await self.on_end_game()
+
+	async def on_end_timer(self, loser: User):
+		await self.on_end_game()
+
+		# noinspection PyTypeChecker
+		await self.on_win(lambda player: self.player_1 if loser == self.player_2 else self.player_2)
+
+		await channel_layer.group_send(
+			self.tag,
+			{
+				'type': "end_timer",
+				'loser': loser.color
+			})
 
 
+channel_layer = get_channel_layer("default")
 games = []
