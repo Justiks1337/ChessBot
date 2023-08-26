@@ -1,17 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Ошибка</title>
+{% extends 'base.html' %}
+
+{% block css_load %}
+
     {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'error_page/style.css' %}">
-</head>
-<body>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/error_page.css' %}">
+
+{% endblock%}
+
+{% block title %} Ошибка {% endblock %}
+
+{% block body %}
     <div id="popup">
         {% load static %}
-        <img src="{%static 'error_page/error.png'%}">
+        <img src="{%static 'images/error.png'%}" class="error_img">
         <h1>ПРОИЗОШЛА НЕОЖИДАННАЯ ОШИБКА</h1>
         <h1>КОД ОШИБКИ:{{error_number}}</h1>
     </div>
-</body>
-</html>
+
+{% endblock %}

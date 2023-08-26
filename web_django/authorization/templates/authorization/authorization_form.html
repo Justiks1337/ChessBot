@@ -1,12 +1,16 @@
-<!DOCTYPE html>
-<html lang="ru">
-    <head>
-        <meta charset="utf-8">
-        <title>Авторизация</title>
-        {% load static %}
-        <link rel="stylesheet" type="text/css" href="{% static 'css/authorization_form.css' %}">
-    </head>
-    <body>
+{% extends 'base.html' %}
+
+{% block title %}Авторизация {% endblock %}
+
+{% block css_load%}
+
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/authorization_form.css' %}">
+
+{% endblock %}
+
+
+{% block body %}
 
     <div class="popup visible" id="callback">
         <div class="into">
@@ -26,7 +30,11 @@
             </form>
         </div>
     </div>
-    </body>
+
+{% endblock %}
+
+
+{% block scripts %}
 
     <script src="https://code.jquery.com/jquery-3.7.0.min.js" 
     integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" 
@@ -34,4 +42,5 @@
 
     {% load static %}
     <script src="{% static 'js/authorization_response.js' %}"></script>
-</html>
+
+{% endblock %}

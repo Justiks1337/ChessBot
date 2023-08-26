@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    {% block css_load %}
+    {% endblock %}
+
+    <title>{% block title %} {% endblock %}</title>
+</head>
+<body>
+    {% block body %}
+    {% endblock %}
+<footer>
+
+
+    <div class="footer-container">
+        <div class="footer-col" id="help">
+           <h3 class="footer_list_heading">Помощь</h3>
+            <section class="footer_section">
+                <ul class="footer_list">
+                    <li class="footer_item"><a href="https://t.me/Elvira1C">Elvira1C</a></li>
+                    <li class="footer_item"><a href="https://t.me/Justiks1337">Justiks</a></li>
+                    <li class="footer_item"><a href="https://psy-sovet.ru/">Помощь</a></li>
+                    <li class="footer_item"><a href="https://t.me/TheLastOrderGroup">Группа</a></li>
+                </ul>
+            </section>
+        </div>
+
+        <div class="footer-col" id="contacts">
+            <h3 class="footer_list_heading">Контакты разработчиков</h3>
+            <section class="footer_section">
+                <ul class="footer_list">
+                    <li class="footer_item"><a href="https://t.me/Justiks1337"> Дубков Максим</a></li>
+                    <li class="footer_item"><a href="https://www.mrcont.ru/"> With love, MasterCont!</a></li>
+                    <li class="footer_item"><a href="mailto:sasaprigoda6@gmail.com"> sasaprigoda6@gmail.com</a></li>
+                    <li class="footer_item"><a href="kazoe.ru/contacts"> sodiel</a></li>
+                </ul>
+            </section>
+        </div>
+
+        <div class="footer-col" id="project_resources">
+            <h3 class="footer_list_heading">Ресурсы проекта</h3>
+            <section class="footer_section">
+                <ul class="footer_list">
+                    <li class="footer_item"><a href="https://t.me/OneC_chess_bot">Бот</a></li>
+                    <li class="footer_item"><a href="https://github.com/Justiks228/ChessBot">Код проекта</a></li>
+                </ul>
+            </section>
+        </div>
+    </div>
+</footer>
+{% block scripts %}
+{% endblock %}
+</body>
+</html>

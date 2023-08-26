@@ -28,6 +28,8 @@ class Game:
 		await self.checkmate()
 		await self.check_stalemate()
 
+		return self.board.board_fen()
+
 	async def checkmate(self):
 		""":raise MateError если есть на доске мат"""
 
@@ -35,7 +37,7 @@ class Game:
 			await channel_layer.group_send(
 				self.tag,
 				{
-					'type': "mate",
+					'type': "mate_event",
 					'winner': self.get_winner()
 				})
 
@@ -46,13 +48,18 @@ class Game:
 			await channel_layer.group_send(
 				self.tag,
 				{
-					'type': "stalemate",
+					'type': "stalemate_event",
 				})
 
 	def get_winner(self) -> User:
 		""":return User - object"""
 
 		return self.player_1 if not self.board.turn else self.player_2
+
+	def get_turn_player(self):
+		""":return User object"""
+
+		return self.player_1 if self.player_1.color is self.board.turn else self.player_2
 
 	async def start_timers_game(self):
 		"""actions before start game"""
@@ -71,6 +78,8 @@ class Game:
 		await self.player_1.remove_games()
 		await self.player_2.remove_games()
 
+		games.remove(self)
+
 	async def on_win(self, winner: User):
 		await winner.give_points()
 
@@ -82,7 +91,7 @@ class Game:
 				await channel_layer.group_send(
 					self.tag,
 					{
-						'type': "draw_offer",
+						'type': "draw_offer_event",
 						'receiver': player.session_id
 					}
 				)
@@ -92,7 +101,7 @@ class Game:
 			await self.on_end_game()
 			await channel_layer.group_send(
 				self.tag,
-				{'type': 'draw'}
+				{'type': 'draw_event'}
 			)
 
 		await self.on_end_game()
@@ -113,7 +122,7 @@ class Game:
 		await channel_layer.group_send(
 			self.tag,
 			{
-				'type': "end_timer",
+				'type': "end_timer_event",
 				'loser': loser.color
 			})
 

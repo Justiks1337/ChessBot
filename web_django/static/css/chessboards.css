@@ -1,0 +1,804 @@
+*{
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Задаём первоначальные стили элементам */
+:root{
+    /* Задаём стандартные цвета элементам */
+    --bg-header: #242424;
+    --bg-button1: #FF1F44;
+    --bg-button2: #C22A2A;
+    --bg-main: #121212;
+    --bg-footer: #242424;
+    --bg-player-content: rgb(18,66,43);
+    --gradient-player-content: linear-gradient(90deg, rgba(18,66,43,1) 0%, rgba(36,36,36,1) 100%);
+    --bg-table-content: rgba(255, 31, 68, 0.2);
+    --bg-table: #242424;
+    --border-table: 1px solid #313131;
+    --color-text-header: #fff;
+    --color-text-wrap: #A4A4A4;
+    --color-link-footer: #818181;
+    --bg-modal-button: #383838;
+
+    /* Задаём стандартные размеры элементов */
+    --body-width: 1728px;
+    --navbar-width: 100%;
+    --navbar-height: 72px;
+    --navbar-sec-width: 50%;
+    --navbar-sec-wrap-height: 40px;
+    --index-header: 3;
+    --index-main: 2;
+    --padding-main: 70px 88px;
+    --padding-header: 0px 88px;
+    --main-iframe-size: 800px;
+    --chessboard-bg-size: 200px;
+    --chessboard-square-size: 100px;
+    --main-inner_iframe-size: 800px;
+    --table-size-number: 56px;
+    --modal-width: 580px;
+}
+
+
+/* Выдаём стили главным элементам */
+html{
+    background: var(--bg-main);
+}
+
+body{
+    max-width: var(--body-width);
+    min-height: 100%;
+    margin: 0 auto;
+}
+
+header{
+    background: var(--bg-header);
+    z-index: var(--index-header);
+    transition: 0.3s;
+}
+
+footer{
+    background: var(--bg-footer);
+}
+
+h1 {
+    color: var(--color-text-header);
+}
+
+/* Стили для панели навигации (<header>) */
+
+.navbar{
+    display: flex;
+    justify-content: center;
+    width: var(--navbar-width);
+    min-height: var(--navbar-height);
+    position: fixed;
+    left: 0;
+    top: 0;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.navbar .wrap{
+    display: flex;
+    flex-direction: row;
+    max-width: var(--body-width);
+    min-height: var(--navbar-height);
+    position: relative;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+@media (max-width: 1816px) {
+    .navbar .wrap, .navbar{
+        width: 100%;
+    }
+    .navbar .wrap{
+         padding: var(--padding-header);
+    }
+}
+
+.navbar .navsec{
+    display: flex;
+    /* width: calc(var(--body-width) / 2); */
+    min-height: var(--navbar-height);
+    align-items: center;
+    justify-content: flex-start;
+    transition: 0.3s;
+    user-select: none;
+}
+
+.navbar .navsec:last-child{
+    justify-content: flex-end;
+}
+
+.navsec .wrap{
+    display: flex;
+    height: var(--navbar-sec-wrap-height);
+    font-family: 'Inter';
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+    text-align: center;
+    color: var(--color-text-wrap);
+    align-items: center;
+    max-width: 100%;
+}
+
+.navsec .wrap.logo{
+    justify-content: flex-start;
+    padding-left: 0;
+    padding: 0;
+}
+
+.navsec .wrap.logo a{
+    display: inline-flex;
+    text-decoration: none;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 29.05px;
+    color: var(--color-text-wrap);
+}
+
+.burgermenu{
+    display: flex;
+    width: 40px;
+    height: 40px;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    cursor: pointer;
+    user-select: none;
+}
+
+.burgermenu img{
+    pointer-events: none;
+}
+
+.navsec nav{
+    display: flex;
+    flex-direction: row;
+    min-height: var(--navbar-sec-wrap-height);
+    gap: 4px;
+}
+
+.navsec nav .inner, .navsec nav .inner .menu{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    color: var(--color-text-wrap);
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px; /* 150% */
+
+}
+
+.navsec nav .inner .menu{
+    cursor: pointer;
+}
+
+.navsec nav .inner .menu p {
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
+.navsec nav .inner .menu::before{
+    content: "";
+    display: block;
+    width: 24px;
+    height: 16px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.navsec nav .inner .menu[lang="English"]::before{background-image: url(../images/US_menu_icon_flag.png);}
+
+.menu_icon{
+    width: 24px;
+    height: 24px;
+}
+
+.navsec nav .inner .link{
+    display: inline-flex;
+    color: var(--color-text-wrap);
+    text-align: center;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px; /* 150% */
+    text-decoration: none;
+    margin-left: 24px;
+}
+
+.navsec nav .inner .link:last-child{
+    margin-right: 24px;
+}
+
+.navsec nav .nav_btn.type1, .navsec nav .nav_btn{
+    padding: 8px 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: 1px solid var(--bg-button1);
+    color: var(--bg-button1);
+    cursor: pointer;
+    margin-right: 16px;
+}
+
+.navsec nav .nav_btn.type1:last-child, .navsec nav .nav_btn:last-child{
+    margin-right: 0;
+}
+
+
+.navsec nav .nav_btn.type2{
+    background: var(--bg-button1);
+    color: var(--color-text-header);
+}
+
+/* Стили для тела */
+
+main{
+    display: flex;
+    position: relative;
+    top: var(--navbar-height);
+    width: 100%;
+}
+
+main .wrap:first-child{
+    min-height: calc(100% - var(--navbar-height));
+}
+
+main .wrap{
+    display: flex;
+    padding: 70px 88px;
+    flex-direction: column;
+    align-items: center;
+    gap: 64px;
+    align-self: stretch;
+    z-index: var(--index-main);
+    width: 100%;
+}
+
+main .wrap nav {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+}
+
+.nav_btn {
+    display: flex;
+    padding: 16px 32px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-button2);
+    font-family: 'Inter';
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px; /* 150% */
+    text-transform: uppercase;
+    color: var(--color-text-header);
+    cursor: pointer;
+    user-select: none;
+}
+
+.nav_btn::before{
+    content: "";
+    width: 24px;
+    height: 24px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    display: none;
+}
+
+.nav_btn[icon="Draw"]::before{
+    background-image: url(../images/Icon\ Leftdraw.png);
+    display: block;
+}
+
+.nav_btn[icon="Revenge"]::before{
+    background-image: url(../images/Icon\ LeftRevenge.png);
+    display: block;
+}
+.nav_btn[icon="Give up"]::before{
+    background-image: url(../images/Icon\ LeftGive\ up.png);
+    display: block;
+}
+
+main .wrap nav .nav_btn {
+    width: 500px;
+    margin-right: 16px;
+    flex: 1 0 0;
+}
+
+main .wrap nav .nav_btn:last-child{
+    margin-right: 0;
+}
+
+/* Секция для шахматной доски и статистик */
+
+main .wrap .sec{
+    display: flex;
+    align-items: stretch;
+    gap: 32px;
+    align-self: stretch;
+    width: 100%;
+    min-height: 800px;
+}
+
+main .wrap .sec .inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    margin-right: 32px;
+    /* align-items: center; */
+    height: 100%;
+}
+
+main .wrap .sec .inner:last-child{
+    margin-right: 0;
+}
+
+main .wrap .sec .inner .sidebar{
+    height: 100%;
+}
+
+.table{
+    display: flex;
+    flex-direction: column;
+    height: 50%;
+}
+
+main .wrap .sec .inner.chess_inner{
+    justify-content: center;
+    align-items: center;
+    width: var(--main-inner_iframe-size);
+}
+
+main .wrap .sec .inner.chess_static{
+    width: calc(100% - var(--main-inner_iframe-size) - 32px);
+}
+
+.square img{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-size: contain;
+    background-position: center;
+    user-select: none;
+}
+
+.squareNotation{
+    user-select: none;
+}
+
+#chess_frame{
+    min-width: var(--main-iframe-size);
+    min-height: var(--main-iframe-size);
+    overflow: hidden;
+}
+
+table.iksweb{
+    display: flex;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    border-collapse:collapse;
+    border-spacing:0;
+    height: auto;
+    z-index: 3;
+    flex-direction: column;
+
+}
+
+tbody.player::before{
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #12B76A;
+    flex: 1 0 0;
+    width: 135px;
+    height: 4px;
+    z-index: 4;
+}
+
+/* table.iksweb,table.iksweb td, table.iksweb th {
+	border: 1px solid #595959;
+} */
+table.iksweb{
+    
+}
+
+.table.history table tbody{
+    background: var(--bg-table);
+}
+
+
+table.iksweb td,table.iksweb th {
+	display: flex;
+	padding: 3px;
+	width: 30px;
+	height: 35px;
+    align-items: center;
+    font-family: 'Inter';
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    text-transform: uppercase;
+}
+table.iksweb th {
+	background: #347c99; 
+	color: #fff; 
+	font-weight: normal;
+}
+
+
+table.iksweb tbody.player{
+    display: block;
+    float: left;
+    background: var(--gradient-player-content);
+    height: 128px;
+    width: 100%;
+    gap: 8px;
+    /* padding: 16px !important; */
+    margin-bottom: 16px;
+}
+
+table.iksweb tbody.player:last-child{
+    margin-bottom: 32px;
+    position: relative;
+}
+
+table.iksweb tbody.player tr{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+td{
+    height: 64px !important;
+    width: 100%;
+    padding: 16px !important;
+}
+
+td#player_avatar_wrap{
+    display: flex;
+    width: 64px !important;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+#player_time{
+    font-family: 'Placid Armor';
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 40px; /* 125% */
+    letter-spacing: -0.8px;
+    text-transform: uppercase;
+    width: 100%;
+}
+
+td#player_name_wrap{
+    width: calc(100% - 64px);
+}
+
+table.iksweb td.header{
+    background: #343434;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px; /* 171.429% */
+    color: #FFF;
+    /* width: calc((100% - var(--table-size-number)) / 2); */
+}
+
+table.iksweb td.number, .table.iksweb td.center{
+    justify-content: center;
+}
+
+table.iksweb td.number{
+    width: var(--table-size-number);
+}
+
+table.iksweb td{
+    display: flex;
+    align-items: center;
+    width: calc((100% - var(--table-size-number)) / 2);
+    text-align: center;
+    font-family: 'Inter';
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px; /* 171.429% */
+    color: var(--color-text-wrap);
+}
+
+table.iksweb td.last{
+    background: linear-gradient(0deg, rgba(255, 31, 68, 0.20) 0%, rgba(255, 31, 68, 0.20) 100%), var(--bg-header);
+    color: #FFF;
+    font-weight: 600;
+    line-height: 24px; /* 150% */
+}
+
+table.iksweb tbody tr{
+    display: flex;
+    /* padding: 16px; */
+    /* background: var(--bg-table); */
+    /* border: var(--border-table); */
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.table.history table.iksweb tbody tr{
+    height: calc(100% / 6) !important;
+
+}
+
+/* Стили для модального окошечка */
+.modal{
+    display: flex;
+    position: fixed;
+    top: 35%;
+    left: calc(50% - var(--modal-width) / 2);
+    z-index: 999;
+    width: var(--modal-width);
+    padding: 24px;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    background: var(--bg-main);
+    font-family: 'Inter';
+    font-style: normal;
+    text-align: center;
+}
+
+.modal h1{
+    font-size: 20px;
+    font-weight: 500;
+    line-height: normal;
+    text-transform: uppercase;
+}
+
+.modal p{
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px; /* 150% */
+    color: var(--color-text-wrap);
+}
+
+.modal nav{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.modal nav .nav_btn {
+    display: flex;
+    padding: 8px 16px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    flex: 1 0 0;
+    background: var(--bg-modal-button);
+    margin-right: 8px;
+    margin-left: 8px;
+    color: var(--color-text-wrap);
+}
+
+.modal nav .nav_btn.type2{
+    background: var(--bg-button1);
+    color: #FFF;
+}
+
+/* Адаптация под маленькие разрешения экрана */
+@media (max-width: 1536px) {
+    table.iksweb td.header, table.iksweb td{
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 1400px){
+
+    main .wrap .sec{
+        flex-direction: column;
+        align-items: center;
+        justify-content: c;
+    }
+
+    main .wrap .sec .inner.chess_static{
+        width: 100%;
+    }
+
+    table.iksweb td.header, table.iksweb td{
+        font-size: 16px;
+    }
+
+    main .wrap .sec .inner{
+        margin-right: 0;
+    }
+}
+
+@media (max-width: 1152px){
+.navsec nav .inner .link, .navsec nav .inner, .navsec nav .inner .menu{
+        font-size: 14px;
+    }
+}
+
+@media (min-width: 1024px){
+    .burgermenu{
+        display: none;
+    }
+}
+
+@media (max-width: 1024px){
+    /* .navsec nav{
+        display: none;
+    } */
+
+    .navsec nav .inner{
+        flex-direction: column;
+        background: var(--bg-header);
+        width: 100vw;
+    }
+
+    .navbar .wrap{
+        padding: 16px 32px;
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .navsec nav{
+        flex-direction: column;
+        width: 100%;
+        align-items: flex-start;
+    }
+
+    .navbar .navsec{
+        position: relative;
+        z-index: 2;
+        /* align-items: flex-start; */
+        width: 100%;
+        
+    }
+
+    .navsec.close{
+        display: none !important;
+    }
+
+    .navsec .wrap.logo{
+        justify-content: center;
+        align-items: flex-start;
+    }
+
+    /* .navbar .navsec::before{
+        content: "";
+        display: block;
+        position: absolute;
+        top: 0;
+        left: -24%;
+        width: 200vw;
+        background: var(--bg-header);
+        min-height: 100%;
+        z-index: 1;
+        padding: 32px;
+    } */
+
+    .navsec nav .inner, .navsec nav .inner .menu, .navsec .wrap.logo{
+        z-index: 3;
+        align-items: flex-start;
+
+    }
+    
+    .navsec nav .inner.buttons{
+        flex-direction: row;
+    }
+
+    .navsec nav .inner .menu, .navsec nav .inner .link{
+        width: 100%;
+        align-items: center;
+    }
+
+    .navsec nav .inner .menu{
+        min-height: 44px;
+    }
+
+    .navsec nav .inner .link{
+        min-height: 40px;
+    }
+
+    .navsec nav .inner .link:last-child{
+        margin-bottom: 24px;
+    }
+
+}
+
+@media (max-width: 982px){
+    /* Код адаптации для шахматной доски под маленькие устройства */
+
+    /* main .wrap .sec .inner.chess_inner{
+        width: calc(var(--main-inner_iframe-size) / 2);
+    }
+
+    #chess_frame{
+        min-width: calc(var(--main-iframe-size) /2);
+        min-height: calc(var(--main-iframe-size) /2);
+    }
+
+    #chessBoard{
+        width: calc(var(--main-iframe-size) / 2) !important;
+        height: calc(var(--main-iframe-size) / 2) !important;
+        background-size: calc(var(--chessboard-bg-size) / 2) !important;
+    }
+
+    .square{
+        width: calc(var(--chessboard-square-size) / 2) !important;
+        height: calc(var(--chessboard-square-size) / 2) !important;
+        position: static !important;
+        float: left;
+    } */
+
+    main .wrap nav{
+        flex-direction: column;
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+    }
+    
+
+    main .wrap nav .nav_btn{
+        margin-right: 0;
+        margin-bottom: 16px;
+        width: 100% !important;
+        max-width: 500px;
+    }
+
+    main .wrap nav .nav_btn:last-child{
+        margin-bottom: 0;
+    }
+}
+
+@media (max-width: 640px){
+    #player_name{
+        font-size: 20px;
+    }
+    
+    main .wrap{
+        padding: 70px 16px;
+    }
+
+    .modal{
+        width: 100%;
+        left: 0;
+    }
+
+    .modal nav{
+        flex-direction: column;
+    }
+
+    .modal nav .nav_btn{
+        width: 100%;
+        margin-bottom: 16px;
+        margin-left: 0;
+        margin-right: 0;
+    }
+    .modal nav .nav_btn:last-child{
+        margin-bottom: 0;
+    }
+}

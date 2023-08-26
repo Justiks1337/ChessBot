@@ -1,16 +1,117 @@
-<!doctype html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Игра</title>
-</head>
-<body>
-    <div class="buttons">
-        <button id="draw_button">Ничья</button>
-        <button id="give_up_button">Сдаться</button>
+﻿{% extends 'base.html' %}
+    {% block title%} App | Chess {% endblock %}
+
+    {% block css_load %}
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/fonts.css' %}">
+    <link rel="stylesheet" href="{% static 'css/chessboards.css' %}">
+
+    {% endblock %}
+
+{% block body %}
+    <header class="navbar">
+        <div class="wrap">
+            <section class="navsec logotype">
+                <div class="wrap logo">
+                    <a href="#">1С УЧЕБНЫЙ ЦЕНТР</a>
+                </div>
+                <div class="burgermenu" onclick="openNavigation()">
+                        {% load static %}
+                        <img src="{% static 'images/burgermenu_icon.png' %}" alt="">
+                </div>
+            </section>
+            <section class="navsec navigation close" id="nav">
+                <nav>
+                    <div class="inner buttons">
+
+                        <button class="nav_btn type2">ИГРАТЬ</button>
+                    </div>
+                </nav>
+            </section>
+        </div>
+    </header>
+    <main>
+        <div class="wrap">
+            <nav>
+                <div class="nav_btn" icon="Draw">Ничья</div>
+                <div class="nav_btn" icon="Give up">Сдаться</div>
+            </nav>
+            <section class="sec">
+                <div class="inner chess_inner">
+                    {% load static %}
+                    <iframe src="http://127.0.0.1:8000/playgrounds/boards/{{ board_tag }}" frameborder="0" id="chess_frame"></iframe>
+                </div>
+                <div class="inner chess_static">
+                    <div class="sidebar">
+                        <div class="table players">
+                            <table class="iksweb players">
+                                <tbody class="player">
+                                    <tr>
+                                        <td id="player_avatar_wrap">
+
+                                            {% load static %}
+                                            <img id="player_avatar" src="{% static '/images/Avatar.png' %}" alt="">
+                                        </td>
+                                        <td id="player_name_wrap">
+                                            <h1 id="player_name">Raimond Konder (You)</h1>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" id="player_time">
+                                            <h1>32:42</h1>
+                                        </td>
+
+                                    </tr>
+                                </tbody>
+
+                                <tbody class="player">
+                                    <tr>
+                                        <td id="player_avatar_wrap">
+                                            {% load static %}
+                                            <img id="player_avatar" src="{% static '/images/Avatar.png' %}" alt="">
+                                        </td>
+                                        <td id="player_name_wrap">
+                                            <h1 id="player_name">Eliazar Temploa</h1>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" id="player_time">
+                                            <h1>32:42</h1>
+                                        </td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="modal" id="modal">
+        <h1 id="modal_header">ARE YOU SURE YOU WANT TO GIVE UP?</h1>
+        <p id="modal_description">All your progress in this game will be lost. You automatically lose this game!</p>
+        <nav id="modal_buttons">
+            <div class="nav_btn" onclick="closeModalWindow()">CANCEL</div>
+            <div class="nav_btn type2">DELETE</div>
+        </nav>
     </div>
-</body>
-</html>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        function openNavigation(){
+            let nav = document.getElementById("nav");
+            if (nav.classList.contains("close")) nav.classList.remove("close");
+            else nav.classList.add("close");
+        }
+
+        function closeModalWindow(){
+            let modal = document.getElementById("modal");
+            if (modal) modal.remove();
+        }
+    </script>
+
+{% endblock %}

@@ -10,16 +10,12 @@ h1{
     text-align: center
     }
 
-img{
-    display: block;
-    margin: auto;
-    }
-
-div{
-    position: absolute;
-    left: 0;
-    right: 0;
+#popup{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     margin: 0 auto;
+    position: relative;
     top: 50%;
     transform: translate(0, -50%);
 }

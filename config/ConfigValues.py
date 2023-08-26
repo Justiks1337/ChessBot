@@ -51,6 +51,7 @@ class ConfigValues:
 	on_invalid_args = __config_file.get('Messages', 'on_invalid_args').replace('\\n', '\n')
 	on_find_enemy = __config_file.get('Messages', 'on_find_enemy').replace('\\n', '\n')
 	in_recharge = __config_file.get('Messages', 'in_recharge').replace('\\n', '\n')
+	on_illegal_action_error = __config_file.get('Messages', 'on_illegal_action_error').replace('\\n', '\n')
 
 	# Game
 

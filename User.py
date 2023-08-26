@@ -42,15 +42,17 @@ class User:
 		self.username = info[4]
 		self.session_id = info[5]
 
-	def move(self, start_cell: str, end_cell: str):
+	async def move(self, start_cell: str, end_cell: str):
 		"""move in board and flip timer"""
 
 		try:
 			if self.own_object.board.turn != self.color:
 				raise OnSomeoneMoveError()
 
-			self.own_object.move("".join([start_cell, end_cell]))
+			board_fen = await self.own_object.move("".join([start_cell, end_cell]))
 			self.timer.flip_the_timer()
+
+			return board_fen, self.timer.time
 
 		except IllegalMoveError:
 			raise IllegalError()

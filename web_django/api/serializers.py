@@ -1,4 +1,4 @@
-from rest_framework.serializers import Serializer, CharField, BooleanField, IntegerField
+from rest_framework.serializers import Serializer, CharField, BooleanField
 
 
 class StartGameSerializer(Serializer):
@@ -15,19 +15,4 @@ class DeleteAuthorizeTokenSerializer(Serializer):
 
 
 class AuthorizeAttemptSerializer(Serializer):
-    success = BooleanField()
-
-
-class ChessboardMoveSerializer(Serializer):
-    success = BooleanField()
-    board = CharField()
-    message = CharField()
-    time = IntegerField()
-
-
-class ChessboardDrawSerializer(Serializer):
-    success = BooleanField()
-
-
-class ChessboardGiveUpSerializer(Serializer):
     success = BooleanField()

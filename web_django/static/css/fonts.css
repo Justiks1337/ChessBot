@@ -1,0 +1,11 @@
+/* Inter */
+@font-face{
+    font-family: 'Inter';
+    src: url(../fonts/Inter-VariableFont_slnt\,wght.ttf);
+}
+
+/* Placid Armor */
+@font-face{
+    font-family: "Placid Armor";
+    src: url(../fonts/PlacidArmor-Medium.ttf);
+}

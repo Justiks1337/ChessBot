@@ -78,7 +78,9 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             'web_django/authorization/templates',
-            'web_django/error_page/templates'
+            'web_django/error_page/templates',
+            'web_django/chessboards/templates',
+            'web_django/base'
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -154,6 +156,8 @@ STATIC_ROOT = 'web_django/static'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+
+X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 LOGGING = {
     'version': 1,
