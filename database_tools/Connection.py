@@ -14,7 +14,6 @@ class Connection:
 		loop = get_event_loop()
 		self.connection: aiosqlite.Connection = loop.run_until_complete(
 			aiosqlite.connect(os.path.join(os.path.dirname(__file__), ConfigValues.db_name)))
-		set_event_loop(loop)
 		self.__transactions: int = 0
 
 		log.info(f'successful connect to {ConfigValues.db_name}')

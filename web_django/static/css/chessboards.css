@@ -46,7 +46,7 @@ html{
 }
 
 body{
-    max-width: var(--body-width);
+    max-width: 100%;
     min-height: 100%;
     margin: 0 auto;
 }
@@ -491,6 +491,12 @@ td#player_avatar_wrap{
     width: 100%;
 }
 
+#player_avatar{
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+}
+
 td#player_name_wrap{
     width: calc(100% - 64px);
 }
@@ -565,6 +571,7 @@ table.iksweb tbody tr{
     font-family: 'Inter';
     font-style: normal;
     text-align: center;
+    visibility: hidden;
 }
 
 .modal h1{
@@ -639,94 +646,6 @@ table.iksweb tbody tr{
 .navsec nav .inner .link, .navsec nav .inner, .navsec nav .inner .menu{
         font-size: 14px;
     }
-}
-
-@media (min-width: 1024px){
-    .burgermenu{
-        display: none;
-    }
-}
-
-@media (max-width: 1024px){
-    /* .navsec nav{
-        display: none;
-    } */
-
-    .navsec nav .inner{
-        flex-direction: column;
-        background: var(--bg-header);
-        width: 100vw;
-    }
-
-    .navbar .wrap{
-        padding: 16px 32px;
-        width: 100%;
-        flex-direction: column;
-    }
-
-    .navsec nav{
-        flex-direction: column;
-        width: 100%;
-        align-items: flex-start;
-    }
-
-    .navbar .navsec{
-        position: relative;
-        z-index: 2;
-        /* align-items: flex-start; */
-        width: 100%;
-        
-    }
-
-    .navsec.close{
-        display: none !important;
-    }
-
-    .navsec .wrap.logo{
-        justify-content: center;
-        align-items: flex-start;
-    }
-
-    /* .navbar .navsec::before{
-        content: "";
-        display: block;
-        position: absolute;
-        top: 0;
-        left: -24%;
-        width: 200vw;
-        background: var(--bg-header);
-        min-height: 100%;
-        z-index: 1;
-        padding: 32px;
-    } */
-
-    .navsec nav .inner, .navsec nav .inner .menu, .navsec .wrap.logo{
-        z-index: 3;
-        align-items: flex-start;
-
-    }
-    
-    .navsec nav .inner.buttons{
-        flex-direction: row;
-    }
-
-    .navsec nav .inner .menu, .navsec nav .inner .link{
-        width: 100%;
-        align-items: center;
-    }
-
-    .navsec nav .inner .menu{
-        min-height: 44px;
-    }
-
-    .navsec nav .inner .link{
-        min-height: 40px;
-    }
-
-    .navsec nav .inner .link:last-child{
-        margin-bottom: 24px;
-    }
-
 }
 
 @media (max-width: 982px){

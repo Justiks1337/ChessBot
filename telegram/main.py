@@ -83,4 +83,4 @@ async def add_on_blacklist_handler(message: Message):
 	await remove_from_blacklist(bot, message)
 
 
-executor.start_polling(dp)
+executor.start_polling(dp, skip_updates=True)

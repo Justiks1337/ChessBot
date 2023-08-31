@@ -5,6 +5,10 @@ class StartGameSerializer(Serializer):
     uuid = CharField(max_length=38)
 
 
+class CheckInGameSerializer(Serializer):
+    in_game = BooleanField()
+
+
 class NewAuthorizeTokenSerializer(Serializer):
     success = BooleanField()
     token = CharField(max_length=38)

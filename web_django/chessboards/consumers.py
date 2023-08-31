@@ -8,11 +8,10 @@ from Game import games, Game
 
 class UserWebsocket(AsyncJsonWebsocketConsumer):
 
-    legal_action = ()
-
     async def connect(self):
 
         self.board_tag = self.scope['url_route']['kwargs']['tag']
+        self.sessionid = await self.get_sessionid()
 
         await self.channel_layer.group_add(
             self.board_tag,
@@ -28,32 +27,36 @@ class UserWebsocket(AsyncJsonWebsocketConsumer):
         )
 
     async def receive_json(self, content, **kwargs):
-        if not content["type"] in UserWebsocket.legal_action:
-            await self.error("event not found/not legal")
-            return
 
-        await self.__dict__[content["type"]]()
+        # switch case construction does not exit in python 3.9 so:
 
-    async def update_board(self, event):
-        session_id = self.scope["session"]["sessionid"]
+        print(content)
 
-        user = get(games, 'players', session_id=session_id)
-        user.move()
+        if content["type"] == "draw_offer":
+            await self.draw_offer()
+        elif content["type"] == "give_up":
+            await self.give_up()
+        elif content["type"] == "move":
+            await self.move(content["start_cell"], content["end_cell"])
 
-    async def end_timer_event(self, event):
-        await self.send_json({"event": "end_timer", "loser": event['loser']})
-
-    async def mate_event(self, event):
-        await self.send_json({"event": "mate", "winner": event['winner']})
-
-    async def stalemate_event(self, event):
-        await self.send_json({"event": "stalemate"})
-
-    async def draw_event(self, event):
-        await self.send_json({"event": "draw"})
+    async def end_game_event(self, event):
+        await self.send_json({"event": 'end_game', "message": event['message']})
+        await self.disconnect(200)
 
     async def draw_offer_event(self, event):
-        await self.send_json({"event": "draw_offer", "receiver": event['receiver']})
+        await self.send_json({"event": "draw_offer", "recipient": event['recipient']})
+
+    async def on_check(self, event):
+        await self.send_json({"event": "on_check"})
+
+    async def update_board(self, event):
+        await self.send_json({
+            "event": "update_board",
+            "board": event["board"],
+            "user_time": event["user_time"]})
+
+    async def illegal_move_error(self, message):
+        await self.send_json({"event": "illegal_move_error", "message": message})
 
     async def error(self, message):
         await self.send_json({"event": "error", "message": message})
@@ -62,7 +65,7 @@ class UserWebsocket(AsyncJsonWebsocketConsumer):
         try:
 
             board: Game = get(games, '', tag=self.board_tag)
-            user_object = get(games, 'players', session_id=self.scope["session"]["sessionid"])
+            user_object = get(games, 'players', session_id=self.sessionid)
 
             assert user_object
             assert board.board.turn is user_object.color
@@ -70,13 +73,13 @@ class UserWebsocket(AsyncJsonWebsocketConsumer):
             fen_board, time = await user_object.move(start_cell, end_cell)
 
             if not fen_board:
-                await self.error(ConfigValues.illegal_move_error)
+                await self.illegal_move_error(ConfigValues.illegal_move_error)
                 return
 
             await self.channel_layer.group_send(
                 self.board_tag,
                 {
-                    "type": "update_board_event",
+                    "type": "update_board",
                     "board": fen_board,
                     "user_time": time
                 }
@@ -89,7 +92,7 @@ class UserWebsocket(AsyncJsonWebsocketConsumer):
 
         try:
 
-            user_object = get(games, 'players', session_id=self.scope["session"]["sessionid"])
+            user_object = get(games, 'players', session_id=self.sessionid)
 
             assert user_object
 
@@ -101,7 +104,7 @@ class UserWebsocket(AsyncJsonWebsocketConsumer):
     async def give_up(self):
         try:
 
-            user_object = get(games, 'players', session_id=self.scope["session"]["sessionid"])
+            user_object = get(games, 'players', session_id=self.sessionid)
 
             assert user_object
 
@@ -109,3 +112,12 @@ class UserWebsocket(AsyncJsonWebsocketConsumer):
 
         except AssertionError:
             await self.error(ConfigValues.on_illegal_action_error)
+
+    @sync_to_async()
+    def get_sessionid(self):
+        headers = self.scope["headers"]
+
+        for header in headers:
+            if header[0] == b'cookie':
+                sessionid = header[1].decode("utf-8")
+                return sessionid.replace('sessionid=', '')

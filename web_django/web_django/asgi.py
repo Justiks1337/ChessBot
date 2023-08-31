@@ -18,6 +18,7 @@ from web_django.django_log.log import log
 from web_django.web_django.wsgi import application as wsgi_app
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'web_django.web_django.settings')
+os.environ.setdefault('PYTHONASYNCIODEBUG', '1')
 os.environ.setdefault('SERVER_GATEWAY_INTERFACE', 'ASGI')
 
 log.info(f'server successful started. Server gateway interface: ASGI')

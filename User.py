@@ -13,17 +13,17 @@ class User:
 		self.user_id: int = user_id
 		self.color: bool = color
 		self.timer: Timer = Timer(self)
-		self.color_text = lambda x: "бел" if color else "чёрн"
+		self.color_text = lambda x: "бел" if x else "чёрн"
 		self.draw_offer = False
 		self.own_object = own_object
 
 		# attributes from database
 		self.games: Optional[int] = None
 		self.points: Optional[int] = None
-		self.avatar_path: Optional[str] = None
 		self.nickname: Optional[str] = None
 		self.username: Optional[str] = None
 		self.session_id: Optional[str] = None
+		self.avatar_path: Optional[str] = None
 
 		self.own_object.players.append(self)
 
@@ -31,16 +31,24 @@ class User:
 		"""fill attributes from database"""
 
 		info = await (await connect.request(
-			"SELECT games, points, avatar_path, nickname, username, session_id FROM users WHERE user_id = ?",
+			"SELECT games, points, nickname, username, session_id FROM users WHERE user_id = ?",
 			(self.user_id,)
 		)).fetchone()
 
 		self.games = info[0]
 		self.points = info[1]
-		self.avatar_path = info[2]
-		self.nickname = info[3]
-		self.username = info[4]
-		self.session_id = info[5]
+		self.nickname = info[2]
+		self.username = info[3]
+		self.session_id = info[4]
+
+		try:
+			open(f"web_django/static/avatars/{self.user_id}.png")
+
+			self.avatar_path = f"avatars/{self.user_id}.png"
+
+		except FileNotFoundError:
+
+			self.avatar_path = "avatars/unknown_user.png"
 
 	async def move(self, start_cell: str, end_cell: str):
 		"""move in board and flip timer"""

@@ -9,6 +9,7 @@ body{
     flex-direction: column !important;
     min-height: 100% !important;
     height: 100% !important;
+    font-family: Montserrat;
     }
 
 
@@ -64,5 +65,9 @@ a{text-decoration: none; color: #b08989}
 
 a:hover{
     color: #7d4343;
+}
+
+.magic_div{
+    display: none
 }
 

@@ -7,10 +7,7 @@
         <script type="text/javascript" src="{% static 'js/jquery-1.7.1.min.js'%}"></script>
     	<script type="text/javascript" src="{% static 'js/jquery.ui.core.js'%}"></script>
     	<script type="text/javascript" src="{% static 'js/jquery.ui.widget.js'%}"></script>
-    	<script type="text/javascript" src="{% static 'js/jquery.ui.mouse.js'%}"></script>
-    	<script type="text/javascript" src="{% static 'js/jquery.ui.draggable.js'%}"></script>
-        <script type="text/javascript" src="{% static 'js/jquery.ui.droppable.js'%}"></script>
-        <script type="text/javascript" src="{% static 'js/jquery.chess.js'%}"></script>
+        <script type="text/javascript" src="{% static 'js/jquery.chess.spectator.js'%}"></script>
         <link type="text/css" rel="stylesheet" href="{% static 'css/chessboards.css'%}">
 
         <script type="text/javascript">
@@ -26,7 +23,7 @@
             body { font-family: Arial, sans-serif; }
 
             /* board */
-            #chessBoard {
+            #chessBoard { 
                 background: url("{% static 'images/45.gif'%}") !important;
                 background-size: 200px 200px !important;
                 background-repeat: repeat !important;

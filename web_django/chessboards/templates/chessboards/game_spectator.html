@@ -30,8 +30,6 @@
     <main>
         <div class="wrap">
             <nav>
-                <div class="nav_btn" icon="Draw" onclick="showDrawOfferModal()">Ничья</div>
-                <div class="nav_btn" icon="Give up" onclick="showGiveUpModal()">Сдаться</div>
             </nav>
             <section class="sec">
                 <div class="inner chess_inner">
@@ -86,53 +84,11 @@
         </div>
     </main>
 
-    <div class="modal" id="give_up_modal">
-        <h1 id="modal_header">ТЫ УВЕРЕН ЧТО ХОЧЕШЬ СДАТЬСЯ?</h1>
-        <p id="modal_description">После нажатия на кнопку игра заканчивается, а ты автоматически считаешься проигравшим!</p>
-        <nav id="modal_buttons">
-            <div class="nav_btn" onclick="closeModalWindow(give_up_modal)">ОТМЕНА</div>
-            <div class="nav_btn type2" onclick="giveUp()">СДАТЬСЯ</div>
-        </nav>
-    </div>
-
-    <div class="modal" id="draw_offer_create_modal">
-        <h1>ТЫ ОТПРАВИЛ ЗАПРОС НА НИЧЬЮ.</h1>
-        <p>Если противник согласится на неё, игра закончится, а победит дружба.</p>
-        <nav>
-            <div class="nav_btn type2" onclick="closeModalWindow(draw_offer_create_modal)">ОК</div>
-        </nav>
-    </div>
-
-    <div class="modal" id="draw_offer_modal">
-        <h1>ПРОТИВНИК ПРЕДЛАГАЕТ НИЧЬЮ</h1>
-        <p>Твой противник предлагает ничью. Если ты нажмешь на кнопку принять, игра закончится, а победит дружба</p>
-    <nav>
-        <div class="nav_btn" onclick="closeModalWindow(draw_offer_modal)">ОТКЛОНИТЬ</div>
-        <div class="nav_btn type2" onclick="drawOfferAccept()">ПРИНЯТЬ</div>
-    </nav>
-    </div>
-
     <div class="modal" id="end_game_modal">
         <h1>ИГРА ОКОНЧЕНА</h1>
         <p id="end_game_message">message</p>
         <nav>
             <div class="nav_btn type2" onclick="closeModalWindow(end_game_modal)">ОК</div>
-        </nav>
-    </div>
-
-    <div class="modal" id="illegal_move_modal">
-        <h1>НЕВОЗМОЖНЫЙ ХОД</h1>
-        <p id="illegal_move_message"></p>
-        <nav>
-            <div class="nav_btn type2" onclick="closeModalWindow(illegal_move_modal)">ОК</div>
-        </nav>
-    </div>
-
-    <div class="modal" id="on_check_modal">
-        <h1>УГРОЗА КОРОЛЮ</h1>
-        <p>Твой противник объявил твоему королю шах! Будь внимателен!</p>
-        <nav>
-            <div class="nav_btn type2" onclick="closeModalWindow(illegal_move_modal)">ОК</div>
         </nav>
     </div>
 
@@ -146,7 +102,6 @@
     </div>
 
 
-
 {% endblock %}
 
 {% block scripts %}
@@ -156,17 +111,13 @@
     crossorigin="anonymous"></script>
 
     {% load static %}
-    <script type="text/javascript" src="{% static 'js/chessboard.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/chessboard_spectator.js' %}"></script>
 
     <script>
         $(document).ready(fillData(
-        {{user_id}},
         "{{board_fen}}",
         {{first_player_time}},
-        {{second_player_time}},
-        "{{draw_offer}}",
-        "{{color}}",
-        "{{turn}}"))
+        {{second_player_time}},))
 
     </script>
 

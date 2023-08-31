@@ -13,6 +13,7 @@
  *	jquery.ui.mouse.js
  *	jquery.ui.draggable.js
  */
+
 (function( $, undefined ) {
 
 $.widget("ui.droppable", {
@@ -71,6 +72,7 @@ $.widget("ui.droppable", {
 	},
 
 	_activate: function(event) {
+
 		var draggable = $.ui.ddmanager.current;
 		if(this.options.activeClass) this.element.addClass(this.options.activeClass);
 		(draggable && this._trigger('activate', event, this.ui(draggable)));
@@ -111,6 +113,8 @@ $.widget("ui.droppable", {
 		var draggable = custom || $.ui.ddmanager.current;
 		if (!draggable || (draggable.currentItem || draggable.element)[0] == this.element[0]) return false; // Bail if draggable and droppable are same element
 
+        var end_cell = this.element.find(":data(droppable)").context.getElementsByClassName('squareNotation')[0].innerText
+
 		var childrenIntersection = false;
 		this.element.find(":data(droppable)").not(".ui-draggable-dragging").each(function() {
 			var inst = $.data(this, 'droppable');
@@ -130,6 +134,9 @@ $.widget("ui.droppable", {
 			this._trigger('drop', event, this.ui(draggable));
 			return this.element;
 		}
+
+        console.log(window.parent);
+        window.parent.move(start_cell, end_cell);
 
 		return false;
 
@@ -239,6 +246,7 @@ $.ui.ddmanager = {
 
 	},
 	dragStart: function( draggable, event ) {
+	    var start_cell = draggable.element.context.offsetParent.getElementsByClassName('squareNotation')[0].innerText;
 		//Listen for scrolling so that if the dragging causes scrolling the position of the droppables can be recalculated (see #5003)
 		draggable.element.parents( ":not(body,html)" ).bind( "scroll.droppable", function() {
 			if( !draggable.options.refreshPositions ) $.ui.ddmanager.prepareOffsets( draggable, event );

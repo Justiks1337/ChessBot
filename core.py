@@ -1,6 +1,3 @@
-from exceptions.OnEndTimeError import OnEndTimeError
-
-
 def get(from_list: list, path: str, **kwargs):
 	"""The method allows you to get an object according to the condition set using **kwargs and path
 
@@ -22,6 +19,9 @@ def get(from_list: list, path: str, **kwargs):
 	positions = path.split('.')
 	value_name = list(kwargs.keys())[0]
 
+	if path == '':
+		positions = []
+
 	for obj in from_list:
 
 		for position in positions:
@@ -34,6 +34,11 @@ def get(from_list: list, path: str, **kwargs):
 					if obj.__dict__[value_name] == kwargs[value_name]:
 						return obj
 
-		if obj.__dict__[value_name] == kwargs[value_name]:
-			return obj
-
+		try:
+			if obj.__dict__[value_name] == kwargs[value_name]:
+				return obj
+		except AttributeError:
+			for i in obj:
+				if i.__dict__[value_name] == kwargs[value_name]:
+					print(i.__dict__)
+					return i

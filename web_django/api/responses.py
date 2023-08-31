@@ -3,6 +3,11 @@ class StartGameResponse:
         self.uuid = uuid
 
 
+class CheckInGameResponse:
+    def __init__(self, in_game: bool):
+        self.in_game = in_game
+
+
 class NewAuthorizeTokenResponse:
     def __init__(self, success: bool, token: str):
         self.success = success

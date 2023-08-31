@@ -156,30 +156,6 @@ DEALINGS IN THE SOFTWARE.
                         alert(1);
                 }
             }
-
-            // Make pieces draggable.
-            $boardInner.find('.draggablePiece').draggable({
-                //grid: [ $settings.squareSize,$settings.squareSize ],
-                revert: 'invalid',
-                stack: $boardInner.find('.draggablePiece'),
-                start: function (event, ui){
-                    $(this).css({position: 'absolute'});
-                    self.rules($(this));
-                }
-            });
-
-            // Make pieces droppable.
-            $boardInner.find('.square').droppable({
-                accept: '.draggablePiece',
-                tolerance: 'intersect',
-                drop: function( event, ui ) {
-                    //$( this ).addClass( "ui-state-highlight" );
-                    $(this).find('.draggablePiece').css({display:'none'});
-                    $(this).append(ui.draggable.css('position','static'));
-                    //console.log('drop');
-                }
-            });
-
         }
 
         this._fenToPosition = function(fen){

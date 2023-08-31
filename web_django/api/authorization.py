@@ -5,10 +5,11 @@ from config.ConfigValues import ConfigValues
 
 
 def authorization(func):
-    def wrapper(self, request: Request):
+    async def wrapper(request: Request):
         try:
             if request.META.get("HTTP_AUTHORIZATION") == ConfigValues.server_authkey:
-                return func(self, request)
+                return await func(request)
+
             return Response({'Неверный ключ авторизации!'})
 
         except KeyError:

@@ -1,4 +1,4 @@
-import asyncio
+from asyncio import create_task
 from uuid import uuid4
 from time import time
 
@@ -6,6 +6,7 @@ import chess
 from channels.consumer import get_channel_layer
 
 from User import User
+from config.ConfigValues import ConfigValues
 
 
 class Game:
@@ -13,20 +14,26 @@ class Game:
 
 	def __init__(self, users_ids: tuple):
 		self.board: chess.Board = chess.Board()
+		self.players: list = []
 		self.player_1: User = User(users_ids[0], True, self)
 		self.player_2: User = User(users_ids[1], False, self)
-		self.players: list = []
 		self.start_time = time()
-		self.tag = uuid4()
+		self.tag = str(uuid4())
 
 		games.append(self)
 
 	async def move(self, text_move):
 		""":raise BaseError если на доске ситуация приводящая к концу игры либо противоречащая её продолжению"""
 
-		self.board.push_san(text_move)
-		await self.checkmate()
-		await self.check_stalemate()
+		try:
+			self.board.push_san(text_move)
+		except chess.IllegalMoveError as error:
+			if "missing promotion piece type" in error.args[0]:
+				self.board.push_san(f"{text_move}q")
+			else:
+				raise chess.IllegalMoveError()
+
+		await self.move_checks()
 
 		return self.board.board_fen()
 
@@ -34,22 +41,28 @@ class Game:
 		""":raise MateError если есть на доске мат"""
 
 		if self.board.is_checkmate():
-			await channel_layer.group_send(
-				self.tag,
-				{
-					'type': "mate_event",
-					'winner': self.get_winner()
-				})
+			await self.on_end_game(ConfigValues.on_mate_message.replace('{color}', self.get_winner().color_text))
+			await Game.on_win(self.get_winner())
 
 	async def check_stalemate(self):
 		""":raise DrawError если на доске пат"""
 
 		if self.board.is_stalemate():
+			await self.on_end_game(ConfigValues.on_stalemate_message)
+
+	async def on_check(self):
+		if self.board.is_check():
 			await channel_layer.group_send(
 				self.tag,
 				{
-					'type': "stalemate_event",
-				})
+					'type': 'on_check'
+				}
+			)
+
+	async def move_checks(self):
+		await self.checkmate()
+		await self.check_stalemate()
+		await self.on_check()
 
 	def get_winner(self) -> User:
 		""":return User - object"""
@@ -64,27 +77,40 @@ class Game:
 	async def start_timers_game(self):
 		"""actions before start game"""
 
-		async with asyncio.TaskGroup() as tasks:
-			for user in self.players:
-				tasks.create_task(user.fill_attributes())
-				tasks.create_task(user.start_timer())
+		tasks = []
 
-	async def on_end_game(self):
+		for user in self.players:
+			tasks.append(create_task(user.fill_attributes()))
+			tasks.append(create_task(user.start_timer()))
+
+		for task in tasks:
+			await task
+
+	async def on_end_game(self, message):
 		"""Коро хендлер срабатывающий после окончания игры"""
 
 		self.player_1.stop_timer()
 		self.player_2.stop_timer()
+
+		await channel_layer.group_send(
+			self.tag,
+			{
+				'type': "end_game_event",
+				'message': message
+			})
+
+		del channel_layer.groups[self.tag]
 
 		await self.player_1.remove_games()
 		await self.player_2.remove_games()
 
 		games.remove(self)
 
-	async def on_win(self, winner: User):
+	@staticmethod
+	async def on_win(winner: User):
 		await winner.give_points()
 
 	async def on_draw_offer(self):
-
 		for player in self.players:
 			if not player.draw_offer:
 
@@ -92,39 +118,26 @@ class Game:
 					self.tag,
 					{
 						'type': "draw_offer_event",
-						'receiver': player.session_id
+						'recipient': player.user_id
 					}
 				)
-
 				return
 
-			await self.on_end_game()
-			await channel_layer.group_send(
-				self.tag,
-				{'type': 'draw_event'}
-			)
-
-		await self.on_end_game()
+		await self.on_end_game(ConfigValues.on_draw_message)
 
 	async def on_give_up(self, user_id: int):
 		for player in self.players:
 			if player.user_id != user_id:
-				await self.on_win(player)
-
-		await self.on_end_game()
+				await Game.on_win(player)
+			else:
+				await self.on_end_game(ConfigValues.on_resign.replace('{color}', player.color_text(player.color)))
 
 	async def on_end_timer(self, loser: User):
-		await self.on_end_game()
 
 		# noinspection PyTypeChecker
-		await self.on_win(lambda player: self.player_1 if loser == self.player_2 else self.player_2)
+		await Game.on_win(lambda player: self.player_1 if loser == self.player_2 else self.player_2)
 
-		await channel_layer.group_send(
-			self.tag,
-			{
-				'type': "end_timer_event",
-				'loser': loser.color
-			})
+		await self.on_end_game(ConfigValues.on_end_time.replace('{color}', loser.color_text))
 
 
 channel_layer = get_channel_layer("default")

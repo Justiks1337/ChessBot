@@ -7,38 +7,87 @@ from core import get
 from Game import games
 
 
-async def index(request: HttpRequest, *args, **kwargs):
+async def game_view(request: HttpRequest, **kwargs):
 
-	#try:
+	try:
 
-		#game_object = get(games, '', tag=kwargs['tag'])
-		#assert game_object
+		game_object = get(games, '', tag=kwargs['tag'])
+		assert game_object
 
-		#session_key = await get_session_key(request)
+		kwargs["game"] = game_object
 
-		#if get(game_object.players, '', session_id=session_key):
-			#return await player_mode(request)
+		session_key = await get_session_key(request)
 
-		#return await spectator_mode(request)
+		if get(game_object.players, '', session_id=session_key):
+			return await game_player_mode(request, **kwargs)
 
-	#except AssertionError:
-		#pass  # Во избежание флуда в консоли
+		return await game_spectator_mode(request, **kwargs)
+
+	except AssertionError:
+		pass  # Во избежание флуда в консоли
 
 	return render(request, 'chessboards/game.html', {"board_tag": kwargs['tag']})
 
 
 @sync_to_async()
-def player_mode(request: HttpRequest):
-	return render(request, 'chessboards/game.html')
+def game_player_mode(request: HttpRequest, **kwargs):
+
+	game = kwargs["game"]
+	user = get(games, 'players', session_id=request.COOKIES.get('sessionid'))
+
+	return render(request, 'chessboards/game.html', {
+		'board_tag': kwargs['tag'],
+		'user_id': user.user_id,
+		'board_fen': game.board.board_fen(),
+		'first_player_nickname': game.player_1.nickname,
+		'second_player_nickname': game.player_2.nickname,
+		'first_player_avatar': game.player_1.avatar_path,
+		'second_player_avatar': game.player_2.avatar_path,
+		'first_player_time': game.player_1.timer.time,
+		'second_player_time': game.player_2.timer.time,
+		'draw_offer': user.draw_offer,
+		'color': user.color,
+		'turn': game.board.turn})
 
 
 @sync_to_async()
-def spectator_mode(request: HttpRequest):
-	return render(request, 'chessboards/game_spectator.html')
+def game_spectator_mode(request: HttpRequest, **kwargs):
+	
+	game = kwargs["game"]
+
+	return render(request, 'chessboards/game_spectator.html', {
+		'board_tag': kwargs['tag'],
+		'board_fen': game.board.board_fen(),
+		'first_player_nickname': game.player_1.nickname,
+		'second_player_nickname': game.player_2.nickname,
+		'first_player_avatar': game.player_1.avatar_path,
+		'second_player_avatar': game.player_2.avatar_path,
+		'first_player_time': game.player_1.timer.time,
+		'second_player_time': game.player_2.timer.time})
 
 
-def board_view(request: HttpRequest, *args, **kwargs):
-	return render(request, 'chessboards/chess.html')
+def board_view(request: HttpRequest, **kwargs):
+	
+	game = get(games, '', tag=kwargs['tag'])
+	user = get(games, 'players', session_id=request.COOKIES.get('sessionid'))
+
+	kwargs["game"] = game
+	
+	if user:
+		return board_player_mode(request, **kwargs)
+	return board_spectator_mode(request, **kwargs)
 
 
+def board_player_mode(request: HttpRequest, **kwargs):
 
+	game = kwargs["game"]
+
+	return render(request, 'chessboards/chess.html', {'board_fen': game.board.board_fen()})
+
+
+def board_spectator_mode(request: HttpRequest, **kwargs):
+
+	game = kwargs["game"]
+
+	return render(request, 'chessboards/chess_spectator.html', {'board_fen': game.board.board_fen()})
+	

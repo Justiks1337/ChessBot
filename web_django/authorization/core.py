@@ -28,12 +28,15 @@ async def __download_user_avatar(user_id: int):
     if len(user_profile_photo.photos) > 0:
 
         file = await bot.get_file(user_profile_photo.photos[0][0].file_id)
-        await bot.download_file(file.file_path, f'../avatars/{user_id}.png')
+        await bot.download_file(file.file_path, f'web_django/static/avatars/{user_id}.png')
 
 
 async def new_data(user_id: int):
     data = await bot.get_chat_member(chat_id=user_id, user_id=user_id)
-    user_nickname = f'{data.user.first_name} {data.user.last_name}'
+    user_nickname = data.user.first_name
+    if data.user.last_name:
+        user_nickname = user_nickname + f" {data.user.last_name}"
+
     username = data.user.username
 
     await connect.request(

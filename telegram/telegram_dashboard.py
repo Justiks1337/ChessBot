@@ -33,7 +33,15 @@ async def get_top(bot: Bot, message: Message):
 	for player in top[:int(amount)+1]:
 		try:
 
-			player_name = (await bot.get_chat_member(player[0], player[0])).user.username
+			user = (await bot.get_chat_member(player[0], player[0])).user
+
+			if not user.username:
+				player_name = user.first_name
+				if user.last_name:
+					player_name = player_name + f" {user.last_name}"
+			else:
+				player_name = f"@{user.username}"
+
 			position += 1
 
 			msg = msg + ConfigValues.dashboard_object.replace(
