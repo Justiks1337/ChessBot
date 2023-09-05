@@ -1,11 +1,26 @@
 ﻿{% extends 'base.html' %}
+
     {% block title%} App | Chess {% endblock %}
 
     {% block css_load %}
 
     {% load static %}
+    <link rel="image" type="image/gif" href="{% static 'images/45.gif'%}">
+    <link rel="image" type="image/png" href="{% static 'images/wp.gif'%}">
+    <link rel="image" type="image/png" href="{% static 'images/wr.gif'%}">
+    <link rel="image" type="image/png" href="{% static 'images/wn.gif'%}">
+    <link rel="image" type="image/png" href="{% static 'images/wb.gif'%}">
+    <link rel="image" type="image/png" href="{% static 'images/wk.gif'%}">
+    <link rel="image" type="image/png" href="{% static 'images/wq.gif'%}">
+    <link rel="image" type="image/png" href="{% static 'images/bp.gif'%}">
+    <link rel="image" type="image/png" href="{% static 'images/br.gif'%}">
+    <link rel="image" type="image/png" href="{% static 'images/bn.gif'%}">
+    <link rel="image" type="image/png" href="{% static 'images/bb.gif'%}">
+    <link rel="image" type="image/png" href="{% static 'images/bk.gif'%}">
+    <link rel="image" type="image/png" href="{% static 'images/bq.gif'%}">
     <link rel="stylesheet" href="{% static 'css/fonts.css' %}">
     <link rel="stylesheet" href="{% static 'css/chessboards.css' %}">
+
 
     {% endblock %}
 
@@ -34,9 +49,7 @@
                 <div class="nav_btn" icon="Give up" onclick="showGiveUpModal()">Сдаться</div>
             </nav>
             <section class="sec">
-                <div class="inner chess_inner">
-                    {% load static %}
-                    <iframe src="http://127.0.0.1:8000/playgrounds/boards/{{ board_tag }}" frameborder="0" id="chess_frame"></iframe>
+                <div class="inner chess_inner" id="chessBoard">
                 </div>
                 <div class="inner chess_static">
                     <div class="sidebar">
@@ -132,7 +145,7 @@
         <h1>УГРОЗА КОРОЛЮ</h1>
         <p>Твой противник объявил твоему королю шах! Будь внимателен!</p>
         <nav>
-            <div class="nav_btn type2" onclick="closeModalWindow(illegal_move_modal)">ОК</div>
+            <div class="nav_btn type2" onclick="closeModalWindow(on_check_modal)">ОК</div>
         </nav>
     </div>
 
@@ -145,7 +158,8 @@
         </nav>
     </div>
 
-
+    {% load static %}
+    <div class="static_file" id="static_img">{% static 'images/1x1.png' %}</div>
 
 {% endblock %}
 
@@ -169,5 +183,24 @@
         "{{turn}}"))
 
     </script>
+
+    {% load static %}
+    <script type="text/javascript" src="{% static 'js/jquery-1.7.1.min.js'%}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.ui.core.js'%}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.ui.widget.js'%}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.ui.mouse.js'%}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.ui.draggable.js'%}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.ui.droppable.js'%}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.chess.js'%}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.ui.touch-punch.min.js' %}"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+               $.fn.chess({
+                 type: 'fen',
+                 position: '{{board_fen}}'
+               });
+            });
+        </script>
 
 {% endblock %}

@@ -64,30 +64,3 @@ def game_spectator_mode(request: HttpRequest, **kwargs):
 		'second_player_avatar': game.player_2.avatar_path,
 		'first_player_time': game.player_1.timer.time,
 		'second_player_time': game.player_2.timer.time})
-
-
-def board_view(request: HttpRequest, **kwargs):
-	
-	game = get(games, '', tag=kwargs['tag'])
-	user = get(games, 'players', session_id=request.COOKIES.get('sessionid'))
-
-	kwargs["game"] = game
-	
-	if user:
-		return board_player_mode(request, **kwargs)
-	return board_spectator_mode(request, **kwargs)
-
-
-def board_player_mode(request: HttpRequest, **kwargs):
-
-	game = kwargs["game"]
-
-	return render(request, 'chessboards/chess.html', {'board_fen': game.board.board_fen()})
-
-
-def board_spectator_mode(request: HttpRequest, **kwargs):
-
-	game = kwargs["game"]
-
-	return render(request, 'chessboards/chess_spectator.html', {'board_fen': game.board.board_fen()})
-	

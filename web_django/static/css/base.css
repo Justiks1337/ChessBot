@@ -18,26 +18,36 @@ footer {
     background: #dedede;
     position: relative !important;
     margin-top: 50px !important;
-    left: 0 !important;
-    right: 0 !important;
 }
 
 .footer-col{
     height: 100% !important;
     display: inline-block !important;
-    width: 32% !important;
+    width: 32%;
     }
 
 @media (max-width: 1000px){
     #contacts {
-        width: 49% !important;
+        width: 49%;
     }
 
     #help {
-        width: 49% !important;
+        width: 49%;
     }
 
     #project_resources{
+        width: 100%;
+    }
+}
+
+@media (max-width: 450px){
+    .footer-container{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+    }
+
+    .footer-col{
         width: 100% !important;
     }
 }
@@ -56,8 +66,8 @@ footer {
 .footer_list{padding: 0 !important}
 
 .footer_item{
-    text-align: left !important;
-    font-size: 20px !important !important;
+    text-align: center !important;
+    font-size: 20px !important;
     list-style: none !important;
 }
 

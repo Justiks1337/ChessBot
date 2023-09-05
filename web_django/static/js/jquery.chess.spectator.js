@@ -24,6 +24,32 @@ DEALINGS IN THE SOFTWARE.
 */
 
 
+/*
+MIT License
+===========
+
+Copyright (c) 2012 Serban Ghita <serbanghita@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+*/
+
+
 (function($){
 
     function Chess(){
@@ -38,7 +64,7 @@ DEALINGS IN THE SOFTWARE.
         this.init = function(options, elem){
 
             $settings = $.extend({
-                squareSize: 100,
+                squareSize: 12.5,
                 x : [1,2,3,4,5,6,7,8],
                 y : [1,2,3,4,5,6,7,8],
                 xLiteral : ['a','b','c','d','e','f','g','h'],
@@ -67,13 +93,12 @@ DEALINGS IN THE SOFTWARE.
                     bq: $piece.clone().addClass('bq')
                     };
 
-            $board = $('<div></div>').attr({id:'chessBoard'})
+            $board = $('.inner.chess_inner')
                         .css({
                                 position: 'relative',
                                 width: $settings.squareSize*8,
                                 height: $settings.squareSize*8
-                            })
-                        .addClass('chessBoard');
+                            });
 
             $boardInner = $('<div></div>').attr({id:'chessBoardInner'}).addClass('chessBoardInner');
 
@@ -95,11 +120,11 @@ DEALINGS IN THE SOFTWARE.
                    var tmpSquare = $('<div></div>')
                                    .attr({id: 'pos'+$settings.x[x]+''+$settings.y[y]})
                                    .css({
-                                       left: (($settings.x[x]-1)*$settings.squareSize),
-                                       top: (($settings.newY[y]-1)*$settings.squareSize),
+                                       left: (($settings.x[x]-1)*$settings.squareSize) + '%',
+                                       top: (($settings.newY[y]-1)*$settings.squareSize) + '%',
                                        position: 'absolute',
-                                       width: $settings.squareSize,
-                                       height: $settings.squareSize
+                                       width: $settings.squareSize + '%',
+                                       height: $settings.squareSize + '%'
                                        })
                                    .addClass('square '+(x%2 ? 'evenX' : 'oddX')+' '+(y%2 ? 'evenY' : 'oddY'));
                    var tmpSquareNotation = $('<div></div>')
@@ -209,11 +234,53 @@ DEALINGS IN THE SOFTWARE.
             }
         }
 
+        this.updateMatrixPosition = function(fen){
+
+            let position = this._fenToPosition(fen).reverse();
+
+            console.log(document.getElementsByClassName('last_move'));
+
+            for(let last_move_div of document.getElementsByClassName('last_move')){
+                console.log(last_move_div);
+                last_move_div.classList.remove('last_move');
+                }
+
+            for(y in position){
+                for(x in position[y]){
+                     let square_div = $boardInner.find('#pos'+Number(parseInt(x)+1)+Number(parseInt(y)+1));
+                     let piece_type;
+                     let draggable_piece;
+
+                     try{draggable_piece = square_div[0].getElementsByClassName('draggablePiece')[0];
+                         piece_type = draggable_piece.classList[1];
+                         if (draggable_piece.style) draggable_piece.style = null;
+                     }catch(e){if (e.name == "TypeError") {piece_type = 0;}}
+
+
+                        if (piece_type != position[y][x]){
+                            square_div.addClass('last_move');
+                            if (piece_type != 0){
+                                if (draggable_piece.style){
+                                    draggable_piece.style = null;
+                                }
+                                draggable_piece.remove();
+                            }
+
+                            if (position[y][x]){
+                                let piece_object = $pieces[position[y][x]].clone();
+                                square_div.append(piece_object);
+                        }
+                     }
+                }
+            }
+        }
+
+
         // @todo: Append to element.
         this.drawBoard = function(){
 
             $board.append($boardInner);
-            $board.appendTo($settings.appendTo);
+            //$board.appendTo($settings.appendTo);
 
         }
 
@@ -254,6 +321,7 @@ DEALINGS IN THE SOFTWARE.
 
         var c = new Chess();
         c.init(options, this);
+        window.c = c;
 
     }
 

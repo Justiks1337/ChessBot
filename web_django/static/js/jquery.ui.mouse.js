@@ -24,6 +24,7 @@ $.widget("ui.mouse", {
 		delay: 0
 	},
 	_mouseInit: function() {
+
 		var self = this;
 
 		this.element
@@ -48,6 +49,8 @@ $.widget("ui.mouse", {
 	},
 
 	_mouseDown: function(event) {
+        if (!possibles_to_move(event.srcElement.classList[1])) return;
+
 		// don't let more than one widget handle mouseStart
 		if( mouseHandled ) { return };
 

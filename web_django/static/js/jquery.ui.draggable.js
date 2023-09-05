@@ -56,7 +56,6 @@ $.widget("ui.draggable", $.ui.mouse, {
 
 	destroy: function() {
 		if(!this.element.data('draggable')) return;
-	    console.log("destroy");
 		this.element
 			.removeData("draggable")
 			.unbind(".draggable")

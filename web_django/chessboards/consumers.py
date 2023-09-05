@@ -1,5 +1,6 @@
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from asgiref.sync import sync_to_async
+from chess import IllegalMoveError
 
 from core import get
 from config.ConfigValues import ConfigValues
@@ -30,8 +31,6 @@ class UserWebsocket(AsyncJsonWebsocketConsumer):
 
         # switch case construction does not exit in python 3.9 so:
 
-        print(content)
-
         if content["type"] == "draw_offer":
             await self.draw_offer()
         elif content["type"] == "give_up":
@@ -47,13 +46,14 @@ class UserWebsocket(AsyncJsonWebsocketConsumer):
         await self.send_json({"event": "draw_offer", "recipient": event['recipient']})
 
     async def on_check(self, event):
-        await self.send_json({"event": "on_check"})
+        await self.send_json({"event": "on_check", "recipient": event['recipient']})
 
     async def update_board(self, event):
         await self.send_json({
             "event": "update_board",
             "board": event["board"],
-            "user_time": event["user_time"]})
+            "first_user_time": event["first_user_time"],
+            "second_user_time": event["second_user_time"]})
 
     async def illegal_move_error(self, message):
         await self.send_json({"event": "illegal_move_error", "message": message})
@@ -70,20 +70,11 @@ class UserWebsocket(AsyncJsonWebsocketConsumer):
             assert user_object
             assert board.board.turn is user_object.color
 
-            fen_board, time = await user_object.move(start_cell, end_cell)
-
-            if not fen_board:
+            try:
+                await user_object.move(start_cell, end_cell)
+            except IllegalMoveError:
                 await self.illegal_move_error(ConfigValues.illegal_move_error)
                 return
-
-            await self.channel_layer.group_send(
-                self.board_tag,
-                {
-                    "type": "update_board",
-                    "board": fen_board,
-                    "user_time": time
-                }
-             )
 
         except AssertionError:
             await self.error(ConfigValues.on_illegal_action_error)

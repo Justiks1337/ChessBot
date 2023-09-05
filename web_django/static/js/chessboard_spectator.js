@@ -2,10 +2,19 @@ function closeModalWindow(modal){
     modal.style = {'visibility': 'hidden'};
 }
 
+function transitionAcceptModal(url){
+    replaceText(document.getElementById('transition_message'), 'Ты уверен что хочешь перейти на страницу ' + url + '?');
+    $('#transition_modal').css({'visibility': 'visible'});
+}
+
+function transitionUser(url){
+    window.location.href = url;
+}
+
 function webSocketConnector(){
     let game_tag = window.location.pathname.split('/').at(-2);
 
-    let connect = new WebSocket('ws://127.0.0.1:8000/websocket/games/' + game_tag);
+    let connect = new WebSocket('ws://192.168.1.60:8000/websocket/games/' + game_tag);
 
     return connect;
 }
@@ -41,15 +50,6 @@ function replaceText(element, text){
     }
 }
 
-function transitionAcceptModal(url){
-    replaceText(document.getElementById('transition_message'), 'Ты уверен что хочешь перейти на страницу ' + url + '?');
-    $('#transition_modal').css({'visibility': 'visible'});
-}
-
-function transitionUser(url){
-    window.location.href = url;
-}
-
 var socket_connection = webSocketConnector();
 
 socket_connection.onmessage = function(event){
@@ -60,6 +60,11 @@ socket_connection.onmessage = function(event){
     case "end_game":
         replaceText(document.getElementById('end_game_message'), response["message"]);
         $("#end_game_modal").css({"visibility": "visible"})
+        break;
+
+    case "update_board":
+        window.c.updateMatrixPosition(response["board"]);
+        window.board_fen = response["board"];
         break;
     }
 }

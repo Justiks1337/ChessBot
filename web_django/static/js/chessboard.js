@@ -35,7 +35,7 @@ function transitionUser(url){
 function webSocketConnector(){
     let game_tag = window.location.pathname.split('/').at(-2);
 
-    let connect = new WebSocket('ws://127.0.0.1:8000/websocket/games/' + game_tag);
+    let connect = new WebSocket('ws://192.168.1.60:8000/websocket/games/' + game_tag);
 
     return connect;
 }
@@ -71,17 +71,24 @@ function updateSecondPlayerTime(second_player_time_var){
 }
 
 function updateDrawOffer(draw_offer_var){
-    var draw_offer = (draw_offer_var == "True");
+    var draw_offer = (draw_offer_var.toLowerCase() == "true");
     window.draw_offer = draw_offer;
 }
 
 function updateColor(color_var){
-    var color = (color_var == "True");
+
+    var color = (color_var.toLowerCase() == "true");
+    var color_word;
+
+    if (color) color_word = "w";
+    else color_word = "b";
+
     window.color = color;
+    window.color_word = color_word
 }
 
 function updateTurn(turn_var){
-    var turn = (turn_var == "True");
+    var turn = (turn_var.toLowerCase() == "true");
     window.turn = turn;
 }
 
@@ -96,12 +103,25 @@ function replaceText(element, text){
 }
 
 function move(start_cell, end_cell){
-    socket_connection.send(JSON.stringify({"type": "move", "start_cell": start_cell, "end_cell": end_cell}));
+
+    socket_connection.send(JSON.stringify({
+    "type": "move", "start_cell": start_cell.getElementsByClassName('squareNotation')[0].innerText,
+    "end_cell": end_cell.getElementsByClassName('squareNotation')[0].innerText}));
 }
 
+function possibles_to_move(piece_type){
+    if (check_turn() && check_color(piece_type)) return true;
+}
+
+function check_turn(){
+    if (window.turn == window.color) return true;
+}
+
+function check_color(piece_type){
+    if (piece_type[0] == window.color_word) return true;
+}
 
 var socket_connection = webSocketConnector();
-
 
 socket_connection.onmessage = function(event){
     let response = $.parseJSON(event.data);
@@ -119,6 +139,7 @@ socket_connection.onmessage = function(event){
     case "illegal_move_error":
         replaceText(document.getElementById('illegal_move_message'), response["message"]);
         $("#illegal_move_modal").css({"visibility": "visible"})
+        window.c.updateMatrixPosition(window.board_fen)
         break;
 
     case "end_game":
@@ -127,13 +148,21 @@ socket_connection.onmessage = function(event){
         break;
 
     case "on_check":
-        $('#on_check_modal').css({"visibility": "visible"})
+        if (response["recipient"] == user_id){
+            $('#on_check_modal').css({"visibility": "visible"})
+        }
+
         break;
 
     case "update_board":
-        // function
+        window.c.updateMatrixPosition(response["board"]);
+        window.board_fen = response["board"];
+        if (window.turn){
+            updateTurn("false");
+        }
+        else {updateTurn("true");
         break;
     }
-
+}
 
 }

@@ -53,17 +53,8 @@ class User:
 	async def move(self, start_cell: str, end_cell: str):
 		"""move in board and flip timer"""
 
-		try:
-			if self.own_object.board.turn != self.color:
-				raise OnSomeoneMoveError()
-
-			board_fen = await self.own_object.move("".join([start_cell, end_cell]))
-			self.timer.flip_the_timer()
-
-			return board_fen, self.timer.time
-
-		except IllegalMoveError:
-			raise IllegalError()
+		await self.own_object.move("".join([start_cell, end_cell]))
+		self.timer.flip_the_timer()
 
 	async def draw(self):
 		self.draw_offer = True

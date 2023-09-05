@@ -28,7 +28,8 @@ SECRET_KEY = ConfigValues.server_authkey
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["127.0.0.1"]
+ALLOWED_HOSTS = ["127.0.0.1",
+                 "192.168.1.60"]
 
 
 # Application definition
@@ -176,3 +177,7 @@ LOGGING = {
         },
     },
 }
+
+
+SESSION_COOKIE_SECURE = False
+SECURE_CROSS_ORIGIN_OPENER_POLICY=None

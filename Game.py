@@ -33,6 +33,16 @@ class Game:
 			else:
 				raise chess.IllegalMoveError()
 
+		await channel_layer.group_send(
+			self.tag,
+			{
+				"type": "update_board",
+				"board": self.board.board_fen(),
+				"first_user_time": self.player_1.timer.time,
+				"second_user_time": self.player_2.timer.time
+			}
+		)
+
 		await self.move_checks()
 
 		return self.board.board_fen()
@@ -41,8 +51,9 @@ class Game:
 		""":raise MateError если есть на доске мат"""
 
 		if self.board.is_checkmate():
-			await self.on_end_game(ConfigValues.on_mate_message.replace('{color}', self.get_winner().color_text))
-			await Game.on_win(self.get_winner())
+			winner = self.get_winner()
+			await self.on_end_game(ConfigValues.on_mate_message.replace('{color}', winner.color_text(winner)))
+			await Game.on_win(winner)
 
 	async def check_stalemate(self):
 		""":raise DrawError если на доске пат"""
@@ -55,7 +66,8 @@ class Game:
 			await channel_layer.group_send(
 				self.tag,
 				{
-					'type': 'on_check'
+					'type': 'on_check',
+					'recipient': self.get_turn_player().user_id
 				}
 			)
 
@@ -137,7 +149,7 @@ class Game:
 		# noinspection PyTypeChecker
 		await Game.on_win(lambda player: self.player_1 if loser == self.player_2 else self.player_2)
 
-		await self.on_end_game(ConfigValues.on_end_time.replace('{color}', loser.color_text))
+		await self.on_end_game(ConfigValues.on_end_time.replace('{color}', loser.color_text(loser.color)))
 
 
 channel_layer = get_channel_layer("default")

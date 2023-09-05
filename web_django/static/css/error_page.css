@@ -15,7 +15,18 @@ h1{
     flex-direction: column;
     height: 100%;
     margin: 0 auto;
-    position: relative;
-    top: 50%;
-    transform: translate(0, -50%);
+}
+
+@media (max-width: 830px){
+    #popup{
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .error_img{
+        max-width: 100%;
+        width: 100%;
+    }
+
+    h1{font-size: 20px;}
 }

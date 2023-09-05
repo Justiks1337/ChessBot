@@ -111,9 +111,9 @@ $.widget("ui.droppable", {
 	_drop: function(event,custom) {
 
 		var draggable = custom || $.ui.ddmanager.current;
-		if (!draggable || (draggable.currentItem || draggable.element)[0] == this.element[0]) return false; // Bail if draggable and droppable are same element
+		if (!draggable || (draggable.currentItem || draggable.element)[0] == this.element[0]) {return false;} // Bail if draggable and droppable are same element
 
-        var end_cell = this.element.find(":data(droppable)").context.getElementsByClassName('squareNotation')[0].innerText
+        var end_cell = this.element.find(":data(droppable)").context.getElementsByClassName('squareNotation')[0].innerText;
 
 		var childrenIntersection = false;
 		this.element.find(":data(droppable)").not(".ui-draggable-dragging").each(function() {
@@ -135,8 +135,7 @@ $.widget("ui.droppable", {
 			return this.element;
 		}
 
-        console.log(window.parent);
-        window.parent.move(start_cell, end_cell);
+
 
 		return false;
 
@@ -236,17 +235,25 @@ $.ui.ddmanager = {
 			if (!this.options.disabled && this.visible && $.ui.intersect(draggable, this, this.options.tolerance))
 				dropped = this._drop.call(this, event) || dropped;
 
+
 			if (!this.options.disabled && this.visible && this.accept.call(this.element[0],(draggable.currentItem || draggable.element))) {
 				this.isout = 1; this.isover = 0;
 				this._deactivate.call(this, event);
 			}
 
 		});
+		if (dropped){
+		    let end_cell = dropped[0];
+		    if (window.start_cell == end_cell){return false;}
+		    move(window.start_cell, end_cell);
+        }
+
 		return dropped;
 
 	},
 	dragStart: function( draggable, event ) {
-	    var start_cell = draggable.element.context.offsetParent.getElementsByClassName('squareNotation')[0].innerText;
+
+	    window.start_cell = draggable.element.context.offsetParent;
 		//Listen for scrolling so that if the dragging causes scrolling the position of the droppables can be recalculated (see #5003)
 		draggable.element.parents( ":not(body,html)" ).bind( "scroll.droppable", function() {
 			if( !draggable.options.refreshPositions ) $.ui.ddmanager.prepareOffsets( draggable, event );

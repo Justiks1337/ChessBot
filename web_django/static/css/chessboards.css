@@ -376,11 +376,20 @@ main .wrap .sec .inner.chess_static{
     user-select: none;
 }
 
+.square:hover{
+    background: #66820369;
+    opacity: 35;
+}
+
+.last_move{
+    background: #9bc70069;
+}
+
 .squareNotation{
     user-select: none;
 }
 
-#chess_frame{
+.inner.chess_inner{
     min-width: var(--main-iframe-size);
     min-height: var(--main-iframe-size);
     overflow: hidden;
@@ -621,6 +630,15 @@ table.iksweb tbody tr{
     }
 }
 
+@media (max-width: 800px){
+    .inner.chess_inner{
+        width: 100% !important;
+        height: 100vw !important;
+        min-height: 100vw !important;
+        min-width: 100vw !important;
+    }
+}
+
 @media (max-width: 1400px){
 
     main .wrap .sec{
@@ -720,4 +738,47 @@ table.iksweb tbody tr{
     .modal nav .nav_btn:last-child{
         margin-bottom: 0;
     }
+
+    .navbar .wrap {
+        padding: 0 20px;
+    }
+    .navsec .wrap.logo a {
+        font-size: 18px;
+    }
 }
+
+body { font-family: Arial, sans-serif; }
+
+            /* board */
+#chessBoard {
+                background: url("/static/images/45.gif") !important;
+                background-size: 25% !important;;
+                background-repeat: repeat !important;
+                overflow: hidden;
+                border:1px solid #D3A36A;
+                width: var(--main-iframe-size);
+                height: var(--main-iframe-size);
+             }
+.squareNotation { padding-left:1px; z-index:1; }
+.square.oddX.evenY .squareNotation,
+.square.evenX.oddY .squareNotation { color:#D3A36A; }
+.square.evenX.evenY .squareNotation,
+.square.oddX.oddY .squareNotation { color:#EDC9A2; }
+
+            /* pieces */
+.draggablePiece { z-index: 2; cursor:pointer;}
+.wp { background: url("/static/images/wp.png") no-repeat; }
+.wr { background: url("/static/images/wr.png") no-repeat; }
+.wn { background: url("/static/images/wn.png") no-repeat; }
+.wb { background: url("/static/images/wb.png") no-repeat; }
+.wk { background: url("/static/images/wk.png") no-repeat; }
+.wq { background: url("/static/images/wq.png") no-repeat; }
+
+.bp { background: url("/static/images/bp.png") no-repeat; }
+.br { background: url("/static/images/br.png") no-repeat; }
+.bn { background: url("/static/images/bn.png") no-repeat; }
+.bb { background: url("/static/images/bb.png") no-repeat; }
+.bk { background: url("/static/images/bk.png") no-repeat; }
+.bq { background: url("/static/images/bq.png") no-repeat; }
+
+.static_file {display: none;}
