@@ -24,9 +24,7 @@ async def game_view(request: HttpRequest, **kwargs):
 		return await game_spectator_mode(request, **kwargs)
 
 	except AssertionError:
-		pass  # Во избежание флуда в консоли
-
-	return render(request, 'chessboards/game.html', {"board_tag": kwargs['tag']})
+		return render(request, 'error_page/index.html', {'error_number': '404'})
 
 
 @sync_to_async()
@@ -43,8 +41,8 @@ def game_player_mode(request: HttpRequest, **kwargs):
 		'second_player_nickname': game.player_2.nickname,
 		'first_player_avatar': game.player_1.avatar_path,
 		'second_player_avatar': game.player_2.avatar_path,
-		'first_player_time': game.player_1.timer.time,
-		'second_player_time': game.player_2.timer.time,
+		'first_player_time': round(game.player_1.timer.time),
+		'second_player_time': round(game.player_2.timer.time),
 		'draw_offer': user.draw_offer,
 		'color': user.color,
 		'turn': game.board.turn})
@@ -62,5 +60,5 @@ def game_spectator_mode(request: HttpRequest, **kwargs):
 		'second_player_nickname': game.player_2.nickname,
 		'first_player_avatar': game.player_1.avatar_path,
 		'second_player_avatar': game.player_2.avatar_path,
-		'first_player_time': game.player_1.timer.time,
-		'second_player_time': game.player_2.timer.time})
+		'first_player_time': round(game.player_1.timer.time),
+		'second_player_time': round(game.player_2.timer.time)})

@@ -1,13 +1,16 @@
+from asyncio import create_task, get_running_loop
+
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.renderers import JSONRenderer
 from adrf.decorators import api_view
 
-from .serializers import (StartGameSerializer,
-                        CheckInGameSerializer,
-                        NewAuthorizeTokenSerializer,
-                        DeleteAuthorizeTokenSerializer,
-                        AuthorizeAttemptSerializer)
+from .serializers import (
+    StartGameSerializer,
+    CheckInGameSerializer,
+    NewAuthorizeTokenSerializer,
+    DeleteAuthorizeTokenSerializer,
+    AuthorizeAttemptSerializer)
 
 from .responses import (StartGameResponse,
                         CheckInGameResponse,
@@ -21,23 +24,8 @@ from Authorization import main_authorization
 from web_django.authorization.core import get_session_key
 from exceptions.DuplicateAuthorizationTokenError import DuplicateAuthorizationTokenError
 from exceptions.UnsuccessfulAuthorization import UnsuccessfulAuthorization
-from web_django.chessboards.games_management import game_start
 from core import get
 from Game import games
-
-# Create your views here.
-
-
-@api_view(['POST'])
-@authorization
-async def start_game(request: Request):
-
-    first_user_id = request.query_params.get('first_user_id')
-    second_user_id = request.query_params.get('second_user_id')
-
-    token = await game_start(first_user_id, second_user_id)
-
-    return Response(StartGameSerializer(StartGameResponse(token)).data)
 
 
 @api_view(['POST'])

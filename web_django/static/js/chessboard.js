@@ -10,7 +10,6 @@ function showDrawOfferModal(){
     socket_connection.send(JSON.stringify({"type": "draw_offer"}));
     $('#draw_offer_create_modal').css({"visibility": 'visible'});
     draw_offer = true;
-    console.log(draw_offer);
 }
 
 function giveUp(){
@@ -61,13 +60,21 @@ function updateBoardFEN(board_fen_var){
 }
 
 function updateFirstPlayerTime(first_player_time_var){
+
+    console.log(first_player_time_var);
+
     var first_player_time = first_player_time_var;
     window.first_player_time = first_player_time;
+    updateTimer(first_player_time, "first_player_time");
 }
 
 function updateSecondPlayerTime(second_player_time_var){
+
+    console.log(second_player_time_var);
+
     var second_player_time = second_player_time_var;
     window.second_player_time = second_player_time;
+    updateTimer(second_player_time, "second_player_time");
 }
 
 function updateDrawOffer(draw_offer_var){
@@ -93,6 +100,7 @@ function updateTurn(turn_var){
 }
 
 function replaceText(element, text){
+
     if (element.innerText) {
         element.innerText = text;
     }
@@ -100,6 +108,23 @@ function replaceText(element, text){
     else if (element.textContent) {
         element.textContent = text;
     }
+}
+
+function updateTimer(time, player){
+
+    watch = Math.floor(time / 60) + ":" + (time % 60);
+
+    replaceText($('#' + player)[0].children[0], watch);
+
+}
+
+function UpdateTimerFunction(){
+    if (window.turn){
+        updateFirstPlayerTime(window.first_player_time - 1);
+        return;
+    }
+    updateSecondPlayerTime(window.second_player_time - 1);
+
 }
 
 function move(start_cell, end_cell){
@@ -122,6 +147,13 @@ function check_color(piece_type){
 }
 
 var socket_connection = webSocketConnector();
+setInterval(function () {
+    if (window.turn){
+        updateFirstPlayerTime(window.first_player_time - 1);
+        return;
+    }
+        updateSecondPlayerTime(window.second_player_time - 1);
+}, 1000);
 
 socket_connection.onmessage = function(event){
     let response = $.parseJSON(event.data);
@@ -160,9 +192,11 @@ socket_connection.onmessage = function(event){
         if (window.turn){
             updateTurn("false");
         }
-        else {updateTurn("true");
+        else {updateTurn("true");}
+
+        updateFirstPlayerTime(response["first_user_time"]);
+        updateSecondPlayerTime(response["second_user_time"]);
         break;
-    }
 }
 
 }

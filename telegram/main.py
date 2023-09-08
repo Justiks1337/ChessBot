@@ -1,8 +1,11 @@
+from asyncio import create_task, get_event_loop
+
 from aiogram.types import Message
-from aiogram import Bot, Dispatcher, executor
+from aiogram import Dispatcher, executor
 from aiogram.dispatcher.filters import Command
 
 from config.ConfigValues import ConfigValues
+from Bot import Bot
 from telegram_log.log import log
 from telegram_authorize import new_token
 from telegram_admin import remove_from_blacklist, add_on_blacklist
@@ -16,8 +19,8 @@ from telegram_help import send_manual
 log.info('bot successful started!')
 
 
-bot = Bot(token=ConfigValues.telegram_token)
-dp = Dispatcher(bot)
+bot: Bot = Bot(token=ConfigValues.telegram_token)
+dp = Dispatcher(bot, loop=get_event_loop())
 
 
 @dp.message_handler(Command('start'))
@@ -83,4 +86,5 @@ async def add_on_blacklist_handler(message: Message):
 	await remove_from_blacklist(bot, message)
 
 
+dp.loop.create_task(bot.websocket_connection.connect())
 executor.start_polling(dp, skip_updates=True)

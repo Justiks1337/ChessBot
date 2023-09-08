@@ -20,7 +20,11 @@ async def queue_join(bot: Bot, message: Message):
 async def queue_leave(bot: Bot, message: Message):
 	"""Удаляет пользователя из очереди"""
 
-	main_queue.leave_from_queue(message.from_id)
+	try:
+		main_queue.leave_from_queue(message.from_id)
+	except KeyError:
+		await bot.send_message(message.chat.id, ConfigValues.if_not_in_queue)
+		return
 
 	await bot.send_message(message.chat.id, ConfigValues.on_queue_leave_message)
 

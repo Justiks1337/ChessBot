@@ -28,6 +28,7 @@ class ConfigValues:
 	on_queue_join_message = __config_file.get('Messages', 'on_queue_join_message').replace('\\n', '\n')
 	on_queue_leave_message = __config_file.get('Messages', 'on_queue_leave_message').replace('\\n', '\n')
 	if_in_queue = __config_file.get('Messages', 'if_in_queue').replace('\\n', '\n')
+	if_not_in_queue = __config_file.get('Messages', 'if_not_in_queue').replace('\\n', '\n')
 	if_games_not_enough = __config_file.get('Messages', 'if_games_not_enough').replace('\\n', '\n')
 	in_game_error = __config_file.get('Messages', 'in_game_error').replace('\\n', '\n')
 	profile_message = __config_file.get('Messages', 'profile_message').replace('\\n', '\n')
@@ -65,6 +66,7 @@ class ConfigValues:
 	# Web
 
 	url_to_playground = __config_file.get('Web', 'url_to_playground').replace('\\n', '\n')
+	bot_websocket = __config_file.get('Web', 'bot_websocket').replace('\\n', '\n')
 	server_ip = __config_file.get('Web', 'server_ip').replace('\\n', '\n')
 	server_port = int(__config_file.get('Web', 'server_port'))
 	server_authkey = __config_file.get('Web', 'server_authkey')

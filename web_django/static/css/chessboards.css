@@ -438,13 +438,13 @@ table.iksweb td,table.iksweb th {
 	padding: 3px;
 	width: 30px;
 	height: 35px;
-    align-items: center;
-    font-family: 'Inter';
-    font-size: 20px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-    text-transform: uppercase;
+	align-items: center;
+	font-family: 'Inter';
+	font-size: 20px;
+	font-style: normal;
+	font-weight: 500;
+	line-height: normal;
+	text-transform: uppercase;
 }
 table.iksweb th {
 	background: #347c99; 
@@ -488,16 +488,15 @@ td#player_avatar_wrap{
     justify-content: center;
     align-items: center;
 }
-
-#player_time{
-    font-family: 'Placid Armor';
-    font-size: 32px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 40px; /* 125% */
-    letter-spacing: -0.8px;
-    text-transform: uppercase;
-    width: 100%;
+td.player_time{
+    font-family: 'Placid Armor' !important;
+    font-size: 32px !IMPORTANT;
+    font-style: normal !important;
+    font-weight: 500 !IMPORTANT;
+    line-height: 40px !important; /* 125% */
+    letter-spacing: -0.8px !important;
+    text-transform !important: uppercase;
+    width: 100% !IMPORTANT;
 }
 
 #player_avatar{

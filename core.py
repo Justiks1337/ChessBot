@@ -40,5 +40,4 @@ def get(from_list: list, path: str, **kwargs):
 		except AttributeError:
 			for i in obj:
 				if i.__dict__[value_name] == kwargs[value_name]:
-					print(i.__dict__)
 					return i

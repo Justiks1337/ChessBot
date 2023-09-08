@@ -12,7 +12,8 @@ import os
 from django.core.asgi import get_asgi_application
 from whitenoise import WhiteNoise
 
-from web_django.chessboards.routing import websocket_urlpatterns
+from web_django.chessboards.routing import websocket_urlpatterns as chessboards_websocket_url_patterns
+from web_django.api.routing import websocket_urlpatterns as api_websocket_url_patterns
 from channels.routing import ProtocolTypeRouter, URLRouter
 from web_django.django_log.log import log
 from web_django.web_django.wsgi import application as wsgi_app
@@ -27,7 +28,7 @@ asgi_application = get_asgi_application()
 
 application = ProtocolTypeRouter({
             "http": asgi_application,
-            "websocket": URLRouter(websocket_urlpatterns)
+            "websocket": URLRouter(chessboards_websocket_url_patterns + api_websocket_url_patterns)
                        })
 
 

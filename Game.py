@@ -33,12 +33,15 @@ class Game:
 			else:
 				raise chess.IllegalMoveError()
 
+		print(self.player_1.timer.flip_the_timer())
+		print(self.player_2.timer.flip_the_timer())
+
 		await channel_layer.group_send(
 			self.tag,
 			{
 				"type": "update_board",
 				"board": self.board.board_fen(),
-				"first_user_time": self.player_1.timer.time,
+				"first_user_time": 	self.player_1.timer.time,
 				"second_user_time": self.player_2.timer.time
 			}
 		)
@@ -89,13 +92,13 @@ class Game:
 	async def start_timers_game(self):
 		"""actions before start game"""
 
-		tasks = []
+		task_list = [
+			create_task(self.player_1.fill_attributes()),
+			create_task(self.player_2.fill_attributes()),
+			create_task(self.player_1.start_timer()),
+			create_task(self.player_2.start_timer())]
 
-		for user in self.players:
-			tasks.append(create_task(user.fill_attributes()))
-			tasks.append(create_task(user.start_timer()))
-
-		for task in tasks:
+		for task in task_list:
 			await task
 
 	async def on_end_game(self, message):
@@ -110,8 +113,6 @@ class Game:
 				'type': "end_game_event",
 				'message': message
 			})
-
-		del channel_layer.groups[self.tag]
 
 		await self.player_1.remove_games()
 		await self.player_2.remove_games()
@@ -147,7 +148,7 @@ class Game:
 	async def on_end_timer(self, loser: User):
 
 		# noinspection PyTypeChecker
-		await Game.on_win(lambda player: self.player_1 if loser == self.player_2 else self.player_2)
+		await Game.on_win((lambda player: self.player_1 if player == self.player_2 else self.player_2)(loser))
 
 		await self.on_end_game(ConfigValues.on_end_time.replace('{color}', loser.color_text(loser.color)))
 

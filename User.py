@@ -1,9 +1,8 @@
+from typing import Optional
+from os.path import exists
+
 from database_tools.Connection import connect
 from Timer import Timer
-from typing import Optional
-from chess import IllegalMoveError
-from exceptions.OnSomeoneMoveError import OnSomeoneMoveError
-from exceptions.IllegalMoveError import IllegalMoveError as IllegalError
 
 
 class User:
@@ -12,7 +11,7 @@ class User:
 	def __init__(self, user_id: int, color: bool, own_object):
 		self.user_id: int = user_id
 		self.color: bool = color
-		self.timer: Timer = Timer(self)
+		self.timer: Timer = Timer(self, color)
 		self.color_text = lambda x: "бел" if x else "чёрн"
 		self.draw_offer = False
 		self.own_object = own_object
@@ -41,20 +40,16 @@ class User:
 		self.username = info[3]
 		self.session_id = info[4]
 
-		try:
-			open(f"web_django/static/avatars/{self.user_id}.png")
-
+		if exists(f"web_django/static/avatars/{self.user_id}.png"):
 			self.avatar_path = f"avatars/{self.user_id}.png"
+			return
 
-		except FileNotFoundError:
-
-			self.avatar_path = "avatars/unknown_user.png"
+		self.avatar_path = "avatars/unknown_user.png"
 
 	async def move(self, start_cell: str, end_cell: str):
 		"""move in board and flip timer"""
 
 		await self.own_object.move("".join([start_cell, end_cell]))
-		self.timer.flip_the_timer()
 
 	async def draw(self):
 		self.draw_offer = True

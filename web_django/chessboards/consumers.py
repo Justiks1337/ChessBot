@@ -52,8 +52,8 @@ class UserWebsocket(AsyncJsonWebsocketConsumer):
         await self.send_json({
             "event": "update_board",
             "board": event["board"],
-            "first_user_time": event["first_user_time"],
-            "second_user_time": event["second_user_time"]})
+            "first_user_time": round(event["first_user_time"]),
+            "second_user_time": round(event["second_user_time"])})
 
     async def illegal_move_error(self, message):
         await self.send_json({"event": "illegal_move_error", "message": message})
