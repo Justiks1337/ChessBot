@@ -1,2 +1,0 @@
-class DuplicateAuthorizationTokenError(Exception):
-    pass

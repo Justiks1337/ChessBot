@@ -1,17 +1,19 @@
 from aiogram.types import Message
-from aiogram import Bot
-from database_tools.Connection import connect
-from telegram_core import in_blacklist, recharge
+from aiogram.dispatcher.filters import Command
+from aiogram.types.reply_keyboard import KeyboardButton, ReplyKeyboardMarkup
+
+from decorators import in_blacklist, recharge, only_in_dm
 from config.ConfigValues import ConfigValues
+from telegram import dp
 
 
+@dp.message_handler(Command('start'))
 @recharge
+@only_in_dm
 @in_blacklist
-async def start(bot: Bot, message: Message):
+async def start(message: Message):
 	"""send start message"""
 
-	if await (await connect.request("SELECT user_id FROM users WHERE user_id = ?", (message.from_id, ))).fetchone():
-		await bot.send_message(message.chat.id, ConfigValues.game_instructions)
-		return
-
-	await bot.send_message(message.chat.id, ConfigValues.authorization_instructions)
+	await message.reply(
+		ConfigValues.authorization_instructions,
+		reply_markup=ReplyKeyboardMarkup(resize_keyboard=True).add(KeyboardButton('/authorization 🔑')))

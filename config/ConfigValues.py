@@ -10,7 +10,7 @@ class ConfigValues:
 
 	# database section
 	db_name = __config_file.get('database', 'db_name')
-	transactions_to_backup = __config_file.get('database', 'transactions_to_backup')
+	transactions_to_backup = int(__config_file.get('database', 'transactions_to_backup'))
 
 	# Yadisk section
 	yadisk_jwt = __config_file.get('Yadisk', 'yadisk_jwt')
@@ -27,6 +27,7 @@ class ConfigValues:
 	manual = __config_file.get('Messages', 'manual').replace('\\n', '\n')
 	on_queue_join_message = __config_file.get('Messages', 'on_queue_join_message').replace('\\n', '\n')
 	on_queue_leave_message = __config_file.get('Messages', 'on_queue_leave_message').replace('\\n', '\n')
+	only_in_dm_message = __config_file.get('Messages', 'only_in_dm_message').replace('\\n', '\n')
 	if_in_queue = __config_file.get('Messages', 'if_in_queue').replace('\\n', '\n')
 	if_not_in_queue = __config_file.get('Messages', 'if_not_in_queue').replace('\\n', '\n')
 	if_games_not_enough = __config_file.get('Messages', 'if_games_not_enough').replace('\\n', '\n')
@@ -65,8 +66,12 @@ class ConfigValues:
 
 	# Web
 
+	path_to_avatars = __config_file.get('Web', 'path_to_avatars')
 	url_to_playground = __config_file.get('Web', 'url_to_playground').replace('\\n', '\n')
 	bot_websocket = __config_file.get('Web', 'bot_websocket').replace('\\n', '\n')
 	server_ip = __config_file.get('Web', 'server_ip').replace('\\n', '\n')
+	proxy_ip = __config_file.get('Web', 'proxy_ip').replace('\\n', '\n')
 	server_port = int(__config_file.get('Web', 'server_port'))
+	http_protocol = __config_file.get('Web', 'http_protocol')
+	websocket_protocol = __config_file.get('Web', 'websocket_protocol')
 	server_authkey = __config_file.get('Web', 'server_authkey')

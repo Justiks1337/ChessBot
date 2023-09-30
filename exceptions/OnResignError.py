@@ -1,2 +1,0 @@
-class OnResignError(Exception):
-	pass

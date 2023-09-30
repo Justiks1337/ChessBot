@@ -1,4 +1,5 @@
-from asyncio import create_task, get_running_loop
+from asyncio import get_running_loop
+from time import time
 
 from rest_framework.response import Response
 from rest_framework.request import Request
@@ -12,20 +13,33 @@ from .serializers import (
     DeleteAuthorizeTokenSerializer,
     AuthorizeAttemptSerializer)
 
-from .responses import (StartGameResponse,
-                        CheckInGameResponse,
-                        NewAuthorizeTokenResponse,
-                        DeleteAuthorizeTokenResponse,
-                        AuthorizeAttemptResponse)
+from .responses import (
+    StartGameResponse,
+    CheckInGameResponse,
+    NewAuthorizeTokenResponse,
+    DeleteAuthorizeTokenResponse,
+    AuthorizeAttemptResponse)
 
 from database_tools.Connection import connect
 from .authorization import authorization
 from Authorization import main_authorization
-from web_django.authorization.core import get_session_key
-from exceptions.DuplicateAuthorizationTokenError import DuplicateAuthorizationTokenError
-from exceptions.UnsuccessfulAuthorization import UnsuccessfulAuthorization
+from web_django.authorization.core import get_session_key, get_ip
 from core import get
-from Game import games
+from Game import games, Game
+
+
+@api_view(['POST'])
+@authorization
+async def start_game(request: Request):
+
+    first_user_id = request.query_params.get('first_user_id')
+    second_user_id = request.query_params.get('second_user_id')
+
+    game = Game((first_user_id, second_user_id))
+
+    get_running_loop().create_task(game.start_timers_game())
+
+    return Response(StartGameSerializer(StartGameResponse(game.tag)).data)
 
 
 @api_view(['POST'])
@@ -34,7 +48,7 @@ async def check_in_game(request: Request):
 
     user_id = request.query_params.get('user_id')
 
-    user = get(games, 'players', user_id=user_id)
+    user = await get(games, 'players', _user_id=user_id)
 
     if user:
         return Response(CheckInGameSerializer(CheckInGameResponse(True)).data)
@@ -45,23 +59,19 @@ async def check_in_game(request: Request):
 @api_view(['POST'])
 @authorization
 async def new_authorize_token(request: Request):
-
     user_id = request.query_params.get("user_id")
 
-    try:
+    token = main_authorization.new_token(user_id)
 
-        token = main_authorization.new_token(user_id)
-
+    if token:
         return Response(NewAuthorizeTokenSerializer(NewAuthorizeTokenResponse(True, token)).data)
 
-    except DuplicateAuthorizationTokenError:
-        return Response(NewAuthorizeTokenSerializer(NewAuthorizeTokenResponse(False, '')).data)
+    return Response(NewAuthorizeTokenSerializer(NewAuthorizeTokenResponse(False, '')).data)
 
 
 @authorization
 @api_view(['POST'])
 async def delete_authorize_token(request: Request):
-
     user_id = request.query_params.get('user_id')
     try:
         main_authorization.remove_token(user_id)
@@ -73,18 +83,42 @@ async def delete_authorize_token(request: Request):
 
 @api_view(['POST'])
 async def authorization_attempt(request: Request):
-
     token = request.query_params.get('token')
+    ip = await get_ip(request)
 
-    try:
+    user_id = await main_authorization.authorization(token)
 
-        user_id = await main_authorization.authorization(token)
-
+    if user_id:
         session_key = await get_session_key(request)
 
-        await connect.request("UPDATE users SET session_id = ? WHERE user_id = ?", (session_key, user_id))
+        await connect.request("UPDATE users SET session_id = ?, ip_address = ? WHERE user_id = ?", (
+            session_key,
+            ip[0],
+            user_id))
+
+        user = await get(games, 'players', _user_id=user_id)
+
+        if user:
+            user.session_id = session_key
 
         return Response(JSONRenderer().render(AuthorizeAttemptSerializer(AuthorizeAttemptResponse(True)).data))
 
-    except UnsuccessfulAuthorization:
-        return Response(JSONRenderer().render(AuthorizeAttemptSerializer(AuthorizeAttemptResponse(False)).data))
+    return Response(JSONRenderer().render(AuthorizeAttemptSerializer(AuthorizeAttemptResponse(False)).data))
+
+
+@api_view(['POST'])
+async def check_timer(request: Request):
+
+    game_tag = request.query_params.get("tag")
+
+    game: Game = await get(games, '', tag=game_tag)
+
+    if not game:
+        return Response({"status": 200})
+
+    player = game.get_turn_player()
+
+    if time() - player.timer.last_flip > player.timer.time:
+        await game.on_end_timer(player)
+
+    return Response({'status': 200})

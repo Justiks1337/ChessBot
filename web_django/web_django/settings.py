@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 
 from config.ConfigValues import ConfigValues
-import mimetypes
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,7 +28,10 @@ SECRET_KEY = ConfigValues.server_authkey
 DEBUG = False
 
 ALLOWED_HOSTS = ["127.0.0.1",
-                 "192.168.1.60"]
+                 "192.168.1.60",
+                 "45.142.122.143",
+                 "chess.kazoe.ru",
+                 "chess-kb.ru"]
 
 
 # Application definition
@@ -41,25 +43,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.db.models',
     'django.contrib.messages',
+    'daphne',
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
     'adrf',
     'channels',
-    'daphne',
-    'whitenoise'
-
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware'
 ]
 
@@ -94,7 +92,7 @@ TEMPLATES = [
     },
 ]
 
-ASGI_APPLICATION = 'web_django.asgi.application'
+ASGI_APPLICATION = 'web_django.web_django.asgi.application'
 
 
 # Database
@@ -180,4 +178,5 @@ LOGGING = {
 
 
 SESSION_COOKIE_SECURE = False
-SECURE_CROSS_ORIGIN_OPENER_POLICY=None
+SECURE_CROSS_ORIGIN_OPENER_POLICY = None
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

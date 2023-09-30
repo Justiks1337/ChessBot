@@ -1,3 +1,0 @@
-class OnSomeoneMoveError(Exception):
-	pass
-			

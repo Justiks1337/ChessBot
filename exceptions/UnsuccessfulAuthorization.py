@@ -1,2 +1,0 @@
-class UnsuccessfulAuthorization(Exception):
-    pass

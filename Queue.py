@@ -5,16 +5,15 @@ from aiohttp import ClientSession
 
 from config.ConfigValues import ConfigValues
 from database_tools.Connection import connect
-from OrderedSet import OrderedSet
-from Bot import Bot
+from telegram.decorators import send_message
 
 
 class Queue(PyQueue):
-	"""Класс - очередь (единственный экземпляр создаётся в main.py"""
+	"""Класс - очередь (единственный экземпляр создаётся в __init__.py"""
 
 	# rewriting implementation
 	def _init(self, maxsize):
-		self.queue: OrderedSet = OrderedSet()
+		self.queue: set = set()
 
 	def _put(self, item):
 		self.queue.add(item)
@@ -22,43 +21,63 @@ class Queue(PyQueue):
 	def _get(self):
 		return self.queue.pop()
 
-	async def add_new_user(self, bot: Bot, user_id: int):
+	async def add_new_user(self, user_id: int):
 		"""Добавляет нового игрока в очередь"""
 
 		try:
 			await self.checks(user_id)
 		except AssertionError as error:
-			await bot.send_message(user_id, error.args[0])
+			await send_message(user_id, error.args[0])
 			return
 
-		try:
-			self.put(user_id)
-		except KeyError:
-			await bot.send_message(user_id, ConfigValues.if_in_queue)
-			return
+		self.put(user_id)
 
-		await create_task(bot.send_message(user_id, ConfigValues.on_queue_join_message))
-		await create_task(self.on_new_user(bot))
+		send_task = create_task(send_message(user_id, ConfigValues.on_queue_join_message))
+		new_user_task = create_task(self.on_new_user())
 
-	async def start_game(self, bot: Bot):
+		await new_user_task
+		await send_task
+
+	def leave_from_queue(self, user_id: int):
+		"""Удаляет участника из очереди"""
+
+		self.queue.remove(user_id)
+
+	async def on_new_user(self):
+		"""Хандлер срабатывающий при попадании нового пользователя в очередь"""
+		if self.full():
+			await self.start_game()
+
+	async def start_game(self):
 		"""Начало игры"""
 
 		users = [self.get(), self.get()]
 
-		await bot.websocket_connection.send({
-			"event": "start_game",
-			"first_user_id": users[0],
-			"second_user_id": users[1]})
+		async with ClientSession() as session:
+			async with session.post(
+					f"http://{ConfigValues.server_ip}:{ConfigValues.server_port}/api/v1/start_game",
+					params={
+						"first_user_id": users[0],
+						"second_user_id": users[1]},
+					headers={
+						"content-type": "application/json",
+						"Authorization": ConfigValues.server_authkey}) as response:
 
-	async def on_new_user(self, bot: Bot):
-		"""Хандлер срабатывающий при попадании нового пользователя в очередь"""
+				json = await response.json()
 
-		if self.full():
-			await create_task(self.start_game(bot))
+				url = f"{ConfigValues.http_protocol}://{ConfigValues.proxy_ip}\
+{ConfigValues.url_to_playground.replace('{rout}', json['uuid'])}"
+
+				for user_id in users:
+					await send_message(user_id, ConfigValues.on_find_enemy.replace('{url}', url))
 
 	async def checks(self, user_id):
+		self.check_in_queue(user_id)
 		await Queue.check_games_amount(user_id)
 		await Queue.check_in_game(user_id)
+
+	def check_in_queue(self, user_id):
+		assert user_id not in self.queue, ConfigValues.if_in_queue
 
 	@staticmethod
 	async def check_games_amount(user_id):
@@ -78,13 +97,7 @@ class Queue(PyQueue):
 						"Authorization": ConfigValues.server_authkey}) as response:
 
 				json = await response.json()
-
 				assert not json['in_game'], ConfigValues.in_game_error
-
-	def leave_from_queue(self, user_id: int):
-		"""Удаляет участника из очереди"""
-
-		del self.queue.map[user_id]
 
 
 main_queue = Queue(maxsize=2)

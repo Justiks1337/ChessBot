@@ -1,7 +1,5 @@
 from uuid import uuid4
 
-from exceptions.UnsuccessfulAuthorization import UnsuccessfulAuthorization
-from exceptions.DuplicateAuthorizationTokenError import DuplicateAuthorizationTokenError
 from web_django.authorization.core import fill_data
 
 
@@ -12,7 +10,7 @@ class Authorization:
     def new_token(self, user_id: int):
 
         if user_id in list(self.authorization_tokens.keys()):
-            raise DuplicateAuthorizationTokenError()
+            return None
 
         token = str(uuid4())
 
@@ -30,15 +28,12 @@ class Authorization:
                 await self.successful_authorization(user_id)
                 return user_id
 
-        self.unsuccessful_authorization()
+        return None
 
     async def successful_authorization(self, user_id: int):
         self.remove_token(user_id)
 
         return await fill_data(user_id)
-
-    def unsuccessful_authorization(self):
-        raise UnsuccessfulAuthorization()
 
 
 main_authorization = Authorization()

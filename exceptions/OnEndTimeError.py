@@ -1,2 +1,0 @@
-class OnEndTimeError(Exception):
-	pass

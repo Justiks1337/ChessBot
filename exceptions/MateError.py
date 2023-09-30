@@ -1,2 +1,0 @@
-class MateError(Exception):
-	pass

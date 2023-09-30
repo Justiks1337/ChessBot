@@ -1,2 +1,0 @@
-class DrawError(Exception):
-	pass

@@ -18,8 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from web_django.error_page.views import handler500
-
+from web_django.error_page.views import handler404
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,5 +27,4 @@ urlpatterns = [
     path('authorization/', include('web_django.authorization.urls'))
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
-
-handler404 = handler500
+handler404 = handler404

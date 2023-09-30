@@ -1,6 +1,8 @@
-from config.ConfigValues import ConfigValues
-from asyncio import Event, wait_for, TimeoutError
+from typing import Optional
 from time import time as _time
+import asyncio
+
+from config.ConfigValues import ConfigValues
 
 
 class Timer:
@@ -9,52 +11,63 @@ class Timer:
 	def __init__(
 			self,
 			own_object,
-			active_timer: bool,
 			time: int = ConfigValues.game_time,
 	):
-		self.__event = Event()
+		self.__event = asyncio.Event()
 
-		self.last_flip = _time()
-		self.active_timer = active_timer
+		self.last_flip = None
 		self.own_object = own_object
-		self.time = time
+		self._time = time
+
+	@property
+	def time(self):
+		return round(self._time)
 
 	async def __wait_move(self):
 		"""wait move"""
+
 		self.last_flip = _time()
 
-		await self.__event.wait()
+		waiter_task = asyncio.get_running_loop().create_task(self.__event.wait())
+		await waiter_task
 
 		self.__event.clear()
 
 	async def start_timer(self):
 		"""Start the timer"""
-		while self.time > 0:
 
-			if not self.active_timer:
-				await self.__event.wait()
-				self.__event.clear()
-				self.active_timer = True
+		loop = asyncio.get_running_loop()
 
-			try:
-				await wait_for(self.__wait_move(), timeout=self.time)
-			except TimeoutError:
-				await self.own_object.own_object.on_end_timer(self.own_object)
+		try:
+			await Timer.wait_for(self.__wait_move(), timeout=self._time, loop=loop)
+		except asyncio.TimeoutError:
+
+			loop.create_task(self.own_object.own_object.on_end_timer(self.own_object))
+			return
+
+	def update_timer(self):
+
+		if not self.last_flip:
+			self.last_flip = _time()
+
+		self._time = self._time - (_time() - self.last_flip)
+		self.last_flip = _time()
 
 	def flip_the_timer(self):
 		"""Меняет положение таймера (активный/деактивный)"""
 
 		self.__event.set()
 
-		if self.active_timer:
-			self.time = self.time - (_time() - self.last_flip)
-			self.active_timer = False
+		self.update_timer()
 
-		return self.time
+		return self._time
 
-	def stop_the_timer(self):
-		"""Stop the timer"""
+	@staticmethod
+	async def wait_for(task, timeout=0, loop: Optional[asyncio.AbstractEventLoop] = None):
 
-		self.time = 0  # timer loop has condition self.time > 0. I'm killing timer loop by changing the condition
-		self.flip_the_timer()  # back to loop start and kill timer loop
-		self.flip_the_timer()  # if timer in activity position
+		task = loop.create_task(task)
+
+		await asyncio.sleep(timeout)
+
+		if not task.done():
+			raise asyncio.TimeoutError()

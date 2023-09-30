@@ -1,14 +1,15 @@
 from aiogram.types import Message
-from aiogram import Bot
-from database_tools.Connection import connect
-from telegram_core import in_blacklist, recharge
-from config.ConfigValues import ConfigValues
 from aiogram.utils.exceptions import ChatNotFound
+from aiogram.dispatcher.filters import Command
+
+from database_tools.Connection import connect
+from config.ConfigValues import ConfigValues
+from decorators import command_handler, send_message
+from telegram import bot
 
 
-@recharge
-@in_blacklist
-async def get_top(bot: Bot, message: Message):
+@command_handler(Command(['dashboard', 'top']))
+async def get_top(message: Message):
 	"""send message with dashboard"""
 
 	amount = message.get_args()
@@ -25,7 +26,7 @@ async def get_top(bot: Bot, message: Message):
 		int(amount)
 
 	except ValueError:
-		await bot.send_message(message.chat.id, ConfigValues.on_invalid_args)
+		await send_message(message.chat.id, ConfigValues.on_invalid_args)
 
 	msg: str = ConfigValues.dashboard_title.replace('{amount}', str(amount))
 
@@ -52,4 +53,4 @@ async def get_top(bot: Bot, message: Message):
 		except ChatNotFound:
 			continue
 
-	await bot.send_message(message.chat.id, msg)
+	await send_message(message.chat.id, msg)

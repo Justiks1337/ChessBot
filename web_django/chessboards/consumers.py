@@ -64,8 +64,12 @@ class UserWebsocket(AsyncJsonWebsocketConsumer):
     async def move(self, start_cell: str, end_cell: str):
         try:
 
-            board: Game = get(games, '', tag=self.board_tag)
-            user_object = get(games, 'players', session_id=self.sessionid)
+            board: Game = await get(games, '', tag=self.board_tag)
+            user_object = await get(games, 'players', session_id=self.sessionid)
+
+            print(self.sessionid)
+            print(games)
+            print(user_object)
 
             assert user_object
             assert board.board.turn is user_object.color
@@ -83,7 +87,7 @@ class UserWebsocket(AsyncJsonWebsocketConsumer):
 
         try:
 
-            user_object = get(games, 'players', session_id=self.sessionid)
+            user_object = await get(games, 'players', session_id=self.sessionid)
 
             assert user_object
 
@@ -95,7 +99,7 @@ class UserWebsocket(AsyncJsonWebsocketConsumer):
     async def give_up(self):
         try:
 
-            user_object = get(games, 'players', session_id=self.sessionid)
+            user_object = await get(games, 'players', session_id=self.sessionid)
 
             assert user_object
 

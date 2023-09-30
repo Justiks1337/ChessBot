@@ -12,7 +12,7 @@ function check_token(){
         $.ajax(
         {
         type: 'POST',
-        url: `http://192.168.1.60:8000/api/v1/authorize?token=${token}`,
+        url: `http://chess-kb.ru/api/v1/authorize?token=${token}`,
         success: function(data){
             var response = $.parseJSON(data);
 

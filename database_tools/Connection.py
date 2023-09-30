@@ -1,6 +1,6 @@
 import sqlite3
 import aiosqlite
-from asyncio import get_event_loop, set_event_loop
+from asyncio import get_event_loop
 from config.ConfigValues import ConfigValues
 from database_tools.backup_tools import backup
 from database_tools.database_log.log import log
@@ -49,7 +49,8 @@ class Connection:
 		await self.connection.commit()
 		await self.__on_request(sql_request)
 
-		log.debug(f'request to {ConfigValues.db_name}. sql_request: {sql_request}, values: {values}')
+		log.debug(
+			f'request to {ConfigValues.db_name}. sql_request: {sql_request}, values: {values}, transaction: {self.__transactions}')
 
 		return statement
 

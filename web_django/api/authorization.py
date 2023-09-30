@@ -13,5 +13,6 @@ def authorization(func):
             return Response({'Неверный ключ авторизации!'})
 
         except KeyError:
+
             return Response({'Неверный ключ авторизации!'})
     return wrapper

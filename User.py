@@ -1,6 +1,8 @@
 from typing import Optional
-from os.path import exists
+import glob
 
+from UserId import UserId
+from config.ConfigValues import ConfigValues
 from database_tools.Connection import connect
 from Timer import Timer
 
@@ -9,10 +11,10 @@ class User:
 	"""User class"""
 
 	def __init__(self, user_id: int, color: bool, own_object):
-		self.user_id: int = user_id
+		self._user_id: UserId = UserId(user_id)
 		self.color: bool = color
-		self.timer: Timer = Timer(self, color)
-		self.color_text = lambda x: "бел" if x else "чёрн"
+		self.timer: Timer = Timer(self)
+		self.color_text = (lambda x: "бел" if x else "чёрн")(self.color)
 		self.draw_offer = False
 		self.own_object = own_object
 
@@ -25,6 +27,10 @@ class User:
 		self.avatar_path: Optional[str] = None
 
 		self.own_object.players.append(self)
+
+	@property
+	def user_id(self):
+		return self._user_id.user_id
 
 	async def fill_attributes(self):
 		"""fill attributes from database"""
@@ -40,8 +46,10 @@ class User:
 		self.username = info[3]
 		self.session_id = info[4]
 
-		if exists(f"web_django/static/avatars/{self.user_id}.png"):
-			self.avatar_path = f"avatars/{self.user_id}.png"
+		file_name = glob.glob(f"{ConfigValues.path_to_avatars}{self.user_id}.*")
+
+		if len(file_name):
+			self.avatar_path = file_name[0][file_name[0].index('avatars/'):]
 			return
 
 		self.avatar_path = "avatars/unknown_user.png"
@@ -49,6 +57,7 @@ class User:
 	async def move(self, start_cell: str, end_cell: str):
 		"""move in board and flip timer"""
 
+		self.timer.flip_the_timer()
 		await self.own_object.move("".join([start_cell, end_cell]))
 
 	async def draw(self):
@@ -62,11 +71,6 @@ class User:
 		"""return timer to activity"""
 
 		self.timer.flip_the_timer()
-
-	def stop_timer(self):
-		"""kill timer (fatal stop)"""
-
-		self.timer.stop_the_timer()
 
 	async def start_timer(self):
 		"""timer starter"""

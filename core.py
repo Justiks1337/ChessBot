@@ -1,3 +1,7 @@
+from asgiref.sync import sync_to_async
+
+
+@sync_to_async()
 def get(from_list: list, path: str, **kwargs):
 	"""The method allows you to get an object according to the condition set using **kwargs and path
 

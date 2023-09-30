@@ -1,37 +1,34 @@
-from aiogram import Bot
 from aiogram.types import Message
+from aiogram.dispatcher.filters import Command
+
 from Queue import main_queue
 from config.ConfigValues import ConfigValues
-from telegram_core import in_blacklist, authorize, recharge
+from decorators import command_handler, send_message
 
 
-@recharge
-@authorize
-@in_blacklist
-async def queue_join(bot: Bot, message: Message):
+@command_handler(Command(['queue_join', 'game', 'play']))
+async def queue_join(message: Message):
 	"""Добавляет пользователя в очередь"""
 
-	await main_queue.add_new_user(bot, message.from_id)
+	await main_queue.add_new_user(message.from_id)
 
 
-@recharge
-@authorize
-@in_blacklist
-async def queue_leave(bot: Bot, message: Message):
+@command_handler(Command(['queue_leave', 'leave']))
+async def queue_leave(message: Message):
 	"""Удаляет пользователя из очереди"""
 
 	try:
 		main_queue.leave_from_queue(message.from_id)
 	except KeyError:
-		await bot.send_message(message.chat.id, ConfigValues.if_not_in_queue)
+		await send_message(message.chat.id, ConfigValues.if_not_in_queue)
 		return
 
-	await bot.send_message(message.chat.id, ConfigValues.on_queue_leave_message)
+	await send_message(message.chat.id, ConfigValues.on_queue_leave_message)
 
 
-async def send_url_to_playground(bot: Bot, user_id: int, uuid):
+async def send_url_to_playground(user_id: int, uuid):
 	"""send url to game"""
 
-	await bot.send_message(
+	await send_message(
 		user_id,
 		ConfigValues.on_find_enemy.replace('{url}', ConfigValues.url_to_playground.replace('{rout}', uuid)))

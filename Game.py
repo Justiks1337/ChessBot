@@ -1,12 +1,14 @@
-from asyncio import create_task
+import asyncio
 from uuid import uuid4
 from time import time
+from typing import Optional
 
 import chess
 from channels.consumer import get_channel_layer
 
 from User import User
 from config.ConfigValues import ConfigValues
+from database_tools.Connection import connect
 
 
 class Game:
@@ -17,15 +19,22 @@ class Game:
 		self.players: list = []
 		self.player_1: User = User(users_ids[0], True, self)
 		self.player_2: User = User(users_ids[1], False, self)
-		self.start_time = time()
+		self._started_at = time()
 		self.tag = str(uuid4())
 
 		games.append(self)
 
+	@property
+	def started_at(self):
+		return round(self._started_at)
+
 	async def move(self, text_move):
 		""":raise BaseError если на доске ситуация приводящая к концу игры либо противоречащая её продолжению"""
 
+		turn_player = self.get_turn_player()
+
 		try:
+
 			self.board.push_san(text_move)
 		except chess.IllegalMoveError as error:
 			if "missing promotion piece type" in error.args[0]:
@@ -33,8 +42,9 @@ class Game:
 			else:
 				raise chess.IllegalMoveError()
 
-		print(self.player_1.timer.flip_the_timer())
-		print(self.player_2.timer.flip_the_timer())
+		asyncio.get_running_loop().create_task(self.get_turn_player().start_timer(), name=self.tag)
+
+		turn_player.timer.flip_the_timer()
 
 		await channel_layer.group_send(
 			self.tag,
@@ -55,8 +65,8 @@ class Game:
 
 		if self.board.is_checkmate():
 			winner = self.get_winner()
-			await self.on_end_game(ConfigValues.on_mate_message.replace('{color}', winner.color_text(winner)))
-			await Game.on_win(winner)
+			await self.on_end_game(ConfigValues.on_mate_message.replace('{color}', winner.color_text))
+			await self.on_win(winner)
 
 	async def check_stalemate(self):
 		""":raise DrawError если на доске пат"""
@@ -92,20 +102,17 @@ class Game:
 	async def start_timers_game(self):
 		"""actions before start game"""
 
-		task_list = [
-			create_task(self.player_1.fill_attributes()),
-			create_task(self.player_2.fill_attributes()),
-			create_task(self.player_1.start_timer()),
-			create_task(self.player_2.start_timer())]
+		for player in self.players:
+			asyncio.get_running_loop().create_task(player.fill_attributes())
 
-		for task in task_list:
-			await task
+		await asyncio.sleep(ConfigValues.prepare_time)
+
+		asyncio.get_running_loop().create_task(self.get_turn_player().start_timer(), name=self.tag)
 
 	async def on_end_game(self, message):
 		"""Коро хендлер срабатывающий после окончания игры"""
 
-		self.player_1.stop_timer()
-		self.player_2.stop_timer()
+		self.delete_timers()
 
 		await channel_layer.group_send(
 			self.tag,
@@ -119,9 +126,24 @@ class Game:
 
 		games.remove(self)
 
-	@staticmethod
-	async def on_win(winner: User):
+	def delete_timers(self):
+		for task in asyncio.all_tasks(asyncio.get_running_loop()):
+			if task.get_name() == self.tag:
+					task.cancel()
+
+	async def on_win(self, winner: User):
 		await winner.give_points()
+		await self.add_to_game_registry(winner)
+
+	async def on_draw(self):
+		await self.add_to_game_registry(None)
+
+	async def add_to_game_registry(self, winner: Optional[User]):
+
+		await connect.request("INSERT INTO games VALUES (?, ?, ?)", (
+			self.player_1.user_id,
+			self.player_2.user_id,
+			winner.user_id))
 
 	async def on_draw_offer(self):
 		for player in self.players:
@@ -141,16 +163,16 @@ class Game:
 	async def on_give_up(self, user_id: int):
 		for player in self.players:
 			if player.user_id != user_id:
-				await Game.on_win(player)
+				await self.on_win(player)
 			else:
-				await self.on_end_game(ConfigValues.on_resign.replace('{color}', player.color_text(player.color)))
+				await self.on_end_game(ConfigValues.on_resign.replace('{color}', player.color_text))
 
 	async def on_end_timer(self, loser: User):
 
 		# noinspection PyTypeChecker
-		await Game.on_win((lambda player: self.player_1 if player == self.player_2 else self.player_2)(loser))
+		await self.on_win((lambda player: self.player_1 if player == self.player_2 else self.player_2)(loser))
 
-		await self.on_end_game(ConfigValues.on_end_time.replace('{color}', loser.color_text(loser.color)))
+		await self.on_end_game(ConfigValues.on_end_time.replace('{color}', loser.color_text))
 
 
 channel_layer = get_channel_layer("default")

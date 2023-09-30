@@ -50,6 +50,12 @@
             </nav>
             <section class="sec">
                 <div class="inner chess_inner" id="chessBoard">
+                    <div id="prepare_time_div">
+                        <div id="prepare_text">
+                            <h2 id="prepare_title">Игра ещё не началась, подождите ещё</h2>
+                            <h1 id="prepare_counter">30</h1>
+                        </div>
+                    </div>
                 </div>
                 <div class="inner chess_static">
                     <div class="sidebar">
@@ -160,6 +166,7 @@
 
     {% load static %}
     <div class="static_file" id="static_img">{% static 'images/1x1.png' %}</div>
+    <div class="static_file" id="on_move_sound">{% static 'move_sound.mp3' %}</div>
 
 {% endblock %}
 
@@ -170,22 +177,30 @@
     crossorigin="anonymous"></script>
 
     {% load static %}
+    <script type="text/javascript" src="{% static 'js/core.js'%}"></script>
+    <script type="text/javascript" src="{% static 'js/player_timers.js'%}"></script>
+    <script type="text/javascript" src="{% static 'js/websocket.js'%}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery-1.7.1.min.js'%}"></script>
     <script type="text/javascript" src="{% static 'js/chessboard.js' %}"></script>
 
+
     <script>
-        $(document).ready(fillData(
-        {{user_id}},
-        "{{board_fen}}",
-        {{first_player_time}},
-        {{second_player_time}},
-        "{{draw_offer}}",
-        "{{color}}",
-        "{{turn}}"))
+        $(document).ready(
+        onReady(
+            {{prepare_time}},
+            {{user_id}},
+            "{{board_fen}}",
+            {{first_player_time}},
+            {{second_player_time}},
+            "{{draw_offer}}",
+            "{{color}}",
+            "{{turn}}"))
 
     </script>
 
     {% load static %}
-    <script type="text/javascript" src="{% static 'js/jquery-1.7.1.min.js'%}"></script>
+
+    <script type="text/javascript" src="{% static 'js/prepare_time.js'%}"></script>
     <script type="text/javascript" src="{% static 'js/jquery.ui.core.js'%}"></script>
     <script type="text/javascript" src="{% static 'js/jquery.ui.widget.js'%}"></script>
     <script type="text/javascript" src="{% static 'js/jquery.ui.mouse.js'%}"></script>
@@ -193,6 +208,7 @@
     <script type="text/javascript" src="{% static 'js/jquery.ui.droppable.js'%}"></script>
     <script type="text/javascript" src="{% static 'js/jquery.chess.js'%}"></script>
     <script type="text/javascript" src="{% static 'js/jquery.ui.touch-punch.min.js' %}"></script>
+
 
     <script type="text/javascript">
         $(document).ready(function(){
