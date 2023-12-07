@@ -24,6 +24,8 @@ async def game_view(request: HttpRequest, **kwargs):
 		kwargs["game"] = game_object
 		kwargs["user"] = user
 
+		await game_object.get_turn_player().timer.update_timer()
+
 		if user:
 			return await game_player_mode(request, **kwargs)
 

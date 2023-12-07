@@ -21,6 +21,7 @@ class Game:
 		self.player_2: User = User(users_ids[1], False, self)
 		self._started_at = time()
 		self.tag = str(uuid4())
+		self.game_end: bool = False
 
 		games.append(self)
 
@@ -44,7 +45,7 @@ class Game:
 
 		asyncio.get_running_loop().create_task(self.get_turn_player().start_timer(), name=self.tag)
 
-		turn_player.timer.flip_the_timer()
+		await turn_player.timer.flip_the_timer()
 
 		await channel_layer.group_send(
 			self.tag,
@@ -65,8 +66,7 @@ class Game:
 
 		if self.board.is_checkmate():
 			winner = self.get_winner()
-			await self.on_end_game(ConfigValues.on_mate_message.replace('{color}', winner.color_text))
-			await self.on_win(winner)
+			await self.on_win(winner, ConfigValues.on_mate_message.replace('{color}', winner.color_text))
 
 	async def check_stalemate(self):
 		""":raise DrawError если на доске пат"""
@@ -112,6 +112,11 @@ class Game:
 	async def on_end_game(self, message):
 		"""Коро хендлер срабатывающий после окончания игры"""
 
+		if self.game_end:
+			return
+
+		self.game_end = True
+
 		self.delete_timers()
 
 		await channel_layer.group_send(
@@ -125,13 +130,15 @@ class Game:
 		await self.player_2.remove_games()
 
 		games.remove(self)
+		del self
 
 	def delete_timers(self):
 		for task in asyncio.all_tasks(asyncio.get_running_loop()):
 			if task.get_name() == self.tag:
-					task.cancel()
+				task.cancel()
 
-	async def on_win(self, winner: User):
+	async def on_win(self, winner: User, message: str):
+		await self.on_end_game(message)
 		await winner.give_points()
 		await self.add_to_game_registry(winner)
 
@@ -163,16 +170,22 @@ class Game:
 	async def on_give_up(self, user_id: int):
 		for player in self.players:
 			if player.user_id != user_id:
-				await self.on_win(player)
-			else:
-				await self.on_end_game(ConfigValues.on_resign.replace('{color}', player.color_text))
+				await self.on_win(player, ConfigValues.on_resign.replace('{color}', player.color_text))
 
 	async def on_end_timer(self, loser: User):
 
-		# noinspection PyTypeChecker
-		await self.on_win((lambda player: self.player_1 if player == self.player_2 else self.player_2)(loser))
+		if self.game_end:
+			return
 
-		await self.on_end_game(ConfigValues.on_end_time.replace('{color}', loser.color_text))
+		# noinspection PyTypeChecker
+
+		await self.on_win((lambda player: self.player_1 if player == self.player_2 else self.player_2)(loser), ConfigValues.on_end_time.replace('{color}', loser.color_text))
+
+	def get_legal_moves(self, cell: str) -> list:
+
+		""":return legal moves for piece on cell"""
+
+		return [str(move)[2:] for move in self.board.legal_moves if str(move)[:2] == cell]
 
 
 channel_layer = get_channel_layer("default")

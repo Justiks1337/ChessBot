@@ -1,144 +1,157 @@
 ﻿{% extends 'base.html' %}
 
-    {% block title%} App | Chess {% endblock %}
+{% block title%} App | Chess {% endblock %}
 
-    {% block css_load %}
+{% block css_load %}
 
-    {% load static %}
-    <link rel="image" type="image/gif" href="{% static 'images/45.gif'%}">
-    <link rel="image" type="image/png" href="{% static 'images/wp.gif'%}">
-    <link rel="image" type="image/png" href="{% static 'images/wr.gif'%}">
-    <link rel="image" type="image/png" href="{% static 'images/wn.gif'%}">
-    <link rel="image" type="image/png" href="{% static 'images/wb.gif'%}">
-    <link rel="image" type="image/png" href="{% static 'images/wk.gif'%}">
-    <link rel="image" type="image/png" href="{% static 'images/wq.gif'%}">
-    <link rel="image" type="image/png" href="{% static 'images/bp.gif'%}">
-    <link rel="image" type="image/png" href="{% static 'images/br.gif'%}">
-    <link rel="image" type="image/png" href="{% static 'images/bn.gif'%}">
-    <link rel="image" type="image/png" href="{% static 'images/bb.gif'%}">
-    <link rel="image" type="image/png" href="{% static 'images/bk.gif'%}">
-    <link rel="image" type="image/png" href="{% static 'images/bq.gif'%}">
-    <link rel="stylesheet" href="{% static 'css/fonts.css' %}">
-    <link rel="stylesheet" href="{% static 'css/chessboards.css' %}">
+{% load static %}
+<link rel="image" type="image/gif" href="{% static 'images/45.gif'%}">
+<link rel="image" type="image/png" href="{% static 'images/wp.gif'%}">
+<link rel="image" type="image/png" href="{% static 'images/wr.gif'%}">
+<link rel="image" type="image/png" href="{% static 'images/wn.gif'%}">
+<link rel="image" type="image/png" href="{% static 'images/wb.gif'%}">
+<link rel="image" type="image/png" href="{% static 'images/wk.gif'%}">
+<link rel="image" type="image/png" href="{% static 'images/wq.gif'%}">
+<link rel="image" type="image/png" href="{% static 'images/bp.gif'%}">
+<link rel="image" type="image/png" href="{% static 'images/br.gif'%}">
+<link rel="image" type="image/png" href="{% static 'images/bn.gif'%}">
+<link rel="image" type="image/png" href="{% static 'images/bb.gif'%}">
+<link rel="image" type="image/png" href="{% static 'images/bk.gif'%}">
+<link rel="image" type="image/png" href="{% static 'images/bq.gif'%}">
+<link rel="stylesheet" href="{% static 'css/fonts.css' %}">
+<link rel="stylesheet" href="{% static 'css/chessboards.css' %}">
 
 
-    {% endblock %}
+{% endblock %}
 
 {% block body %}
-    <header class="navbar">
-        <div class="wrap">
-            <section class="navsec logotype">
-                <div class="wrap logo">
-                    <a href="#">1С УЧЕБНЫЙ ЦЕНТР</a>
+<header class="navbar">
+    <div class="wrap">
+        <section class="navsec logotype">
+            <div class="wrap logo">
+                <a href="#">1С УЧЕБНЫЙ ЦЕНТР</a>
+            </div>
+        </section>
+        <section class="navsec navigation close" id="nav">
+            <nav>
+                <div class="inner buttons">
+
+                    <button class="nav_btn type2" onclick=transitionAcceptModal('https://t.me/OneC_chess_bot')>ИГРАТЬ
+                    </button>
                 </div>
-            </section>
-            <section class="navsec navigation close" id="nav">
-                <nav>
-                    <div class="inner buttons">
-
-                        <button class="nav_btn type2" onclick=transitionAcceptModal('https://t.me/OneC_chess_bot')>ИГРАТЬ</button>
-                    </div>
-                </nav>
-            </section>
-        </div>
-    </header>
-    <main>
-        <div class="wrap">
-            <section class="sec">
-                <div class="inner chess_inner" id="chessBoard">
-                    <div id="prepare_time_div">
-                        <div id="prepare_text">
-                            <h2 id="prepare_title">Игра ещё не началась, подождите ещё</h2>
-                            <h1 id="prepare_counter">30</h1>
-                        </div>
-                    </div>
-                </div>
-                <div class="inner chess_static">
-                    <div class="sidebar">
-                        <div class="table players">
-                            <table class="iksweb players">
-                                <tbody class="player">
-                                    <tr>
-                                        <td id="player_avatar_wrap">
-
-                                            {% load static %}
-                                            <img id="player_avatar" src="{% get_static_prefix %}{{first_player_avatar}}" alt="">
-                                        </td>
-                                        <td id="player_name_wrap">
-                                            <h1 id="player_name">{{first_player_nickname}}</h1>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="2" class="player_time" id="first_player_time">
-                                            <h1>32:42</h1>
-                                        </td>
-
-                                    </tr>
-                                </tbody>
-
-                                <tbody class="player">
-                                    <tr>
-                                        <td id="player_avatar_wrap">
-                                            {% load static %}
-                                            <img id="player_avatar" src="{% get_static_prefix%}{{second_player_avatar}}" alt="">
-                                        </td>
-                                        <td id="player_name_wrap">
-                                            <h1 id="player_name">{{second_player_nickname}}</h1>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="2" class="player_time" id="second_player_time">
-                                            <h1>32:42</h1>
-                                        </td>
-
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
-    </main>
-
-    <div class="modal" id="end_game_modal">
-        <h1>ИГРА ОКОНЧЕНА</h1>
-        <p id="end_game_message">message</p>
-        <nav>
-            <div class="nav_btn type2" onclick="closeModalWindow(end_game_modal)">ОК</div>
-        </nav>
+            </nav>
+        </section>
     </div>
-
-    <div class="modal" id="transition_modal">
-        <h1>ПОДТВЕРДИТЕ ПЕРЕХОД</h1>
-        <p id="transition_message">message</p>
-        <nav>
-            <div class="nav_btn" onclick="closeModalWindow(transition_modal)">ОТМЕНИТЬ</div>
-            <div class="nav_btn type2" onclick="transitionUser('https://t.me/OneC_chess_bot')">ПЕРЕЙТИ</div>
+</header>
+<main>
+    <div class="wrap">
+        <nav style="
+    flex-direction: column;
+">
+            <h1 style="
+    color: gray;
+    text-align: center;
+    margin: -10px;
+            ">ВЫ НАБЛЮДАТЕЛЬ</h1>
+            <h4 style="
+                color: gray;
+                text-align: center;
+            ">Если это не так, попробуйте авторизоваться заново.</h4>
         </nav>
-    </div>
+        <section class="sec">
+            <div class="inner chess_inner" id="chessBoard">
+                <div id="prepare_time_div">
+                    <div id="prepare_text">
+                        <h2 id="prepare_title">Игра ещё не началась, подождите ещё</h2>
+                        <h1 id="prepare_counter">30</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="inner chess_static">
+                <div class="sidebar">
+                    <div class="table players">
+                        <table class="iksweb players">
+                            <tbody class="player">
+                            <tr>
+                                <td id="player_avatar_wrap">
 
-    {% load static %}
-    <div class="static_file" id="static_img">{% static 'images/1x1.png' %}</div>
+                                    {% load static %}
+                                    <img id="player_avatar" src="{% get_static_prefix %}{{first_player_avatar}}" alt="">
+                                </td>
+                                <td id="player_name_wrap">
+                                    <h1 id="player_name">{{first_player_nickname}}</h1>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="player_time" id="first_player_time">
+                                    <h1>32:42</h1>
+                                </td>
+
+                            </tr>
+                            </tbody>
+
+                            <tbody class="player">
+                            <tr>
+                                <td id="player_avatar_wrap">
+                                    {% load static %}
+                                    <img id="player_avatar" src="{% get_static_prefix%}{{second_player_avatar}}" alt="">
+                                </td>
+                                <td id="player_name_wrap">
+                                    <h1 id="player_name">{{second_player_nickname}}</h1>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="player_time" id="second_player_time">
+                                    <h1>32:42</h1>
+                                </td>
+
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<div class="modal" id="end_game_modal">
+    <h1>ИГРА ОКОНЧЕНА</h1>
+    <p id="end_game_message">message</p>
+    <nav>
+        <div class="nav_btn type2" onclick="closeModalWindow(end_game_modal)">ОК</div>
+    </nav>
+</div>
+
+<div class="modal" id="transition_modal">
+    <h1>ПОДТВЕРДИТЕ ПЕРЕХОД</h1>
+    <p id="transition_message">message</p>
+    <nav>
+        <div class="nav_btn" onclick="closeModalWindow(transition_modal)">ОТМЕНИТЬ</div>
+        <div class="nav_btn type2" onclick="transitionUser('https://t.me/OneC_chess_bot')">ПЕРЕЙТИ</div>
+    </nav>
+</div>
+
+{% load static %}
+<div class="static_file" id="static_img">{% static 'images/1x1.png' %}</div>
 
 {% endblock %}
 
 {% block scripts %}
 
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"
-    integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g="
-    crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"
+        integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g="
+        crossorigin="anonymous"></script>
 
-    {% load static %}
-    <script type="text/javascript" src="{% static 'js/core.js'%}"></script>
-    <script type="text/javascript" src="{% static 'js/player_timers.js'%}"></script>
-    <script type="text/javascript" src="{% static 'js/websocket_spectator.js'%}"></script>
-    <script type="text/javascript" src="{% static 'js/jquery-1.7.1.min.js'%}"></script>
-    <script type="text/javascript" src="{% static 'js/chessboard_spectator.js' %}"></script>
+{% load static %}
+<script type="text/javascript" src="{% static 'js/core.js'%}"></script>
+<script type="text/javascript" src="{% static 'js/websocket_spectator.js'%}"></script>
+<script type="text/javascript" src="{% static 'js/player_timers.js'%}"></script>
+<script type="text/javascript" src="{% static 'js/jquery-1.7.1.min.js'%}"></script>
+<script type="text/javascript" src="{% static 'js/chessboard_spectator.js' %}"></script>
 
 
-
-    <script>
+<script>
         $(document).ready(onReady(
         {{prepare_time}},
         "{{board_fen}}",
@@ -146,22 +159,24 @@
         {{second_player_time}},
         "{{turn}}"))
 
-    </script>
 
-    {% load static %}
+</script>
 
-    <script type="text/javascript" src="{% static 'js/prepare_time.js'%}"></script>
-    <script type="text/javascript" src="{% static 'js/jquery.ui.core.js'%}"></script>
-    <script type="text/javascript" src="{% static 'js/jquery.chess.spectator.js'%}"></script>
+{% load static %}
+
+<script type="text/javascript" src="{% static 'js/prepare_time.js'%}"></script>
+<script type="text/javascript" src="{% static 'js/jquery.ui.core.js'%}"></script>
+<script type="text/javascript" src="{% static 'js/jquery.chess.spectator.js'%}"></script>
 
 
-    <script type="text/javascript">
+<script type="text/javascript">
         $(document).ready(function(){
                $.fn.chess({
                  type: 'fen',
                  position: '{{board_fen}}'
                });
             });
-        </script>
+
+</script>
 
 {% endblock %}

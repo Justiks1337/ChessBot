@@ -2,7 +2,7 @@ function webSocketConnector(){
 
     let game_tag = window.location.pathname.split('/').at(-2);
 
-    let connect = new WebSocket('ws://chess-kb.ru/websocket/games/' + game_tag);
+    let connect = new WebSocket('wss://chess-kb.ru/websocket/games/' + game_tag);
 
     return connect;
 }
@@ -18,6 +18,10 @@ function onMessage(event){
             if(!draw_offer){
                 $('#draw_offer_modal').css({"visibility": "visible"})}
             }
+        break;
+
+    case "error":
+        alert(response["message"] + "Если это не так, скинь скрин этой ошибки - @Justiks1337");
         break;
 
     case "illegal_move_error":
@@ -53,8 +57,16 @@ function onMessage(event){
         updateFirstPlayerTime(response["first_user_time"]);
         updateSecondPlayerTime(response["second_user_time"]);
         break;
+
+    case "legal_moves":
+        showLegalMoves(response["cells"]);
+        break;
         }
+
+
     }
+
+var socket_connection = webSocketConnector();
 
 function move(start_cell, end_cell){
 
@@ -63,7 +75,9 @@ function move(start_cell, end_cell){
     "end_cell": end_cell.getElementsByClassName('squareNotation')[0].innerText}));
 }
 
-
-var socket_connection = webSocketConnector();
+function getLegalMoves(figure_cell){
+     socket_connection.send(JSON.stringify({
+    "type": "get_legal_moves", "figure_cell": figure_cell}))
+}
 
 socket_connection.onmessage = onMessage;

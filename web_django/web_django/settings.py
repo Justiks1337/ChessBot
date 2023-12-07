@@ -31,7 +31,8 @@ ALLOWED_HOSTS = ["127.0.0.1",
                  "192.168.1.60",
                  "45.142.122.143",
                  "chess.kazoe.ru",
-                 "chess-kb.ru"]
+                 "chess-kb.ru",
+                 "beta.chess-kb.ru"]
 
 
 # Application definition

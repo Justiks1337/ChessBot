@@ -103,3 +103,16 @@ function check_turn(){
 function check_color(piece_type){
     if (piece_type[0] == window.color_word) return true;
 }
+
+function showLegalMoves(legal_moves_array){
+    legal_moves_array.forEach(function(element){
+        $('#' + element)[0].offsetParent.append($('<div class="legal_move"></div>')[0]);
+    })
+}
+
+function hideLegalMoves(){
+    let legal_moves = [...document.getElementsByClassName("legal_move")];
+    for (i=0; i < legal_moves.length; i++) {
+        legal_moves[i].remove();
+    }
+}

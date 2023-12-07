@@ -736,6 +736,19 @@ table.iksweb tbody tr{
     }
 }
 
+.legal_move{
+      width: 25%;
+      height: 25%;
+      margin-right: auto;
+      margin-left: auto;
+      opacity: .7;
+      border-radius: 50%;
+      background: green;
+      position: relative;
+      top: 50%;
+      transform: translate(0, -50%);
+}
+
 @media (max-width: 640px){
     #player_name{
         font-size: 20px;

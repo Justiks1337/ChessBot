@@ -41,16 +41,21 @@ class Timer:
 		try:
 			await Timer.wait_for(self.__wait_move(), timeout=self._time, loop=loop)
 		except asyncio.TimeoutError:
-
 			loop.create_task(self.own_object.own_object.on_end_timer(self.own_object))
-			return
 
-	def update_timer(self):
+	async def update_timer(self):
+
+		if _time() - self.own_object.own_object.started_at < ConfigValues.prepare_time:
+			return
 
 		if not self.last_flip:
 			self.last_flip = _time()
 
 		self._time = self._time - (_time() - self.last_flip)
+
+		if self._time <= 0:
+			await self.own_object.own_object.on_end_timer(self.own_object)
+
 		self.last_flip = _time()
 
 	def flip_the_timer(self):
@@ -58,7 +63,7 @@ class Timer:
 
 		self.__event.set()
 
-		self.update_timer()
+		await self.update_timer()
 
 		return self._time
 

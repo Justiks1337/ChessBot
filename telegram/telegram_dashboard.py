@@ -10,47 +10,48 @@ from telegram import bot
 
 @command_handler(Command(['dashboard', 'top']))
 async def get_top(message: Message):
-	"""send message with dashboard"""
+    """send message with dashboard"""
 
-	amount = message.get_args()
+    amount = message.get_args()
 
-	top = await (await connect.request("SELECT user_id, points FROM users ORDER BY points DESC")).fetchall()
+    if not amount:
+        amount = 10
 
-	if not amount:
-		amount = 10
+    try:
 
-	if amount == "all":
-		amount = len(top)
+        int(amount)
+        top = await (await connect.request(f"SELECT user_id, points, username, nickname FROM users ORDER BY points DESC LIMIT {amount}")).fetchall()
 
-	try:
-		int(amount)
+    except ValueError:
 
-	except ValueError:
-		await send_message(message.chat.id, ConfigValues.on_invalid_args)
+        if amount == "all":
+            top = await (await connect.request("SELECT user_id, points, username, nickname FROM users ORDER BY points DESC")).fetchall()
+            amount = len(top)
 
-	msg: str = ConfigValues.dashboard_title.replace('{amount}', str(amount))
+        else:
+            await send_message(message.chat.id, ConfigValues.on_invalid_args)
+            return
 
-	position = 0
-	for player in top[:int(amount)+1]:
-		try:
+    msg: str = ConfigValues.dashboard_title.replace('{amount}', str(amount))
 
-			user = (await bot.get_chat_member(player[0], player[0])).user
+    position = 0
+    for player in top:
+        try:
 
-			if not user.username:
-				player_name = user.first_name
-				if user.last_name:
-					player_name = player_name + f" {user.last_name}"
-			else:
-				player_name = f"@{user.username}"
+            if not player[2]:
+                player_name = player[3]
+            else:
+                player_name = player[2]
 
-			position += 1
+            position += 1
 
-			msg = msg + ConfigValues.dashboard_object.replace(
-				'{position}', str(position)).replace(
-				'{player_name}', player_name).replace(
-				'{points_amount}', str(player[1]))
+            msg = msg + ConfigValues.dashboard_object.replace(
+                '{position}', str(position)).replace(
+                '{player_name}', f'<a href="tg://user?id={player[0]}">{player_name}</a>').replace(
+                '{points_amount}', str(player[1]))
 
-		except ChatNotFound:
-			continue
+        except ChatNotFound:
+            continue
 
-	await send_message(message.chat.id, msg)
+    await send_message(message.chat.id, msg, parse_mode="html")
+

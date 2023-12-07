@@ -47,6 +47,10 @@ DEALINGS IN THE SOFTWARE.
                 position: null
             }, options);
 
+            if (window.color === false){
+                $settings.y = $settings.y.reverse();
+            }
+
             var path_to_1x1 = $("#static_img").textContent;
 
             $piece = $('<img/>').attr({src: path_to_1x1, width: $settings.squareSize, height: $settings.squareSize}).addClass('draggablePiece');
@@ -101,7 +105,7 @@ DEALINGS IN THE SOFTWARE.
                                        height: $settings.squareSize + '%'
                                        })
                                    .addClass('square '+(x%2 ? 'evenX' : 'oddX')+' '+(y%2 ? 'evenY' : 'oddY'));
-                   var tmpSquareNotation = $('<div></div>')
+                   var tmpSquareNotation = $(`<div id=${$settings.xLiteral[$settings.x[x]-1]+''+(parseInt(y)+1)}></div>`)
                                            .css({
                                                position: 'absolute',
                                                bottom:0,
@@ -109,8 +113,7 @@ DEALINGS IN THE SOFTWARE.
                                                fontSize:'56%'
                                            })
                                            .addClass('squareNotation')
-                                           .html($settings.xLiteral[$settings.x[x]-1]+''+$settings.y[y]);
-                    tmpSquareNotation.id = 'test'
+                                           .html($settings.xLiteral[$settings.x[x]-1]+''+(parseInt(y)+1));
                    tmpSquare.append(tmpSquareNotation);
                    $boardInner.append(tmpSquare);
 
@@ -204,7 +207,8 @@ DEALINGS IN THE SOFTWARE.
                 ];
 
             }
-            position.reverse();
+
+            if (window.color != false){position.reverse();}
 
             for(y in position){
                 for(x in position[y]){
@@ -217,7 +221,8 @@ DEALINGS IN THE SOFTWARE.
 
         this.updateMatrixPosition = function(fen){
 
-            let position = this._fenToPosition(fen).reverse();
+            let position = this._fenToPosition(fen);
+            if (window.color != false){position.reverse();}
 
             for(let last_move_div of document.getElementsByClassName('last_move')){
                 last_move_div.classList.remove('last_move');

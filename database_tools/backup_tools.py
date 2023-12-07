@@ -7,26 +7,27 @@ from database_tools.database_log.log import log
 from os import path
 
 
-def __dump() -> str:
+def __dump() -> tuple:
 	"""Делает бекап базы данных sqlite
 	:return dump filename
 							"""
 	start_time = time()
 
 	backup_file_name = "mydatabase_backup_" + datetime.now().strftime("%Y%m%d%H%M%S") + '.sql'
+	path_to_db = path.join(path.dirname(__file__), backup_file_name)
 
 	system(
 		f'sqlite3 {path.join(path.dirname(__file__), ConfigValues.db_name)} .dump > {path.join(path.dirname(__file__), backup_file_name)}')
 
 	log.info(f'Database dump was completed in {time() - start_time} seconds')
 
-	return backup_file_name
+	return backup_file_name, path_to_db
 
 
 async def backup():
 	"""backup to Yadisk"""
 
-	backup_name = __dump()
+	backup_name, path_to_db = __dump()
 
 	async with ClientSession() as session:
 		async with session.get(
@@ -36,7 +37,8 @@ async def backup():
 				"Accept": "application/json",
 				"Authorization": f'{ConfigValues.yadisk_jwt}'}
 		) as response:
-			async with session.put((await response.json())['href'], data=open(backup_name, "rb")) as resp:
+			print((await response.json()))
+			async with session.put((await response.json())['href'], data=open(path_to_db, "rb")) as resp:
 
 				log.info(f'The database backup has been completed. Database dump is named as {backup_name}')
 

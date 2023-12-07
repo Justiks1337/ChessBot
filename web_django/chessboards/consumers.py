@@ -1,10 +1,14 @@
+from time import time
+
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from asgiref.sync import sync_to_async
 from chess import IllegalMoveError
+from autobahn.exception import Disconnected
 
 from core import get
 from config.ConfigValues import ConfigValues
-from Game import games, Game
+from Game import games
+from web_django.django_log.log import log
 
 
 class UserWebsocket(AsyncJsonWebsocketConsumer):
@@ -13,6 +17,7 @@ class UserWebsocket(AsyncJsonWebsocketConsumer):
 
         self.board_tag = self.scope['url_route']['kwargs']['tag']
         self.sessionid = await self.get_sessionid()
+        self.user = await get(games, 'players', session_id=self.sessionid)
 
         await self.channel_layer.group_add(
             self.board_tag,
@@ -27,6 +32,8 @@ class UserWebsocket(AsyncJsonWebsocketConsumer):
             self.channel_name
         )
 
+        await self.close()
+
     async def receive_json(self, content, **kwargs):
 
         # switch case construction does not exit in python 3.9 so:
@@ -37,6 +44,14 @@ class UserWebsocket(AsyncJsonWebsocketConsumer):
             await self.give_up()
         elif content["type"] == "move":
             await self.move(content["start_cell"], content["end_cell"])
+        elif content["type"] == "get_legal_moves":
+            await self.get_legal_moves(content["figure_cell"])
+
+    async def send_json(self, content, close=False):
+        try:
+            await super().send_json(content, close=close)
+        except Disconnected:
+            log.info("autobahn.exception.Disconnection error. ")
 
     async def end_game_event(self, event):
         await self.send_json({"event": 'end_game', "message": event['message']})
@@ -62,51 +77,41 @@ class UserWebsocket(AsyncJsonWebsocketConsumer):
         await self.send_json({"event": "error", "message": message})
 
     async def move(self, start_cell: str, end_cell: str):
-        try:
 
-            board: Game = await get(games, '', tag=self.board_tag)
-            user_object = await get(games, 'players', session_id=self.sessionid)
+        if not self.user:
+            return
 
-            print(self.sessionid)
-            print(games)
-            print(user_object)
-
-            assert user_object
-            assert board.board.turn is user_object.color
-
-            try:
-                await user_object.move(start_cell, end_cell)
-            except IllegalMoveError:
-                await self.illegal_move_error(ConfigValues.illegal_move_error)
-                return
-
-        except AssertionError:
+        if self.user.own_object.board.turn is not self.user.color:
             await self.error(ConfigValues.on_illegal_action_error)
+            return
+
+        try:
+            await self.user.move(start_cell, end_cell)
+        except IllegalMoveError:
+            await self.illegal_move_error(ConfigValues.illegal_move_error)
+
+    async def get_legal_moves(self, figure_cell: str):
+
+        if not self.user:
+            return
+
+        cells = self.user.own_object.get_legal_moves(figure_cell)
+
+        await self.send_json({"event": "legal_moves", "cells": cells})
 
     async def draw_offer(self):
 
-        try:
+        if not self.user:
+            return
 
-            user_object = await get(games, 'players', session_id=self.sessionid)
-
-            assert user_object
-
-            await user_object.draw()
-
-        except AssertionError:
-            await self.error(ConfigValues.on_illegal_action_error)
+        await self.user.draw()
 
     async def give_up(self):
-        try:
 
-            user_object = await get(games, 'players', session_id=self.sessionid)
+        if not self.user:
+            return
 
-            assert user_object
-
-            await user_object.give_up()
-
-        except AssertionError:
-            await self.error(ConfigValues.on_illegal_action_error)
+        await self.user.give_up()
 
     @sync_to_async()
     def get_sessionid(self):

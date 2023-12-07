@@ -57,7 +57,7 @@ class User:
 	async def move(self, start_cell: str, end_cell: str):
 		"""move in board and flip timer"""
 
-		self.timer.flip_the_timer()
+		await self.timer.flip_the_timer()
 		await self.own_object.move("".join([start_cell, end_cell]))
 
 	async def draw(self):
@@ -66,11 +66,6 @@ class User:
 
 	async def give_up(self):
 		await self.own_object.on_give_up(self.user_id)
-
-	def timer_continue(self):
-		"""return timer to activity"""
-
-		self.timer.flip_the_timer()
 
 	async def start_timer(self):
 		"""timer starter"""

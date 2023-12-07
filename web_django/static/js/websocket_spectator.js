@@ -2,7 +2,7 @@ function webSocketConnector(){
 
     let game_tag = window.location.pathname.split('/').at(-2);
 
-    let connect = new WebSocket('ws://chess-kb.ru/websocket/games/' + game_tag);
+    let connect = new WebSocket('wss://chess-kb.ru/websocket/games/' + game_tag);
 
     return connect;
 }
@@ -34,5 +34,11 @@ function onMessage(event){
     }
 
 var socket_connection = webSocketConnector();
+
+function timeEnd(){
+    socket_connection.send(JSON.stringify({"type": "end_timer"}))
+}
+
+
 
 socket_connection.onmessage = onMessage;

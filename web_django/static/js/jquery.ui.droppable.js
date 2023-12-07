@@ -228,6 +228,8 @@ $.ui.ddmanager = {
 	},
 	drop: function(draggable, event) {
 
+        hideLegalMoves();
+
 		var dropped = false;
 		$.each($.ui.ddmanager.droppables[draggable.options.scope] || [], function() {
 
@@ -254,6 +256,7 @@ $.ui.ddmanager = {
 	dragStart: function( draggable, event ) {
 
 	    window.start_cell = draggable.element.context.offsetParent;
+	    getLegalMoves(window.start_cell.getElementsByClassName("squareNotation")[0].innerText);
 		//Listen for scrolling so that if the dragging causes scrolling the position of the droppables can be recalculated (see #5003)
 		draggable.element.parents( ":not(body,html)" ).bind( "scroll.droppable", function() {
 			if( !draggable.options.refreshPositions ) $.ui.ddmanager.prepareOffsets( draggable, event );
