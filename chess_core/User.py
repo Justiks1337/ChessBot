@@ -1,10 +1,10 @@
 from typing import Optional
 import glob
 
-from UserId import UserId
+from chess_core.UserId import UserId
 from config.ConfigValues import ConfigValues
 from database_tools.Connection import connect
-from Timer import Timer
+from chess_core.Timer import Timer
 
 
 class User:

@@ -57,7 +57,7 @@ function ifNegativeTime(player_time){
         $.ajax(
         {
         type: 'POST',
-        url: `https://chess-kb.ru/api/v1/check_timer?tag=${tag}`
+        url: `${config.ssl_http}://${config.domain} /api/v1/check_timer?tag=${tag}`
         });
     }
 }

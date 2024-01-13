@@ -22,10 +22,10 @@ from .responses import (
 
 from database_tools.Connection import connect
 from .authorization import authorization
-from Authorization import main_authorization
+from web_django.api.Authorization import main_authorization
 from web_django.authorization.core import get_session_key, get_ip
-from core import get
-from Game import games, Game
+from chess_core.core import get
+from chess_core.Game import games, Game
 
 
 @api_view(['POST'])

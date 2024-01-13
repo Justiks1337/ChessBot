@@ -6,7 +6,7 @@ from typing import Optional
 import chess
 from channels.consumer import get_channel_layer
 
-from User import User
+from chess_core.User import User
 from config.ConfigValues import ConfigValues
 from database_tools.Connection import connect
 

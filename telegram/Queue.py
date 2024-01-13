@@ -5,14 +5,15 @@ from aiohttp import ClientSession
 
 from config.ConfigValues import ConfigValues
 from database_tools.Connection import connect
-from telegram.decorators import send_message
+from decorators import send_message
 
 
 class Queue(PyQueue):
 	"""Класс - очередь (единственный экземпляр создаётся в __init__.py"""
 
 	# rewriting implementation
-	def _init(self, maxsize):
+	def __init__(self, maxsize):
+		super().__init__(maxsize)
 		self.queue: set = set()
 
 	def _put(self, item):
@@ -100,4 +101,4 @@ class Queue(PyQueue):
 				assert not json['in_game'], ConfigValues.in_game_error
 
 
-main_queue = Queue(maxsize=2)
+main_queue = Queue(2)

@@ -8,11 +8,11 @@ function check_token(){
             return false;
 
         }
-
+        console.log(config)
         $.ajax(
         {
         type: 'POST',
-        url: `https://chess-kb.ru/api/v1/authorize?token=${token}`,
+        url: `${config.ssl_http}://${config.domain}/api/v1/authorize?token=${token}`,
         success: function(data){
             var response = $.parseJSON(data);
 

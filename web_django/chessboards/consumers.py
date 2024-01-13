@@ -1,13 +1,11 @@
-from time import time
-
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from asgiref.sync import sync_to_async
 from chess import IllegalMoveError
 from autobahn.exception import Disconnected
 
-from core import get
+from chess_core.core import get
 from config.ConfigValues import ConfigValues
-from Game import games
+from chess_core.Game import games
 from web_django.django_log.log import log
 
 

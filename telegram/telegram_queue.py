@@ -1,7 +1,7 @@
 from aiogram.types import Message
 from aiogram.dispatcher.filters import Command
 
-from Queue import main_queue
+from Queue import main_queue as queue
 from config.ConfigValues import ConfigValues
 from decorators import command_handler, send_message
 
@@ -10,7 +10,7 @@ from decorators import command_handler, send_message
 async def queue_join(message: Message):
 	"""Добавляет пользователя в очередь"""
 
-	await main_queue.add_new_user(message.from_id)
+	await queue.add_new_user(message.from_id)
 
 
 @command_handler(Command(['queue_leave', 'leave']))
@@ -18,7 +18,7 @@ async def queue_leave(message: Message):
 	"""Удаляет пользователя из очереди"""
 
 	try:
-		main_queue.leave_from_queue(message.from_id)
+		queue.leave_from_queue(message.from_id)
 	except KeyError:
 		await send_message(message.chat.id, ConfigValues.if_not_in_queue)
 		return

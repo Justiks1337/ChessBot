@@ -2,7 +2,7 @@ function webSocketConnector(){
 
     let game_tag = window.location.pathname.split('/').at(-2);
 
-    let connect = new WebSocket('wss://chess-kb.ru/websocket/games/' + game_tag);
+    let connect = new WebSocket(`${config.ssl_ws}://${config.domain}/websocket/games/` + game_tag + "/");
 
     return connect;
 }

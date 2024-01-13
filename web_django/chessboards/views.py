@@ -6,8 +6,8 @@ from asgiref.sync import sync_to_async
 
 from config.ConfigValues import ConfigValues
 from web_django.authorization.core import get_session_key
-from core import get
-from Game import games
+from chess_core.core import get
+from chess_core.Game import games
 
 
 async def game_view(request: HttpRequest, **kwargs):

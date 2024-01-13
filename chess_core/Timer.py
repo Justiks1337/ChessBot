@@ -58,7 +58,7 @@ class Timer:
 
 		self.last_flip = _time()
 
-	def flip_the_timer(self):
+	async def flip_the_timer(self):
 		"""Меняет положение таймера (активный/деактивный)"""
 
 		self.__event.set()
