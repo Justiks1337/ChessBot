@@ -32,8 +32,7 @@ from chess_core.Game import games, Game
 @authorization
 async def start_game(request: Request):
 
-    first_user_id = request.query_params.get('first_user_id')
-    second_user_id = request.query_params.get('second_user_id')
+    first_user_id, second_user_id = map(int, request.META.get('HTTP_PLAYERS'))
 
     game = Game((first_user_id, second_user_id))
 

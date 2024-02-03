@@ -57,12 +57,10 @@ class Queue(PyQueue):
 		async with ClientSession() as session:
 			async with session.post(
 					f"{ConfigValues.server_http_protocol}://{ConfigValues.server_ip}:{ConfigValues.server_port}/api/v1/start_game",
-					params={
-						"first_user_id": users[0],
-						"second_user_id": users[1]},
 					headers={
 						"content-type": "application/json",
-						"Authorization": ConfigValues.server_authkey}) as response:
+						"Authorization": ConfigValues.server_authkey,
+						"players": [users[0], users[1]]}) as response:
 
 				json = await response.json()
 
