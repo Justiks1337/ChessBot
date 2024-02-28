@@ -1,0 +1,35 @@
+# docker-compose.yml
+version: '3'
+
+services:
+
+    nginx:
+        build:
+            context: .
+            dockerfile: ./dockerfiles/nginx/Dockerfile
+        depends_on:
+            - daphne
+        ports:
+            - 80:80
+
+    daphne:
+        build:
+            context: .
+            dockerfile: ./dockerfiles/web/Dockerfile
+        container_name: 'daphne'
+        command: python3 -m daphne web_django.web_django.asgi:application -b daphne -p 8000
+        environment:
+            - PYTHONPATH=.
+            - DJANGO_SETTINGS_MODULE=web_django.web_django.settings
+        expose:
+        - 8000
+
+    telegram:
+        build:
+            context: .
+            dockerfile: ./dockerfiles/telegram/Dockerfile
+        container_name: 'telegram'
+        command: python3 telegram/main.py
+        environment:
+            - PYTHONPATH=.
+

@@ -22,23 +22,16 @@
  
  ---------
 ### Installation
-##### linux
+
+Понадобится установленный docker и git
+
+##### windows/mac/linux
 ```
-git clone https://github.com/Justiks1337/ChessBot
+git clone https://github.com/Justiks1337/ChessBot/
 cd ChessBot
-python3 -m venv venv 
-source venv/bin/activate
-python3 -m pip install -r requirements.txt
+docker compose up --build
 ```
 
-##### windows
-```
-git clone https://github.com/Justiks1337/ChessBot
-cd ChessBot
-python -m venv venv 
-venv\bin\activate.bat
-python -m pip install -r requirements.txt
-```
 Made by Maksim Dubkov with aiogram, django and a lot of ❤️.
 
 
