@@ -89,7 +89,7 @@ class Queue(PyQueue):
 	async def check_in_game(user_id):
 		async with ClientSession() as session:
 			async with session.post(
-					f"http://{ConfigValues.server_ip}:{ConfigValues.server_port}/api/v1/check_in_game",
+					f"{ConfigValues.server_http_protocol}://{ConfigValues.server_ip}:{ConfigValues.server_port}/api/v1/check_in_game",
 					params={"user_id": user_id},
 					headers={
 						"content-type": "application/json",

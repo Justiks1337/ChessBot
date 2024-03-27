@@ -7,6 +7,7 @@ from aiohttp import ClientSession
 from config.ConfigValues import ConfigValues
 from decorators import recharge, send_message
 from telegram import dp
+from telegram.telegram_log.log import log
 
 
 @dp.message_handler(Command("authorization"))
@@ -19,8 +20,7 @@ async def new_token(message: Message):
                 f"{ConfigValues.server_http_protocol}://{ConfigValues.server_ip}:{ConfigValues.server_port}/api/v1/new_token",
                 params={"user_id": user_id},
                 headers={"content-type": "application/json", "Authorization": ConfigValues.server_authkey}) as response:
-            json = await response.json()
-
+            json = dict(await response.json())
             if json['success']:
                 await send_message(
                     message.chat.id, ConfigValues.authorization_message.replace('{code}', json['token']

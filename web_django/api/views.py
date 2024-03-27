@@ -60,10 +60,6 @@ async def check_in_game(request: Request):
 async def new_authorize_token(request: Request):
     user_id = request.query_params.get("user_id")
 
-    database_user = await (await connect.request("SELECT user_id FROM users WHERE user_id = ?", (user_id, ))).fetchone()
-    if not database_user:
-        return Response(JSONRenderer().render(NewAuthorizeTokenSerializer(NewAuthorizeTokenResponse(False, '')).data))
-
     token = main_authorization.new_token(user_id)
 
     if token:

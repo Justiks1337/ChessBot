@@ -12,11 +12,39 @@ class Connection:
 
 	def __init__(self):
 		loop = get_event_loop()
-		self.connection: aiosqlite.Connection = loop.run_until_complete(
-			aiosqlite.connect(os.path.join(os.path.dirname(__file__), ConfigValues.db_name)))
+		self.connection: aiosqlite.Connection
 		self.__transactions: int = 0
-
+		loop.run_until_complete(self.__on_connect())
 		log.info(f'successful connect to {ConfigValues.db_name}')
+
+	async def __on_connect(self):
+		self.connection = await aiosqlite.connect(str(os.path.join(os.path.dirname(__file__), ConfigValues.db_name)))
+		await self.request(
+			"""CREATE TABLE IF NOT EXISTS "users" (
+			"user_id"	INTEGER NOT NULL UNIQUE,
+			"games"	INTEGER,
+			"points"	INTEGER,
+			"nickname"	TEXT,
+			"username"	TEXT,
+			"session_id"	TEXT,
+			"ip_address"	TEXT,
+			PRIMARY KEY("user_id")
+		)""")
+
+		await self.request("""CREATE TABLE IF NOT EXISTS "games" (
+			"first_player"	INTEGER NOT NULL,
+			"second_player"	INTEGER NOT NULL,
+			"winner" INTEGER NOT NULL,
+			FOREIGN KEY("second_player") REFERENCES "users"("user_id"),
+			FOREIGN KEY("winner") REFERENCES "users"("user_id"),
+			FOREIGN KEY("first_player") REFERENCES "users"("user_id")
+		)""")
+
+		await self.request("""CREATE TABLE IF NOT EXISTS "blacklist" (
+			"user_id"	INTEGER NOT NULL,
+			"username"	TEXT NOT NULL,
+			FOREIGN KEY("user_id") REFERENCES "users"("user_id")
+		)""")
 
 	async def __on_request(self, sql_request: str):
 		"""Coro handler on_request(sql_request: str)
