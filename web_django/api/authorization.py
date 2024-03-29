@@ -1,18 +1,39 @@
-from rest_framework.response import Response
-from rest_framework.request import Request
+from uuid import uuid4
 
-from config.Config import Config
+from authorization.core import fill_data
 
 
-def authorization(func):
-    async def wrapper(request: Request):
-        try:
-            if request.META.get("HTTP_AUTHORIZATION") == Config.server_authkey:
-                return await func(request)
+class Authorization:
+    def __init__(self):
+        self.authorization_tokens = {}
 
-            return Response({'Неверный ключ авторизации!'})
+    def new_token(self, user_id: int):
 
-        except KeyError:
+        if user_id in list(self.authorization_tokens.keys()):
+            return None
 
-            return Response({'Неверный ключ авторизации!'})
-    return wrapper
+        token = str(uuid4())
+
+        self.authorization_tokens[user_id] = token
+
+        return token
+
+    def remove_token(self, user_id: int):
+        del self.authorization_tokens[user_id]
+
+    async def authorization(self, token: str):
+
+        for user_id in list(self.authorization_tokens.keys()):
+            if self.authorization_tokens[user_id] == token:
+                await self.successful_authorization(user_id)
+                return user_id
+
+        return None
+
+    async def successful_authorization(self, user_id: int):
+        self.remove_token(user_id)
+
+        return await fill_data(user_id)
+
+
+main_authorization = Authorization()
