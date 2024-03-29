@@ -20,12 +20,12 @@ from .responses import (
     DeleteAuthorizeTokenResponse,
     AuthorizeAttemptResponse)
 
-from database_tools.Connection import connect
 from .authorization import authorization
-from web_django.api.Authorization import main_authorization
-from web_django.authorization.core import get_session_key, get_ip
-from chess_core.core import get
-from chess_core.Game import games, Game
+from api.Authorization import main_authorization
+from authorization.core import get_session_key, get_ip
+from chessboards.chess_core.core import get
+from chessboards.chess_core.Game import games, Game
+from chessboards.models import UserModel
 
 
 @api_view(['POST'])
@@ -90,10 +90,10 @@ async def authorization_attempt(request: Request):
     if user_id:
         session_key = await get_session_key(request)
 
-        await connect.request("UPDATE users SET session_id = ?, ip_address = ? WHERE user_id = ?", (
-            session_key,
-            ip[0],
-            user_id))
+        user = await UserModel.objects.aget(user_id=user_id)
+        user.session_id = session_key
+        user.ip_address = ip
+        await user.asave()
 
         user = await get(games, 'players', _user_id=user_id)
 

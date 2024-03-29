@@ -2,7 +2,7 @@ from asyncio import sleep, create_task
 
 import aiogram
 
-from database_tools.Connection import connect
+from telegram.database import Connection
 from config.ConfigValues import ConfigValues
 from telegram import dp, bot
 
@@ -10,10 +10,11 @@ from telegram import dp, bot
 def in_blacklist(func):
     """Check user in blacklist"""
 
-    async def wrapped(message):
-        if (await (
-                await connect.request("SELECT user_id FROM blacklist WHERE username = ?", (message.from_user.username,))
-        ).fetchone()):
+    async def wrapped(message: aiogram.types.Message):
+        if await Connection().connection.fetchrow(
+                "SELECT user_id FROM blacklist WHERE username = $1",
+                message.from_user.username):
+
             return await send_message(message.chat.id, ConfigValues.on_blacklist_message)
 
         return await func(message)
@@ -22,9 +23,11 @@ def in_blacklist(func):
 
 
 def authorize(func):
-    async def wrapper(message):
-        user = await(
-            await connect.request("SELECT user_id FROM users WHERE user_id = ?", (message.from_id,))).fetchone()
+    async def wrapper(message: aiogram.types.Message):
+        user = await Connection().connection.fetchrow(
+            "SELECT user_id FROM users WHERE user_id = $1",
+            message.from_user.id)
+
         if not user:
             await send_message(message.chat.id, ConfigValues.unauthorized_message)
             return
@@ -37,7 +40,7 @@ def authorize(func):
 def in_admins(func):
     """Check user in admins"""
     async def wrapped(message):
-        if str(message.from_id) in ConfigValues.admin_ids:
+        if str(message.from_user.id) in ConfigValues.admin_ids:
             return await func(message)
 
         return await send_message(message.chat.id, ConfigValues.on_is_not_admin)
@@ -47,11 +50,11 @@ def in_admins(func):
 
 def recharge(func):
     async def wrapper(message):
-        if message.from_id in users_in_recharge:
+        if message.from_user.id in users_in_recharge:
             return await send_message(message.chat.id, ConfigValues.in_recharge)
 
-        users_in_recharge.append(message.from_id)
-        sleep_task = create_task(clear_recharge(message.from_id))
+        users_in_recharge.append(message.from_user.id)
+        sleep_task = create_task(clear_recharge(message.from_user.id))
         func_task = create_task(func(message))
         await sleep_task
         await func_task
@@ -61,7 +64,7 @@ def recharge(func):
 
 def only_in_dm(coro):
     async def wrapper(message: aiogram.types.Message):
-        if message.from_id != message.chat.id:
+        if message.from_user.id != message.chat.id:
             return await send_message(message.chat.id, ConfigValues.only_in_dm_message)
 
         await coro(message)
@@ -69,9 +72,9 @@ def only_in_dm(coro):
     return wrapper
 
 
-def command_handler(command: aiogram.dispatcher.filters.Command):
+def command_handler(command):
     def decorator(coro):
-        @dp.message_handler(command)
+        @dp.message(command)
         @only_in_dm
         @recharge
         @authorize

@@ -1,4 +1,4 @@
-from .consumers import UserWebsocket
+from chessboards.consumers import UserWebsocket
 from django.urls import path, re_path, utils
 
 

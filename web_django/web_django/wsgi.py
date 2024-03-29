@@ -9,6 +9,6 @@ https://docs.djangoproject.com/en/4.2/howto/deployment/wsgi/
 
 import os
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'web_django.web_django.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
 os.environ.setdefault('SERVER_GATEWAY_INTERFACE', 'WSGI')
 

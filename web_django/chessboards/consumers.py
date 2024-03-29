@@ -3,10 +3,10 @@ from asgiref.sync import sync_to_async
 from chess import IllegalMoveError
 from autobahn.exception import Disconnected
 
-from chess_core.core import get
-from config.ConfigValues import ConfigValues
-from chess_core.Game import games
-from web_django.django_log.log import log
+from chessboards.chess_core.core import get
+from config.Config import Config
+from chessboards.chess_core.Game import games
+from django_log.log import log
 
 
 class UserWebsocket(AsyncJsonWebsocketConsumer):
@@ -80,13 +80,13 @@ class UserWebsocket(AsyncJsonWebsocketConsumer):
             return
 
         if self.user.own_object.board.turn is not self.user.color:
-            await self.error(ConfigValues.on_illegal_action_error)
+            await self.error(Config.on_illegal_action_error)
             return
 
         try:
             await self.user.move(start_cell, end_cell)
         except IllegalMoveError:
-            await self.illegal_move_error(ConfigValues.illegal_move_error)
+            await self.illegal_move_error(Config.illegal_move_error)
 
     async def get_legal_moves(self, figure_cell: str):
 

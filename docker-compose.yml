@@ -12,17 +12,34 @@ services:
         ports:
             - 80:80
 
+
+    database:
+        build:
+            context: .
+            dockerfile: ./dockerfiles/postgres/Dockerfile
+        container_name: 'database'
+        environment:
+            POSTGRES_DB: "chess_database"
+            POSTGRES_USER: "chess"
+            POSTGRES_PASSWORD: "12345678"
+        ports:
+            - 5432:5432
+
     daphne:
         build:
             context: .
             dockerfile: ./dockerfiles/web/Dockerfile
         container_name: 'daphne'
-        command: python3 -u -m daphne web_django.web_django.asgi:application -b daphne -p 8000
+        tty: true
+        command: python3 -u -m daphne web_django.asgi:application -b daphne -p 8000
         environment:
-            - PYTHONPATH=.
-            - DJANGO_SETTINGS_MODULE=web_django.web_django.settings
+             - PYTHONPATH=/web_django/
+        depends_on:
+            - database
+        restart: always
         expose:
-        - 8000
+           - 8000
+
 
     telegram:
         build:
@@ -30,6 +47,12 @@ services:
             dockerfile: ./dockerfiles/telegram/Dockerfile
         container_name: 'telegram'
         command: python3 -u telegram/main.py
+        depends_on:
+            - database
+        tty: true
         environment:
             - PYTHONPATH=.
 
+networks:
+    database_network:
+        driver: bridge

@@ -1,0 +1,6 @@
+
+2. Isolate telegram bot and web site containers
+
+5. isolate configs
+django has special env lib!
+

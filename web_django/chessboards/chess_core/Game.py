@@ -6,10 +6,9 @@ from typing import Optional
 import chess
 from channels.consumer import get_channel_layer
 
-from chess_core.User import User
-from config.ConfigValues import ConfigValues
-from database_tools.Connection import connect
-
+from chessboards.chess_core.User import User
+from config.Config import Config
+from chessboards.models import GamesModel
 
 class Game:
 	"""Класс отвечающий за игру"""
@@ -66,13 +65,13 @@ class Game:
 
 		if self.board.is_checkmate():
 			winner = self.get_winner()
-			await self.on_win(winner, ConfigValues.on_mate_message.replace('{color}', winner.color_text))
+			await self.on_win(winner, Config.on_mate_message.replace('{color}', winner.color_text))
 
 	async def check_stalemate(self):
 		""":raise DrawError если на доске пат"""
 
 		if self.board.is_stalemate():
-			await self.on_end_game(ConfigValues.on_stalemate_message)
+			await self.on_end_game(Config.on_stalemate_message)
 
 	async def on_check(self):
 		if self.board.is_check():
@@ -105,7 +104,7 @@ class Game:
 		for player in self.players:
 			asyncio.get_running_loop().create_task(player.fill_attributes())
 
-		await asyncio.sleep(ConfigValues.prepare_time)
+		await asyncio.sleep(Config.prepare_time)
 
 		asyncio.get_running_loop().create_task(self.get_turn_player().start_timer(), name=self.tag)
 
@@ -147,10 +146,8 @@ class Game:
 
 	async def add_to_game_registry(self, winner: Optional[User]):
 
-		await connect.request("INSERT INTO games VALUES (?, ?, ?)", (
-			self.player_1.user_id,
-			self.player_2.user_id,
-			winner.user_id))
+		game = GamesModel(first_player=self.player_1.user_id, second_player=self.player_2.user_id, winner=winner.user_id)
+		await game.asave()
 
 	async def on_draw_offer(self):
 		for player in self.players:
@@ -165,12 +162,12 @@ class Game:
 				)
 				return
 
-		await self.on_end_game(ConfigValues.on_draw_message)
+		await self.on_end_game(Config.on_draw_message)
 
 	async def on_give_up(self, user_id: int):
 		for player in self.players:
 			if player.user_id != user_id:
-				await self.on_win(player, ConfigValues.on_resign.replace('{color}', player.color_text))
+				await self.on_win(player, Config.on_resign.replace('{color}', player.color_text))
 
 	async def on_end_timer(self, loser: User):
 
@@ -179,7 +176,7 @@ class Game:
 
 		# noinspection PyTypeChecker
 
-		await self.on_win((lambda player: self.player_1 if player == self.player_2 else self.player_2)(loser), ConfigValues.on_end_time.replace('{color}', loser.color_text))
+		await self.on_win((lambda player: self.player_1 if player == self.player_2 else self.player_2)(loser), Config.on_end_time.replace('{color}', loser.color_text))
 
 	def get_legal_moves(self, cell: str) -> list:
 

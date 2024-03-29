@@ -4,8 +4,8 @@ from queue import Queue as PyQueue
 from aiohttp import ClientSession
 
 from config.ConfigValues import ConfigValues
-from database_tools.Connection import connect
 from decorators import send_message
+from telegram.database import Connection
 
 
 class Queue(PyQueue):
@@ -81,7 +81,7 @@ class Queue(PyQueue):
 	@staticmethod
 	async def check_games_amount(user_id):
 
-		games = await (await connect.request("SELECT games FROM users WHERE user_id = ?", (user_id, ))).fetchone()
+		games = await Connection.connection.fetchrow("SELECT games FROM users WHERE user_id = $1", user_id, )
 
 		assert games[0], ConfigValues.if_games_not_enough
 

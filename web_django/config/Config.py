@@ -2,7 +2,7 @@ from configparser import ConfigParser as _ConfigParser
 import os
 
 
-class ConfigValues:
+class Config:
 	"""Get values from config"""
 
 	__config_file = _ConfigParser()

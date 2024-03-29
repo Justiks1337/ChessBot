@@ -1,20 +1,18 @@
 from aiogram.types import Message
-from aiogram.dispatcher.filters import Command
+from aiogram.filters import Command
 
-from database_tools.Connection import connect
 from decorators import command_handler, send_message
 from config.ConfigValues import ConfigValues
+from telegram.database import Connection
 
 
 @command_handler(Command('profile'))
 async def profile(message: Message):
     """Отправляет в чат статистику пользователя"""
 
-    stats_values = await (
-        await connect.request(
-            "SELECT games, points FROM users WHERE user_id = ?",
-            (message.from_id,))
-    ).fetchone()
+    stats_values = await Connection().connection.fetchrow(
+            "SELECT games, points FROM users WHERE user_id = $1",
+            message.from_user.id)
 
     await send_message(
         message.chat.id,
