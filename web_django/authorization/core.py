@@ -66,7 +66,6 @@ async def new_data(user_id: int):
         points=0,
         nickname=user_nickname,
         username=username,
-        session_id=None,
         ip_address=None)
 
     await user.asave()
@@ -77,8 +76,3 @@ async def new_data(user_id: int):
 @sync_to_async()
 def get_ip(request):
     return get_client_ip(request)
-
-
-@sync_to_async()
-def get_session_key(request: HttpRequest):
-    return request.COOKIES.get('sessionid')

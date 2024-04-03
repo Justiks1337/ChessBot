@@ -1,3 +1,4 @@
+from typing import Optional
 import glob
 
 from config.Config import Config
@@ -9,7 +10,7 @@ class User:
 	"""User class"""
 
 	def __init__(self, user_id: int, color: bool, own_object):
-		self.user_id = user_id
+		self.user_id = int(user_id)
 		self.color: bool = color
 		self.timer: Timer = Timer(self)
 		self.color_text = (lambda x: "бел" if x else "чёрн")(self.color)
@@ -18,12 +19,24 @@ class User:
 		self.avatar_path = None
 		self.model_user = None
 
+		self.games: Optional[int] = None
+		self.points: Optional[int] = None
+		self.nickname: Optional[str] = None
+		self.username: Optional[str] = None
+		self.session_id: Optional[str] = None
+		self.avatar_path: Optional[str] = None
+
 		self.own_object.players.append(self)
 
 	async def fill_attributes(self):
 		"""fill attributes from database"""
 
 		self.model_user = await UserModel.objects.aget(user_id=self.user_id)
+
+		self.games = self.model_user.games
+		self.points = self.model_user.points
+		self.nickname = self.model_user.nickname
+		self.username = self.model_user.username
 
 		file_name = glob.glob(f"{Config.path_to_avatars}{self.user_id}.*")
 

@@ -13,8 +13,11 @@ from django import setup
 from django.core.management import call_command
 from django.core.asgi import get_asgi_application
 from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.security.websocket import AllowedHostsOriginValidator
+from channels.sessions import SessionMiddlewareStack
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'web_django.settings')
+os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 setup()
 
 asgi_application = get_asgi_application()
@@ -32,5 +35,6 @@ log.info(f'server successful started. Server gateway interface: ASGI')
 
 application = ProtocolTypeRouter({
             "http": asgi_application,
-            "websocket": URLRouter(chessboards_websocket_url_patterns)
+            "websocket": AllowedHostsOriginValidator(
+                SessionMiddlewareStack(URLRouter(chessboards_websocket_url_patterns)))
                        })

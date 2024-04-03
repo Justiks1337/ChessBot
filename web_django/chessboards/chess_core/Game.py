@@ -146,7 +146,11 @@ class Game:
 
 	async def add_to_game_registry(self, winner: Optional[User]):
 
-		game = GamesModel(first_player=self.player_1.user_id, second_player=self.player_2.user_id, winner=winner.user_id)
+		game = GamesModel(
+				first_player=self.player_1.model_user,
+				second_player=self.player_2.model_user,
+				winner=winner.model_user
+		)
 		await game.asave()
 
 	async def on_draw_offer(self):

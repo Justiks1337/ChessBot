@@ -11,6 +11,8 @@ function webSocketConnector(){
 function onMessage(event){
     let response = $.parseJSON(event.data);
 
+    console.log(response);
+
     switch(response["event"]){
 
     case "draw_offer":

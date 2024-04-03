@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from web_django.authorization.core import fill_data
+from authorization.core import fill_data
 
 
 class Authorization:
@@ -25,7 +25,6 @@ class Authorization:
 
         for user_id in list(self.authorization_tokens.keys()):
             if self.authorization_tokens[user_id] == token:
-                print(1)
                 await self.successful_authorization(user_id)
                 return user_id
 

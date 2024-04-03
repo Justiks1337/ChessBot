@@ -78,9 +78,9 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             'authorization/templates',
-            '/error_page/templates',
-            '/chessboards/templates',
-            '/base'
+            'error_page/templates',
+            'chessboards/templates',
+            'base'
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -106,7 +106,7 @@ DATABASES = {
         'NAME': Config.database_name,
         'USER': Config.database_user,
         'PASSWORD': Config.database_password,
-        'HOST': 'database', #Config.database_host,
+        'HOST': Config.database_host,
         'PORT': Config.database_port
     }
 }
@@ -159,8 +159,6 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
-
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 LOGGING = {
@@ -183,6 +181,6 @@ LOGGING = {
 }
 
 
-SESSION_COOKIE_SECURE = False
 SECURE_CROSS_ORIGIN_OPENER_POLICY = None
+
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

@@ -5,7 +5,6 @@ from django.shortcuts import render
 from asgiref.sync import sync_to_async
 
 from config.Config import Config
-from authorization.core import get_session_key
 from chessboards.chess_core.core import get
 from chessboards.chess_core.Game import games
 
@@ -17,9 +16,9 @@ async def game_view(request: HttpRequest, **kwargs):
 		game_object = await get(games, '', tag=kwargs['tag'])
 		assert game_object
 
-		session_key = await get_session_key(request)
+		user_id = int(request.session.get("user_id"))
 
-		user = await get(game_object.players, '', session_id=session_key)
+		user = await get(game_object.players, '', user_id=user_id)
 
 		kwargs["game"] = game_object
 		kwargs["user"] = user

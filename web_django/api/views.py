@@ -20,9 +20,9 @@ from .responses import (
     DeleteAuthorizeTokenResponse,
     AuthorizeAttemptResponse)
 
-from .authorization import authorization
+from .api_authorization import authorization
 from api.Authorization import main_authorization
-from authorization.core import get_session_key, get_ip
+from authorization.core import get_ip
 from chessboards.chess_core.core import get
 from chessboards.chess_core.Game import games, Game
 from chessboards.models import UserModel
@@ -32,7 +32,7 @@ from chessboards.models import UserModel
 @authorization
 async def start_game(request: Request):
 
-    first_user_id, second_user_id = map(int, request.META.get('HTTP_PLAYERS'))
+    first_user_id, second_user_id = map(int, request.data.get('players'))
 
     game = Game((first_user_id, second_user_id))
 
@@ -88,17 +88,12 @@ async def authorization_attempt(request: Request):
     user_id = await main_authorization.authorization(token)
 
     if user_id:
-        session_key = await get_session_key(request)
 
         user = await UserModel.objects.aget(user_id=user_id)
-        user.session_id = session_key
         user.ip_address = ip
         await user.asave()
 
-        user = await get(games, 'players', _user_id=user_id)
-
-        if user:
-            user.session_id = session_key
+        request.session["user_id"] = user_id
 
         return Response(JSONRenderer().render(AuthorizeAttemptSerializer(AuthorizeAttemptResponse(True)).data))
 

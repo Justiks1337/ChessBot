@@ -21,7 +21,7 @@ class Connection:
             host=ConfigValues.database_host,
             port=ConfigValues.database_port,
             user=ConfigValues.database_user,
-            password=ConfigValues.database_password
+            password=ConfigValues.database_password,
         )
 
         await cls.connection.execute("""CREATE TABLE IF NOT EXISTS "blacklist" (

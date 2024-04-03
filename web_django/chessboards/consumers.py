@@ -14,8 +14,8 @@ class UserWebsocket(AsyncJsonWebsocketConsumer):
     async def connect(self):
 
         self.board_tag = self.scope['url_route']['kwargs']['tag']
-        self.sessionid = await self.get_sessionid()
-        self.user = await get(games, 'players', session_id=self.sessionid)
+        self.user = await get(games, 'players', user_id=int(self.scope["session"].get("user_id")))
+        print(self.user)
 
         await self.channel_layer.group_add(
             self.board_tag,
@@ -110,12 +110,3 @@ class UserWebsocket(AsyncJsonWebsocketConsumer):
             return
 
         await self.user.give_up()
-
-    @sync_to_async()
-    def get_sessionid(self):
-        headers = self.scope["headers"]
-
-        for header in headers:
-            if header[0] == b'cookie':
-                sessionid = header[1].decode("utf-8")
-                return sessionid.replace('sessionid=', '')

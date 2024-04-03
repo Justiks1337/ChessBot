@@ -2,18 +2,19 @@ from django.db import models
 
 
 class UserModel(models.Model):
-    user_id = models.IntegerField(primary_key=True)
+
+    user_id = models.BigIntegerField(primary_key=True)
     games = models.IntegerField()
     points = models.IntegerField()
     nickname = models.TextField()
     username = models.TextField()
-    session_id = models.TextField(null=True)
     ip_address = models.TextField(null=True)
 
     objects: models.Manager()
 
     class Meta:
         db_table = "users"
+        managed = False
 
 
 class GamesModel(models.Model):
@@ -25,3 +26,4 @@ class GamesModel(models.Model):
 
     class Meta:
         db_table = "games"
+        managed = False
