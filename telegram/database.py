@@ -5,8 +5,6 @@ from config.ConfigValues import ConfigValues
 
 class Connection:
 
-    connection: asyncpg.Connection
-
     def __new__(cls, *args, **kwargs):
         it = cls.__dict__.get("__it__")
         if it is not None:
@@ -14,17 +12,16 @@ class Connection:
         cls.__it__ = it = object.__new__(cls)
         return it
 
-    @classmethod
-    async def connect(cls):
-        cls.connection = await asyncpg.connect(
-            database=ConfigValues.database_name,
+    async def connect(self):
+        self.connection = await asyncpg.connect(
             host=ConfigValues.database_host,
             port=ConfigValues.database_port,
             user=ConfigValues.database_user,
             password=ConfigValues.database_password,
+            database=ConfigValues.database_name
         )
 
-        await cls.connection.execute("""CREATE TABLE IF NOT EXISTS "blacklist" (
+        await self.connection.execute("""CREATE TABLE IF NOT EXISTS "blacklist" (
             "user_id"	INTEGER NOT NULL,
             "username"	TEXT NOT NULL,
             FOREIGN KEY("user_id") REFERENCES "users"("user_id")

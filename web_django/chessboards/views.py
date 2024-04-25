@@ -1,10 +1,10 @@
+import os
 from time import time
 
 from django.http import HttpRequest
 from django.shortcuts import render
 from asgiref.sync import sync_to_async
 
-from config.Config import Config
 from chessboards.chess_core.core import get
 from chessboards.chess_core.Game import games
 
@@ -41,7 +41,7 @@ def game_player_mode(request: HttpRequest, **kwargs):
 	user = kwargs["user"]
 
 	return render(request, 'chessboards/game.html', {
-		'prepare_time': Config.prepare_time - round(time() - game.started_at),
+		'prepare_time': int(os.getenv("PREPARE_TIME")) - round(time() - game.started_at),
 		'board_tag': kwargs['tag'],
 		'user_id': user.user_id,
 		'board_fen': game.board.board_fen(),
@@ -62,7 +62,7 @@ def game_spectator_mode(request: HttpRequest, **kwargs):
 	game = kwargs["game"]
 
 	return render(request, 'chessboards/game_spectator.html', {
-		'prepare_time': Config.prepare_time - round(time() - game.started_at),
+		'prepare_time': int(os.getenv('PREPARE_TIME')) - round(time() - game.started_at),
 		'board_tag': kwargs['tag'],
 		'board_fen': game.board.board_fen(),
 		'first_player_nickname': game.player_1.nickname,

@@ -1,7 +1,7 @@
 from aiogram.types import Message
 from aiogram.filters import Command
 
-from Queue import main_queue as queue
+from QueueClass import main_queue as queue
 from config.ConfigValues import ConfigValues
 from decorators import command_handler, send_message
 

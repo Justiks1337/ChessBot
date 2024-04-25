@@ -20,6 +20,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'web_django.settings')
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 setup()
 
+
 asgi_application = get_asgi_application()
 
 from chessboards.routing import websocket_urlpatterns as chessboards_websocket_url_patterns

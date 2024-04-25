@@ -1,7 +1,7 @@
+import os
 from typing import Optional
 import glob
 
-from config.Config import Config
 from chessboards.chess_core.Timer import Timer
 from chessboards.models import UserModel
 
@@ -38,7 +38,7 @@ class User:
 		self.nickname = self.model_user.nickname
 		self.username = self.model_user.username
 
-		file_name = glob.glob(f"{Config.path_to_avatars}{self.user_id}.*")
+		file_name = glob.glob(f"{os.getenv('PATH_TO_AVATARS')}{self.user_id}.*")
 
 		if len(file_name):
 			self.avatar_path = file_name[0][file_name[0].index('avatars/'):]

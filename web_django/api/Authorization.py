@@ -1,7 +1,5 @@
 from uuid import uuid4
 
-from authorization.core import fill_data
-
 
 class Authorization:
     def __init__(self):
@@ -32,8 +30,6 @@ class Authorization:
 
     async def successful_authorization(self, user_id: int):
         self.remove_token(user_id)
-
-        return await fill_data(user_id)
 
 
 main_authorization = Authorization()

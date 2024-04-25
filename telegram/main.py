@@ -18,7 +18,9 @@ log.info('bot successful started!')
 
 
 async def main():
-    asyncio.create_task(Connection().connect())
+    connect = Connection()
+    await connect.connect()
+
     await dp.start_polling(bot)
 
 

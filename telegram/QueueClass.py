@@ -81,7 +81,7 @@ class Queue(PyQueue):
 	@staticmethod
 	async def check_games_amount(user_id):
 
-		games = await Connection.connection.fetchrow("SELECT games FROM users WHERE user_id = $1::bigint", user_id, )
+		games = await Connection().connection.fetchrow("SELECT games FROM users WHERE user_id = $1::bigint", user_id, )
 
 		assert games[0], ConfigValues.if_games_not_enough
 

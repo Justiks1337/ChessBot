@@ -18,12 +18,11 @@ class UserModel(models.Model):
 
 
 class GamesModel(models.Model):
-    first_player = models.ForeignKey(UserModel, models.CASCADE, related_name='first_user')
-    second_player = models.ForeignKey(UserModel, models.CASCADE, related_name='second_user')
-    winner = models.ForeignKey(UserModel, models.CASCADE, related_name='win')
+    first_player = models.ForeignKey(UserModel, models.CASCADE)
+    second_player = models.ForeignKey(UserModel, models.CASCADE)
+    winner = models.ForeignKey(UserModel, models.CASCADE)
 
     objects: models.Manager()
 
     class Meta:
         db_table = "games"
-        managed = False

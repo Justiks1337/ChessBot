@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.renderers import JSONRenderer
 from adrf.decorators import api_view
+from ipware import get_client_ip
+from asgiref import sync
 
 from .serializers import (
     StartGameSerializer,
@@ -22,7 +24,7 @@ from .responses import (
 
 from .api_authorization import authorization
 from api.Authorization import main_authorization
-from authorization.core import get_ip
+
 from chessboards.chess_core.core import get
 from chessboards.chess_core.Game import games, Game
 from chessboards.models import UserModel
@@ -83,7 +85,7 @@ async def delete_authorize_token(request: Request):
 @api_view(['POST'])
 async def authorization_attempt(request: Request):
     token = request.query_params.get('token')
-    ip = await get_ip(request)
+    ip = await sync.sync_to_async(get_client_ip)(request)
 
     user_id = await main_authorization.authorization(token)
 

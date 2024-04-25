@@ -10,19 +10,22 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
+import dotenv
 
-from config.Config import Config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Read environment variables
+dotenv.load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = Config.server_authkey
+SECRET_KEY = os.getenv("SERVER_AUTHKEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -103,11 +106,11 @@ ASGI_APPLICATION = 'asgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': Config.database_name,
-        'USER': Config.database_user,
-        'PASSWORD': Config.database_password,
-        'HOST': Config.database_host,
-        'PORT': Config.database_port
+        'NAME': os.getenv("DATABASE_NAME"),
+        'USER': os.getenv("DATABASE_USER"),
+        'PASSWORD': os.getenv("DATABASE_PASSWORD"),
+        'HOST': os.getenv("DATABASE_HOST"),
+        'PORT': int(os.getenv("DATABASE_PORT"))
     }
 }
 
@@ -182,5 +185,4 @@ LOGGING = {
 
 
 SECURE_CROSS_ORIGIN_OPENER_POLICY = None
-
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

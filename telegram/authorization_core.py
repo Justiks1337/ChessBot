@@ -1,23 +1,8 @@
-from sqlite3 import IntegrityError
+import asyncpg
 
-from aiogram import Bot
-from asgiref.sync import sync_to_async
-from django.http import HttpRequest
-from ipware import get_client_ip
-
-from chessboards.models import UserModel
-from config.Config import Config
-
-
-bot = Bot(Config.telegram_token)
-
-
-async def fill_data(user_id: int):
-    try:
-        return await new_data(user_id)
-
-    except IntegrityError:
-        pass
+from config.ConfigValues import ConfigValues
+from main import Connection
+from telegram import bot
 
 
 async def __download_user_avatar(user_id: int):
@@ -29,7 +14,6 @@ async def __download_user_avatar(user_id: int):
     user_profile_photo = await bot.get_user_profile_photos(user_id)
 
     if len(user_profile_photo.photos) > 0:
-
         file = await bot.get_file(user_profile_photo.photos[0][0].file_id)
         file_destination = get_destination(user_id, get_file_name(file.file_path))
         await bot.download_file(file.file_path, file_destination)
@@ -44,10 +28,9 @@ def get_file_format(file_name: str) -> str:
 
 
 def get_destination(user_id: int, file_name) -> str:
-
     file_format = get_file_format(file_name)
 
-    file_destination = Config.path_to_avatars + str(user_id) + file_format
+    file_destination = ConfigValues.path_to_avatars + str(user_id) + file_format
 
     return file_destination
 
@@ -60,19 +43,19 @@ async def new_data(user_id: int):
 
     username = data.user.username
 
-    user = UserModel(
-        user_id=user_id,
-        games=Config.games_amount,
-        points=0,
-        nickname=user_nickname,
-        username=username,
-        ip_address=None)
-
-    await user.asave()
+    connect = Connection()
+    try:
+        await connect.connection.execute(
+            """INSERT INTO users VALUES (
+                $1, $2, $3, $4, $5, $6, $7)""",
+            user_id,
+            ConfigValues.games_amount,
+            0,
+            user_nickname,
+            username,
+            None,
+            None)
+    except asyncpg.UniqueViolationError:
+        return False
 
     await __download_user_avatar(user_id)
-
-
-@sync_to_async()
-def get_ip(request):
-    return get_client_ip(request)
