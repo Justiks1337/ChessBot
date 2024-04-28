@@ -10,19 +10,15 @@ class UserModel(models.Model):
     username = models.TextField()
     ip_address = models.TextField(null=True)
 
-    objects: models.Manager()
+    #objects: models.Manager()
 
     class Meta:
         db_table = "users"
-        managed = False
 
 
 class GamesModel(models.Model):
-    first_player = models.ForeignKey(UserModel, models.CASCADE)
-    second_player = models.ForeignKey(UserModel, models.CASCADE)
-    winner = models.ForeignKey(UserModel, models.CASCADE)
+    first_player = models.ForeignKey(UserModel, models.CASCADE, related_name="first_player_id")
+    second_player = models.ForeignKey(UserModel, models.CASCADE, related_name="second_player_id")
+    winner = models.ForeignKey(UserModel, models.CASCADE, related_name="winner_id")
 
-    objects: models.Manager()
-
-    class Meta:
-        db_table = "games"
+    #objects: models.Manager()

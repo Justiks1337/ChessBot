@@ -1,3 +1,4 @@
+import os
 from asyncio import get_running_loop
 from time import time
 
@@ -118,3 +119,15 @@ async def check_timer(request: Request):
         await game.on_end_timer(player)
 
     return Response({'status': 200})
+
+
+@api_view(['POST'])
+@authorization
+async def download_avatar(request: Request):
+    file = request.FILES["file"]
+    file_name = request.query_params.get("file_name")
+    with open(os.path.join(os.getenv("PATH_TO_AVATARS"), file_name), "wb") as destination:
+        for chunk in file.chunks():
+            destination.write(chunk)
+
+    return Response({"status": 200})
