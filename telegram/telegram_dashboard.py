@@ -1,14 +1,13 @@
 from aiogram.types import Message
-from aiogram.utils.exceptions import ChatNotFound
-from aiogram.dispatcher.filters import Command
+from aiogram.exceptions import TelegramForbiddenError
+from aiogram.filters import Command
 
-from database_tools.Connection import connect
 from config.ConfigValues import ConfigValues
 from decorators import command_handler, send_message
-from telegram import bot
+from telegram.database import Connection
 
 
-@command_handler(Command(['dashboard', 'top']))
+@command_handler(Command('top'))
 async def get_top(message: Message):
     """send message with dashboard"""
 
@@ -20,12 +19,14 @@ async def get_top(message: Message):
     try:
 
         int(amount)
-        top = await (await connect.request(f"SELECT user_id, points, username, nickname FROM users ORDER BY points DESC LIMIT {amount}")).fetchall()
+        top = await Connection().connection.fetch(
+            f"SELECT user_id, points, username, nickname FROM users ORDER BY points DESC LIMIT {amount}")
 
     except ValueError:
 
         if amount == "all":
-            top = await (await connect.request("SELECT user_id, points, username, nickname FROM users ORDER BY points DESC")).fetchall()
+            top = await Connection().connection.fetch(
+                "SELECT user_id, points, username, nickname FROM users ORDER BY points DESC")
             amount = len(top)
 
         else:
@@ -50,7 +51,7 @@ async def get_top(message: Message):
                 '{player_name}', f'<a href="tg://user?id={player[0]}">{player_name}</a>').replace(
                 '{points_amount}', str(player[1]))
 
-        except ChatNotFound:
+        except TelegramForbiddenError:
             continue
 
     await send_message(message.chat.id, msg, parse_mode="html")

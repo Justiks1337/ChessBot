@@ -9,20 +9,32 @@ https://docs.djangoproject.com/en/4.2/howto/deployment/asgi/
 
 import os
 
+from django import setup
+from django.core.management import call_command
 from django.core.asgi import get_asgi_application
-
-from web_django.chessboards.routing import websocket_urlpatterns as chessboards_websocket_url_patterns
 from channels.routing import ProtocolTypeRouter, URLRouter
-from web_django.django_log.log import log
+from channels.security.websocket import AllowedHostsOriginValidator
+from channels.sessions import SessionMiddlewareStack
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'web_django.settings')
+setup()
+
+
+asgi_application = get_asgi_application()
+
+from chessboards.routing import websocket_urlpatterns as chessboards_websocket_url_patterns
+from django_log.log import log
 
 os.environ.setdefault('PYTHONASYNCIODEBUG', '1')
 os.environ.setdefault('SERVER_GATEWAY_INTERFACE', 'ASGI')
 
-log.info(f'server successful started. Server gateway interface: ASGI')
+call_command('makemigrations')
+call_command('migrate')
 
-asgi_application = get_asgi_application()
+log.info(f'server successful started. Server gateway interface: ASGI')
 
 application = ProtocolTypeRouter({
             "http": asgi_application,
-            "websocket": URLRouter(chessboards_websocket_url_patterns)
+            "websocket": AllowedHostsOriginValidator(
+                SessionMiddlewareStack(URLRouter(chessboards_websocket_url_patterns)))
                        })

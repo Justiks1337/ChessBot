@@ -1,3 +1,4 @@
+import os
 from asyncio import get_running_loop
 from time import time
 
@@ -5,6 +6,8 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.renderers import JSONRenderer
 from adrf.decorators import api_view
+from ipware import get_client_ip
+from asgiref import sync
 
 from .serializers import (
     StartGameSerializer,
@@ -20,19 +23,19 @@ from .responses import (
     DeleteAuthorizeTokenResponse,
     AuthorizeAttemptResponse)
 
-from database_tools.Connection import connect
-from .authorization import authorization
-from web_django.api.Authorization import main_authorization
-from web_django.authorization.core import get_session_key, get_ip
-from chess_core.core import get
-from chess_core.Game import games, Game
+from .api_authorization import authorization
+from api.Authorization import main_authorization
+
+from chessboards.chess_core.core import get
+from chessboards.chess_core.Game import games, Game
+from chessboards.models import UserModel
 
 
 @api_view(['POST'])
 @authorization
 async def start_game(request: Request):
 
-    first_user_id, second_user_id = map(int, request.META.get('HTTP_PLAYERS'))
+    first_user_id, second_user_id = map(int, await sync.sync_to_async(request.data.get)('players'))
 
     game = Game((first_user_id, second_user_id))
 
@@ -58,7 +61,7 @@ async def check_in_game(request: Request):
 @api_view(['POST'])
 @authorization
 async def new_authorize_token(request: Request):
-    user_id = request.query_params.get("user_id")
+    user_id = await sync.sync_to_async(request.query_params.get)("user_id")
 
     token = main_authorization.new_token(user_id)
 
@@ -83,22 +86,17 @@ async def delete_authorize_token(request: Request):
 @api_view(['POST'])
 async def authorization_attempt(request: Request):
     token = request.query_params.get('token')
-    ip = await get_ip(request)
+    ip = await sync.sync_to_async(get_client_ip)(request)
 
     user_id = await main_authorization.authorization(token)
 
     if user_id:
-        session_key = await get_session_key(request)
 
-        await connect.request("UPDATE users SET session_id = ?, ip_address = ? WHERE user_id = ?", (
-            session_key,
-            ip[0],
-            user_id))
+        user = await UserModel.objects.aget(user_id=user_id)
+        user.ip_address = ip
+        await user.asave()
 
-        user = await get(games, 'players', _user_id=user_id)
-
-        if user:
-            user.session_id = session_key
+        request.session["user_id"] = user_id
 
         return Response(JSONRenderer().render(AuthorizeAttemptSerializer(AuthorizeAttemptResponse(True)).data))
 
@@ -121,3 +119,15 @@ async def check_timer(request: Request):
         await game.on_end_timer(player)
 
     return Response({'status': 200})
+
+
+@api_view(['POST'])
+@authorization
+async def download_avatar(request: Request):
+    file = request.FILES["file"]
+    file_name = request.query_params.get("file_name")
+    with open(os.path.join(os.getenv("PATH_TO_AVATARS"), file_name), "wb") as destination:
+        for chunk in file.chunks():
+            destination.write(chunk)
+
+    return Response({"status": 200})

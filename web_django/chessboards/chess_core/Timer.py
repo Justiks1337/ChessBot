@@ -1,8 +1,7 @@
+import os
 from typing import Optional
 from time import time as _time
 import asyncio
-
-from config.ConfigValues import ConfigValues
 
 
 class Timer:
@@ -11,7 +10,7 @@ class Timer:
 	def __init__(
 			self,
 			own_object,
-			time: int = ConfigValues.game_time,
+			time: int = int(os.getenv("GAME_TIME")),
 	):
 		self.__event = asyncio.Event()
 
@@ -45,7 +44,7 @@ class Timer:
 
 	async def update_timer(self):
 
-		if _time() - self.own_object.own_object.started_at < ConfigValues.prepare_time:
+		if _time() - self.own_object.own_object.started_at < int(os.getenv("PREPARE_TIME")):
 			return
 
 		if not self.last_flip:

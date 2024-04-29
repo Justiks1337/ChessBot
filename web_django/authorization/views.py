@@ -1,22 +1,15 @@
 from django.shortcuts import render
 from django.http import HttpRequest
-from .core import get_session_key
+from asgiref.sync import sync_to_async
 
-from database_tools.Connection import connect
-
-# Create your views here.
+from chessboards.models import UserModel
 
 
 async def index(request: HttpRequest):
 
-    session_key = await get_session_key(request)
+    try:
+        await UserModel.objects.aget(user_id=await sync_to_async(request.session.get)("user_id"))
+        return await sync_to_async(render)(request, 'authorization/success_authorization.html')
 
-    user = await (await connect.request("SELECT user_id FROM users WHERE session_id = ?", (session_key, ))).fetchone()
-
-    if user:
-        return render(request, 'authorization/success_authorization.html')
-
-    if request.COOKIES == {}:
-        request.session['cookie_init'] = 'true'
-
-    return render(request, 'authorization/authorization_form.html')
+    except UserModel.DoesNotExist:
+        return await sync_to_async(render)(request, 'authorization/authorization_form.html')

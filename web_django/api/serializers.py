@@ -1,4 +1,4 @@
-from rest_framework.serializers import Serializer, CharField, BooleanField
+from rest_framework.serializers import Serializer, CharField, BooleanField, FileField
 
 
 class StartGameSerializer(Serializer):

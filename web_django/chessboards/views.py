@@ -1,13 +1,12 @@
+import os
 from time import time
 
 from django.http import HttpRequest
 from django.shortcuts import render
 from asgiref.sync import sync_to_async
 
-from config.ConfigValues import ConfigValues
-from web_django.authorization.core import get_session_key
-from chess_core.core import get
-from chess_core.Game import games
+from chessboards.chess_core.core import get
+from chessboards.chess_core.Game import games
 
 
 async def game_view(request: HttpRequest, **kwargs):
@@ -17,9 +16,9 @@ async def game_view(request: HttpRequest, **kwargs):
 		game_object = await get(games, '', tag=kwargs['tag'])
 		assert game_object
 
-		session_key = await get_session_key(request)
+		user_id = int(await sync_to_async(request.session.get)("user_id"))
 
-		user = await get(game_object.players, '', session_id=session_key)
+		user = await get(game_object.players, '', user_id=user_id)
 
 		kwargs["game"] = game_object
 		kwargs["user"] = user
@@ -32,7 +31,7 @@ async def game_view(request: HttpRequest, **kwargs):
 		return await game_spectator_mode(request, **kwargs)
 
 	except AssertionError:
-		return render(request, 'error_page/index.html', {'error_number': '404'})
+		return await sync_to_async(render)(request, 'error_page/index.html', {'error_number': '404'})
 
 
 @sync_to_async()
@@ -42,7 +41,7 @@ def game_player_mode(request: HttpRequest, **kwargs):
 	user = kwargs["user"]
 
 	return render(request, 'chessboards/game.html', {
-		'prepare_time': ConfigValues.prepare_time - round(time() - game.started_at),
+		'prepare_time': int(os.getenv("PREPARE_TIME")) - round(time() - game.started_at),
 		'board_tag': kwargs['tag'],
 		'user_id': user.user_id,
 		'board_fen': game.board.board_fen(),
@@ -63,7 +62,7 @@ def game_spectator_mode(request: HttpRequest, **kwargs):
 	game = kwargs["game"]
 
 	return render(request, 'chessboards/game_spectator.html', {
-		'prepare_time': ConfigValues.prepare_time - round(time() - game.started_at),
+		'prepare_time': int(os.getenv('PREPARE_TIME')) - round(time() - game.started_at),
 		'board_tag': kwargs['tag'],
 		'board_fen': game.board.board_fen(),
 		'first_player_nickname': game.player_1.nickname,

@@ -1,7 +1,5 @@
 from uuid import uuid4
 
-from web_django.authorization.core import fill_data
-
 
 class Authorization:
     def __init__(self):
@@ -25,7 +23,6 @@ class Authorization:
 
         for user_id in list(self.authorization_tokens.keys()):
             if self.authorization_tokens[user_id] == token:
-                print(1)
                 await self.successful_authorization(user_id)
                 return user_id
 
@@ -33,8 +30,6 @@ class Authorization:
 
     async def successful_authorization(self, user_id: int):
         self.remove_token(user_id)
-
-        return await fill_data(user_id)
 
 
 main_authorization = Authorization()

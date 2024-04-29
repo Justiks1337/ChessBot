@@ -9,11 +9,11 @@ class ConfigValues:
 	__config_file.read(os.path.join(os.path.dirname(__file__), 'config.ini'), encoding='utf-8-sig')
 
 	# database section
-	db_name = __config_file.get('database', 'db_name')
-	transactions_to_backup = int(__config_file.get('database', 'transactions_to_backup'))
-
-	# Yadisk section
-	yadisk_jwt = __config_file.get('Yadisk', 'yadisk_jwt')
+	database_user = __config_file.get('database', 'database_user')
+	database_password = __config_file.get('database', 'database_password')
+	database_name = __config_file.get('database', 'database_name')
+	database_host = __config_file.get('database', 'database_host')
+	database_port = int(__config_file.get('database', 'database_port'))
 
 	# Telegram section
 	telegram_token = __config_file.get('Telegram', 'telegram_token')

@@ -1,24 +1,24 @@
+import os
 from typing import Optional
 import glob
 
-from chess_core.UserId import UserId
-from config.ConfigValues import ConfigValues
-from database_tools.Connection import connect
-from chess_core.Timer import Timer
+from chessboards.chess_core.Timer import Timer
+from chessboards.models import UserModel
 
 
 class User:
 	"""User class"""
 
 	def __init__(self, user_id: int, color: bool, own_object):
-		self._user_id: UserId = UserId(user_id)
+		self.user_id = int(user_id)
 		self.color: bool = color
 		self.timer: Timer = Timer(self)
 		self.color_text = (lambda x: "бел" if x else "чёрн")(self.color)
 		self.draw_offer = False
 		self.own_object = own_object
+		self.avatar_path = None
+		self.model_user = None
 
-		# attributes from database
 		self.games: Optional[int] = None
 		self.points: Optional[int] = None
 		self.nickname: Optional[str] = None
@@ -28,25 +28,17 @@ class User:
 
 		self.own_object.players.append(self)
 
-	@property
-	def user_id(self):
-		return self._user_id.user_id
-
 	async def fill_attributes(self):
 		"""fill attributes from database"""
 
-		info = await (await connect.request(
-			"SELECT games, points, nickname, username, session_id FROM users WHERE user_id = ?",
-			(self.user_id,)
-		)).fetchone()
+		self.model_user = await UserModel.objects.aget(user_id=self.user_id)
 
-		self.games = info[0]
-		self.points = info[1]
-		self.nickname = info[2]
-		self.username = info[3]
-		self.session_id = info[4]
+		self.games = self.model_user.games
+		self.points = self.model_user.points
+		self.nickname = self.model_user.nickname
+		self.username = self.model_user.username
 
-		file_name = glob.glob(f"{ConfigValues.path_to_avatars}{self.user_id}.*")
+		file_name = glob.glob(f"{os.getenv('PATH_TO_AVATARS')}{self.user_id}.*")
 
 		if len(file_name):
 			self.avatar_path = file_name[0][file_name[0].index('avatars/'):]
@@ -74,10 +66,11 @@ class User:
 
 	async def remove_games(self):
 		"""remove games count after end game"""
-
-		await connect.request("UPDATE users SET games = games - 1 WHERE user_id = ?", (self.user_id, ))
+		self.model_user.games -= 1
+		await self.model_user.asave()
 
 	async def give_points(self):
 		"""add points count after end game"""
 
-		await connect.request("UPDATE users SET points = points + 1 WHERE user_id = ?", (self.user_id, ))
+		self.model_user.games += 1
+		await self.model_user.asave()

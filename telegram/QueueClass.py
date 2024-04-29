@@ -4,8 +4,8 @@ from queue import Queue as PyQueue
 from aiohttp import ClientSession
 
 from config.ConfigValues import ConfigValues
-from database_tools.Connection import connect
 from decorators import send_message
+from telegram.database import Connection
 
 
 class Queue(PyQueue):
@@ -56,11 +56,11 @@ class Queue(PyQueue):
 
 		async with ClientSession() as session:
 			async with session.post(
-					f"{ConfigValues.server_http_protocol}://{ConfigValues.server_ip}:{ConfigValues.server_port}/api/v1/start_game",
+					f"{ConfigValues.server_http_protocol}://{ConfigValues.server_ip}/api/v1/start_game",
 					headers={
 						"content-type": "application/json",
-						"Authorization": ConfigValues.server_authkey,
-						"players": [users[0], users[1]]}) as response:
+						"Authorization": ConfigValues.server_authkey},
+					json={"players": [users[0], users[1]]}) as response:
 
 				json = await response.json()
 
@@ -81,7 +81,7 @@ class Queue(PyQueue):
 	@staticmethod
 	async def check_games_amount(user_id):
 
-		games = await (await connect.request("SELECT games FROM users WHERE user_id = ?", (user_id, ))).fetchone()
+		games = await Connection().connection.fetchrow("SELECT games FROM users WHERE user_id = $1::bigint", user_id, )
 
 		assert games[0], ConfigValues.if_games_not_enough
 
@@ -89,7 +89,7 @@ class Queue(PyQueue):
 	async def check_in_game(user_id):
 		async with ClientSession() as session:
 			async with session.post(
-					f"{ConfigValues.server_http_protocol}://{ConfigValues.server_ip}:{ConfigValues.server_port}/api/v1/check_in_game",
+					f"{ConfigValues.server_http_protocol}://{ConfigValues.server_ip}/api/v1/check_in_game",
 					params={"user_id": user_id},
 					headers={
 						"content-type": "application/json",
