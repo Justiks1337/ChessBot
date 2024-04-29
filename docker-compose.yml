@@ -32,8 +32,6 @@ services:
         container_name: 'daphne'
         tty: true
         command: python3 -u -m daphne web_django.asgi:application -b daphne -p 8000
-        environment:
-             - PYTHONPATH=/web_django/
         depends_on:
             - database
         restart: always

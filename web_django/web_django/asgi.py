@@ -17,7 +17,6 @@ from channels.security.websocket import AllowedHostsOriginValidator
 from channels.sessions import SessionMiddlewareStack
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'web_django.settings')
-os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 setup()
 
 

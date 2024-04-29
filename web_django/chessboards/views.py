@@ -16,7 +16,7 @@ async def game_view(request: HttpRequest, **kwargs):
 		game_object = await get(games, '', tag=kwargs['tag'])
 		assert game_object
 
-		user_id = int(request.session.get("user_id"))
+		user_id = int(await sync_to_async(request.session.get)("user_id"))
 
 		user = await get(game_object.players, '', user_id=user_id)
 
@@ -31,7 +31,7 @@ async def game_view(request: HttpRequest, **kwargs):
 		return await game_spectator_mode(request, **kwargs)
 
 	except AssertionError:
-		return render(request, 'error_page/index.html', {'error_number': '404'})
+		return await sync_to_async(render)(request, 'error_page/index.html', {'error_number': '404'})
 
 
 @sync_to_async()

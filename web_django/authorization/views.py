@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpRequest
+from asgiref.sync import sync_to_async
 
 from chessboards.models import UserModel
 
@@ -7,8 +8,8 @@ from chessboards.models import UserModel
 async def index(request: HttpRequest):
 
     try:
-        user = await UserModel.objects.aget(user_id=request.session.get("user_id"))
-        return render(request, 'authorization/success_authorization.html')
+        await UserModel.objects.aget(user_id=await sync_to_async(request.session.get)("user_id"))
+        return await sync_to_async(render)(request, 'authorization/success_authorization.html')
 
     except UserModel.DoesNotExist:
-        return render(request, 'authorization/authorization_form.html')
+        return await sync_to_async(render)(request, 'authorization/authorization_form.html')

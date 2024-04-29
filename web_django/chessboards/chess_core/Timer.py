@@ -44,7 +44,7 @@ class Timer:
 
 	async def update_timer(self):
 
-		if _time() - self.own_object.own_object.started_at < int(os.getenv("GAME_TIME")):
+		if _time() - self.own_object.own_object.started_at < int(os.getenv("PREPARE_TIME")):
 			return
 
 		if not self.last_flip:

@@ -16,7 +16,7 @@ async def new_token(message: Message):
 
     async with ClientSession() as session:
         async with session.post(
-                f"{ConfigValues.server_http_protocol}://{ConfigValues.server_ip}:{ConfigValues.server_port}/api/v1/new_token",
+                f"{ConfigValues.server_http_protocol}://{ConfigValues.server_ip}/api/v1/new_token",
                 params={"user_id": user_id},
                 headers={"content-type": "application/json", "Authorization": ConfigValues.server_authkey}) as response:
             json = dict(await response.json())
@@ -37,7 +37,7 @@ async def new_token(message: Message):
 async def delete_token(message: Message):
     async with ClientSession() as session:
         async with session.post(
-                f"{ConfigValues.server_http_protocol}://{ConfigValues.server_ip}:{ConfigValues.server_port}/api/v1/delete_token",
+                f"{ConfigValues.server_http_protocol}://{ConfigValues.server_ip}/api/v1/delete_token",
                 params={"user_id": message.from_user.id},
                 headers={'Authorization': ConfigValues.server_authkey, "content-type": "application/json"},
         ) as response:

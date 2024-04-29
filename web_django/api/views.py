@@ -35,7 +35,7 @@ from chessboards.models import UserModel
 @authorization
 async def start_game(request: Request):
 
-    first_user_id, second_user_id = map(int, request.data.get('players'))
+    first_user_id, second_user_id = map(int, await sync.sync_to_async(request.data.get)('players'))
 
     game = Game((first_user_id, second_user_id))
 
@@ -61,7 +61,7 @@ async def check_in_game(request: Request):
 @api_view(['POST'])
 @authorization
 async def new_authorize_token(request: Request):
-    user_id = request.query_params.get("user_id")
+    user_id = await sync.sync_to_async(request.query_params.get)("user_id")
 
     token = main_authorization.new_token(user_id)
 

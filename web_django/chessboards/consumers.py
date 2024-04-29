@@ -3,6 +3,7 @@ import os
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from chess import IllegalMoveError
 from autobahn.exception import Disconnected
+from asgiref.sync import sync_to_async
 
 from chessboards.chess_core.core import get
 from chessboards.chess_core.Game import games
@@ -14,8 +15,10 @@ class UserWebsocket(AsyncJsonWebsocketConsumer):
     async def connect(self):
 
         self.board_tag = self.scope['url_route']['kwargs']['tag']
-        self.user = await get(games, 'players', user_id=int(self.scope["session"].get("user_id")))
-        print(self.user)
+        self.user = await get(
+            games,
+            'players',
+            user_id=await sync_to_async(int)(await sync_to_async(self.scope["session"].get)("user_id")))
 
         await self.channel_layer.group_add(
             self.board_tag,
@@ -49,7 +52,7 @@ class UserWebsocket(AsyncJsonWebsocketConsumer):
         try:
             await super().send_json(content, close=close)
         except Disconnected:
-            log.info("autobahn.exception.Disconnection error. ")
+            await sync_to_async(log.info)("autobahn.exception.Disconnection error. ")
 
     async def end_game_event(self, event):
         await self.send_json({"event": 'end_game', "message": event['message']})
@@ -80,20 +83,20 @@ class UserWebsocket(AsyncJsonWebsocketConsumer):
             return
 
         if self.user.own_object.board.turn is not self.user.color:
-            await self.error(os.getenv("ON_ILLEGAL_ACTION_ERROR"))
+            await self.error(await sync_to_async(os.getenv)("ON_ILLEGAL_ACTION_ERROR"))
             return
 
         try:
             await self.user.move(start_cell, end_cell)
         except IllegalMoveError:
-            await self.illegal_move_error(os.getenv("ILLEGAL_MOVE_ERROR"))
+            await self.illegal_move_error(await sync_to_async)(os.getenv("ILLEGAL_MOVE_ERROR"))
 
     async def get_legal_moves(self, figure_cell: str):
 
         if not self.user:
             return
 
-        cells = self.user.own_object.get_legal_moves(figure_cell)
+        cells = await sync_to_async(self.user.own_object.get_legal_moves)(figure_cell)
 
         await self.send_json({"event": "legal_moves", "cells": cells})
 
