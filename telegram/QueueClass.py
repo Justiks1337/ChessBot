@@ -50,7 +50,7 @@ class Queue(PyQueue):
 			await self.start_game()
 
 	async def start_game(self):
-		"""Начало игры"""
+		"""Начало игры """
 
 		users = [self.get(), self.get()]
 
@@ -71,15 +71,15 @@ class Queue(PyQueue):
 					await send_message(user_id, ConfigValues.on_find_enemy.replace('{url}', url))
 
 	async def checks(self, user_id):
-		self.check_in_queue(user_id)
-		await Queue.check_games_amount(user_id)
+		return self.check_in_queue(user_id)
+		await Queue.check_games_amount_deprecated(user_id)
 		await Queue.check_in_game(user_id)
 
 	def check_in_queue(self, user_id):
-		assert user_id not in self.queue, ConfigValues.if_in_queue
+		return user_id not in self.queue, ConfigValues.if_in_queue
 
 	@staticmethod
-	async def check_games_amount(user_id):
+	async def check_games_amount_deprecated(user_id):
 
 		games = await Connection().connection.fetchrow("SELECT games FROM users WHERE user_id = $1::bigint", user_id, )
 

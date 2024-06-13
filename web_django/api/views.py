@@ -131,3 +131,10 @@ async def download_avatar(request: Request):
             destination.write(chunk)
 
     return Response({"status": 200})
+
+
+@api_view(['GET'])
+@authorization
+async def download_avatar(request: Request):
+    user_id = request.query_params.get("user_id")
+

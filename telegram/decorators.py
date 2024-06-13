@@ -1,6 +1,7 @@
 from asyncio import sleep, create_task
 
 import aiogram
+from asyncpg import Record
 
 from telegram.database import Connection
 from config.ConfigValues import ConfigValues
@@ -24,11 +25,11 @@ def in_blacklist(func):
 
 def authorize(func):
     async def wrapper(message: aiogram.types.Message):
-        user = await Connection().connection.fetchrow(
-            "SELECT user_id FROM users WHERE user_id = $1",
+        user: Record = await Connection().connection.fetchrow(
+            "SELECT ip_address FROM users WHERE user_id = $1",
             message.from_user.id)
 
-        if not user:
+        if not user.get(""):
             await send_message(message.chat.id, ConfigValues.unauthorized_message)
             return
 

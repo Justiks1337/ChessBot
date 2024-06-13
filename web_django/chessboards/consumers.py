@@ -83,13 +83,13 @@ class UserWebsocket(AsyncJsonWebsocketConsumer):
             return
 
         if self.user.own_object.board.turn is not self.user.color:
-            await self.error(await sync_to_async(os.getenv)("ON_ILLEGAL_ACTION_ERROR"))
+            await self.error(await (sync_to_async(os.getenv)("ON_ILLEGAL_ACTION_ERROR")))
             return
 
         try:
             await self.user.move(start_cell, end_cell)
         except IllegalMoveError:
-            await self.illegal_move_error(await sync_to_async)(os.getenv("ILLEGAL_MOVE_ERROR"))
+            await self.illegal_move_error(await (sync_to_async(os.getenv)("ILLEGAL_MOVE_ERROR")))
 
     async def get_legal_moves(self, figure_cell: str):
 

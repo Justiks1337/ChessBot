@@ -11,27 +11,25 @@ from chessboards.chess_core.Game import games
 
 async def game_view(request: HttpRequest, **kwargs):
 
-	try:
+	game_object = await get(games, '', tag=kwargs['tag'])
+	user_id = await sync_to_async(request.session.get)("user_id")
 
-		game_object = await get(games, '', tag=kwargs['tag'])
-		assert game_object
-
-		user_id = int(await sync_to_async(request.session.get)("user_id"))
-
-		user = await get(game_object.players, '', user_id=user_id)
-
-		kwargs["game"] = game_object
-		kwargs["user"] = user
-
-		await game_object.get_turn_player().timer.update_timer()
-
-		if user:
-			return await game_player_mode(request, **kwargs)
-
-		return await game_spectator_mode(request, **kwargs)
-
-	except AssertionError:
+	if not game_object or not user_id:
 		return await sync_to_async(render)(request, 'error_page/index.html', {'error_number': '404'})
+
+	user_id = int(user_id)
+
+	user = await get(game_object.players, '', user_id=user_id)
+
+	kwargs["game"] = game_object
+	kwargs["user"] = user
+
+	await game_object.get_turn_player().timer.update_timer()
+
+	if user:
+		return await game_player_mode(request, **kwargs)
+
+	return await game_spectator_mode(request, **kwargs)
 
 
 @sync_to_async()

@@ -24,7 +24,7 @@ async def __download_user_avatar(user_id: int):
         with open(file_destination, "rb") as destination:
             async with aiohttp.ClientSession() as session:
                 async with session.post(
-                        f"http://{ConfigValues.server_ip}/api/v1/add_avatar?file_name={file_destination}",
+                        f"{ConfigValues.server_http_protocol}://{ConfigValues.server_ip}/api/v1/add_avatar?file_name={file_destination}",
                         data={"file": destination},
                         headers={"Authorization": ConfigValues.server_authkey}):
                     os.remove(file_destination)

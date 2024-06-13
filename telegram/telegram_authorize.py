@@ -5,12 +5,14 @@ from aiogram.filters import Command
 from aiohttp import ClientSession
 
 from config.ConfigValues import ConfigValues
-from decorators import recharge, send_message
+from decorators import recharge, send_message, in_blacklist, only_in_dm
 from telegram import dp
 
 
 @dp.message(Command("authorization"))
 @recharge
+@only_in_dm
+@in_blacklist
 async def new_token(message: Message):
     user_id = message.from_user.id
 
