@@ -19,8 +19,11 @@ async def new_token(message: Message):
     async with ClientSession() as session:
         async with session.post(
                 f"{ConfigValues.server_http_protocol}://{ConfigValues.server_ip}/api/v1/new_token",
-                params={"user_id": user_id},
-                headers={"content-type": "application/json", "Authorization": ConfigValues.server_authkey}) as response:
+                params={"user_id": user_id,
+                        "username": message.from_user.username,
+                        "nickname": message.from_user.full_name},
+                headers={"content-type": "application/json",
+                         "Authorization": ConfigValues.server_authkey}) as response:
             json = dict(await response.json())
             if json['success']:
                 await send_message(
@@ -28,20 +31,7 @@ async def new_token(message: Message):
                                                                                 ).replace('{url}',
                 f"{ConfigValues.proxy_http_protocol}://{ConfigValues.proxy_ip}/authorization/"),
                     parse_mode='MARKDOWN')
-                await sleep(ConfigValues.authorization_tokens_live_time)
 
-                await delete_token(message)
                 return
 
             await send_message(message.chat.id, ConfigValues.on_authorization_error)
-
-
-async def delete_token(message: Message):
-    async with ClientSession() as session:
-        async with session.post(
-                f"{ConfigValues.server_http_protocol}://{ConfigValues.server_ip}/api/v1/delete_token",
-                params={"user_id": message.from_user.id},
-                headers={'Authorization': ConfigValues.server_authkey, "content-type": "application/json"},
-        ) as response:
-            if (await response.json())['success']:
-                await send_message(message.chat.id, ConfigValues.on_delete_authorization_code)

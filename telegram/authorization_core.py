@@ -1,5 +1,4 @@
 import os
-import io
 import asyncpg
 import aiohttp
 

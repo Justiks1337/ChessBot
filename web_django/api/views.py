@@ -8,23 +8,21 @@ from rest_framework.renderers import JSONRenderer
 from adrf.decorators import api_view
 from ipware import get_client_ip
 from asgiref import sync
+import jwt
 
 from .serializers import (
     StartGameSerializer,
     CheckInGameSerializer,
     NewAuthorizeTokenSerializer,
-    DeleteAuthorizeTokenSerializer,
     AuthorizeAttemptSerializer)
 
 from .responses import (
     StartGameResponse,
     CheckInGameResponse,
     NewAuthorizeTokenResponse,
-    DeleteAuthorizeTokenResponse,
     AuthorizeAttemptResponse)
 
 from .api_authorization import authorization
-from api.Authorization import main_authorization
 
 from chessboards.chess_core.core import get
 from chessboards.chess_core.Game import games, Game
@@ -34,7 +32,6 @@ from chessboards.models import UserModel
 @api_view(['POST'])
 @authorization
 async def start_game(request: Request):
-
     first_user_id, second_user_id = map(int, await sync.sync_to_async(request.data.get)('players'))
 
     game = Game((first_user_id, second_user_id))
@@ -47,7 +44,6 @@ async def start_game(request: Request):
 @api_view(['POST'])
 @authorization
 async def check_in_game(request: Request):
-
     user_id = request.query_params.get('user_id')
 
     user = await get(games, 'players', _user_id=user_id)
@@ -62,25 +58,16 @@ async def check_in_game(request: Request):
 @authorization
 async def new_authorize_token(request: Request):
     user_id = await sync.sync_to_async(request.query_params.get)("user_id")
+    username = await sync.sync_to_async(request.query_params.get)("user_id")
+    nickname = await sync.sync_to_async(request.query_params.get)("user_id")
 
-    token = main_authorization.new_token(user_id)
+    token = jwt.encode({"user_id": user_id,
+                        "username": username,
+                        "nickname": nickname,
+                        "created_at": time()},
+                       os.getenv("SERVER_AUTHKEY"))
 
-    if token:
-        return Response(NewAuthorizeTokenSerializer(NewAuthorizeTokenResponse(True, token)).data)
-
-    return Response(NewAuthorizeTokenSerializer(NewAuthorizeTokenResponse(False, '')).data)
-
-
-@authorization
-@api_view(['POST'])
-async def delete_authorize_token(request: Request):
-    user_id = request.query_params.get('user_id')
-    try:
-        main_authorization.remove_token(user_id)
-        return Response(DeleteAuthorizeTokenSerializer(DeleteAuthorizeTokenResponse(True)).data)
-
-    except KeyError:
-        return Response(DeleteAuthorizeTokenSerializer(DeleteAuthorizeTokenResponse(False)).data)
+    return Response(NewAuthorizeTokenSerializer(NewAuthorizeTokenResponse(True, token)).data)
 
 
 @api_view(['POST'])
@@ -88,24 +75,29 @@ async def authorization_attempt(request: Request):
     token = request.query_params.get('token')
     ip = await sync.sync_to_async(get_client_ip)(request)
 
-    user_id = await main_authorization.authorization(token)
+    decoded_token = jwt.decode(token, os.getenv("SERVER_AUTHKEY"), algorithms=["HS256"])
 
-    if user_id:
+    if not decoded_token.get("user_id"):
+        return Response(JSONRenderer().render(AuthorizeAttemptSerializer(AuthorizeAttemptResponse(False, message="Invalid token")).data))
 
-        user = await UserModel.objects.aget(user_id=user_id)
-        user.ip_address = ip
-        await user.asave()
+    if not decoded_token.get("created_at"):
+        return Response(JSONRenderer().render(AuthorizeAttemptSerializer(AuthorizeAttemptResponse(False, message="Token expired")).data))
 
-        request.session["user_id"] = user_id
+    user_id = decoded_token["user_id"]
+    username = decoded_token["username"]
+    nickname = decoded_token["nickname"]
 
-        return Response(JSONRenderer().render(AuthorizeAttemptSerializer(AuthorizeAttemptResponse(True)).data))
+    user = UserModel(user_id=user_id, games=0, points=0, username=username, nickname=nickname)
+    user.ip_address = ip
+    await user.asave()
 
-    return Response(JSONRenderer().render(AuthorizeAttemptSerializer(AuthorizeAttemptResponse(False)).data))
+    request.session["user_id"] = user_id
+
+    return Response(JSONRenderer().render(AuthorizeAttemptSerializer(AuthorizeAttemptResponse(True)).data))
 
 
 @api_view(['POST'])
 async def check_timer(request: Request):
-
     game_tag = request.query_params.get("tag")
 
     game: Game = await get(games, '', tag=game_tag)
@@ -131,10 +123,3 @@ async def download_avatar(request: Request):
             destination.write(chunk)
 
     return Response({"status": 200})
-
-
-@api_view(['GET'])
-@authorization
-async def download_avatar(request: Request):
-    user_id = request.query_params.get("user_id")
-

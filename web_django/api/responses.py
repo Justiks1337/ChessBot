@@ -22,6 +22,8 @@ class DeleteAuthorizeTokenResponse:
 class AuthorizeAttemptResponse:
     def __init__(
             self,
-            success: bool):
+            success: bool,
+            message: str = "no message"):
 
         self.success = success
+        self.message = message
