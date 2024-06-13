@@ -19,7 +19,6 @@ class User:
 		self.avatar_path = None
 		self.model_user = None
 
-		self.games: Optional[int] = None
 		self.points: Optional[int] = None
 		self.nickname: Optional[str] = None
 		self.username: Optional[str] = None
@@ -33,7 +32,6 @@ class User:
 
 		self.model_user = await UserModel.objects.aget(user_id=self.user_id)
 
-		self.games = self.model_user.games
 		self.points = self.model_user.points
 		self.nickname = self.model_user.nickname
 		self.username = self.model_user.username
@@ -64,13 +62,8 @@ class User:
 
 		await self.timer.start_timer()
 
-	async def remove_games(self):
-		"""remove games count after end game"""
-		self.model_user.games -= 1
-		await self.model_user.asave()
-
 	async def give_points(self):
 		"""add points count after end game"""
 
-		self.model_user.games += 1
+		self.model_user.points += 1
 		await self.model_user.asave()

@@ -1,13 +1,11 @@
 import os
-import asyncpg
 import aiohttp
 
 from config.ConfigValues import ConfigValues
-from main import Connection
 from telegram import bot
 
 
-async def __download_user_avatar(user_id: int):
+async def download_user_avatar(user_id: int):
     """Download user profile photo
 
     :arg user_id - user id
@@ -48,27 +46,3 @@ def get_destination(user_id: int, file_name) -> str:
 
     return file_destination
 
-
-async def new_data_deprecated(user_id: int):
-    data = await bot.get_chat_member(chat_id=user_id, user_id=user_id)
-    user_nickname = data.user.first_name
-    if data.user.last_name:
-        user_nickname = user_nickname + f" {data.user.last_name}"
-
-    username = data.user.username
-
-    connect = Connection()
-    try:
-        await connect.connection.execute(
-            """INSERT INTO users VALUES (
-                $1, $2, $3, $4, $5, $6)""",
-            user_id,
-            ConfigValues.games_amount,
-            0,
-            user_nickname,
-            username,
-            None)
-    except asyncpg.UniqueViolationError:
-        return False
-
-    await __download_user_avatar(user_id)

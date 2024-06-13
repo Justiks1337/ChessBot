@@ -126,9 +126,6 @@ class Game:
 				'message': message
 			})
 
-		await self.player_1.remove_games()
-		await self.player_2.remove_games()
-
 		games.remove(self)
 		del self
 

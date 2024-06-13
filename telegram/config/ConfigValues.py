@@ -62,7 +62,6 @@ class ConfigValues:
 
 	prepare_time = int(__config_file.get('Game', 'prepare_time'))
 	game_time = int(__config_file.get('Game', 'game_time'))
-	games_amount = int(__config_file.get('Game', 'games_amount'))
 
 	# Web
 

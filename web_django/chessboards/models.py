@@ -4,11 +4,9 @@ from django.db import models
 class UserModel(models.Model):
 
     user_id = models.BigIntegerField(primary_key=True)
-    games = models.IntegerField()
     points = models.IntegerField()
     nickname = models.TextField()
     username = models.TextField()
-    ip_address = models.TextField(null=True)
 
     class Meta:
         db_table = "users"

@@ -3,7 +3,6 @@ from asyncio import sleep, create_task
 import aiogram
 import aiohttp
 
-from telegram.database_deprecated import Connection
 from config.ConfigValues import ConfigValues
 from telegram import dp, bot
 

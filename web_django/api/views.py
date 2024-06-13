@@ -8,7 +8,6 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.generics import RetrieveAPIView
 from adrf.decorators import api_view
 from utils import in_database
-from ipware import get_client_ip
 from asgiref import sync
 import jwt
 
@@ -76,7 +75,6 @@ async def new_authorize_token(request: Request):
 @api_view(['POST'])
 async def authorization_attempt(request: Request):
     token = request.query_params.get('token')
-    ip = await sync.sync_to_async(get_client_ip)(request)
 
     decoded_token = jwt.decode(token, os.getenv("SERVER_AUTHKEY"), algorithms=["HS256"])
 
@@ -94,8 +92,7 @@ async def authorization_attempt(request: Request):
 
     if not in_database(user_id):
 
-        user = UserModel(user_id=user_id, games=0, points=0, username=username, nickname=nickname)
-        user.ip_address = ip  # deprecated
+        user = UserModel(user_id=user_id, points=0, username=username, nickname=nickname)
         await user.asave()
 
         return Response(JSONRenderer().render(AuthorizeAttemptSerializer(AuthorizeAttemptResponse(True)).data))
