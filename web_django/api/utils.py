@@ -3,6 +3,18 @@ import os
 from rest_framework.response import Response
 from rest_framework.request import Request
 
+from chessboards.models import UserModel
+
+
+async def in_database(user_id: int) -> bool:
+
+    try:
+        await UserModel.objects.aget(user_id=await user_id)
+        return True
+
+    except UserModel.DoesNotExist:
+        return False
+
 
 def authorization(func):
     async def wrapper(request: Request):

@@ -1,9 +1,9 @@
 from asyncio import sleep, create_task
 
 import aiogram
-from asyncpg import Record
+import aiohttp
 
-from telegram.database import Connection
+from telegram.database_deprecated import Connection
 from config.ConfigValues import ConfigValues
 from telegram import dp, bot
 
@@ -12,29 +12,31 @@ def in_blacklist(func):
     """Check user in blacklist"""
 
     async def wrapped(message: aiogram.types.Message):
-        if await Connection().connection.fetchrow(
-                "SELECT user_id FROM blacklist WHERE username = $1",
-                message.from_user.username):
-
-            return await send_message(message.chat.id, ConfigValues.on_blacklist_message)
-
-        return await func(message)
-
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                    f"{ConfigValues.server_http_protocol}://{ConfigValues.server_ip}/blacklist/in_blacklist",
+                    params={"user_id": message.from_user.id},
+                    headers={"Content-type": "application/json",
+                             "Authorization": ConfigValues.server_authkey}) as response:
+                jsn = await response.json()
+                if jsn.get("in_blacklist"):
+                    return await func(message)
+                return await send_message(message.chat.id, ConfigValues.on_blacklist_message)
     return wrapped
 
 
 def authorize(func):
     async def wrapper(message: aiogram.types.Message):
-        user: Record = await Connection().connection.fetchrow(
-            "SELECT ip_address FROM users WHERE user_id = $1",
-            message.from_user.id)
-
-        if not user.get(""):
-            await send_message(message.chat.id, ConfigValues.unauthorized_message)
-            return
-
-        return await func(message)
-
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                    f"{ConfigValues.server_http_protocol}://{ConfigValues.server_ip}/api/v1/in_database",
+                    params={"user_id": message.from_user.id},
+                    headers={"Content-type": "application/json",
+                             "Authorization": ConfigValues.server_authkey}) as response:
+                jsn = await response.json()
+                if jsn.get("in_database"):
+                    return await func(message)
+                await send_message(message.chat.id, ConfigValues.unauthorized_message)
     return wrapper
 
 

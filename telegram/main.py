@@ -11,7 +11,7 @@ import telegram_profile
 import telegram_queue
 import telegram_start
 
-from telegram.database import Connection
+from telegram.database_deprecated import Connection
 
 
 log.info('bot successful started!')

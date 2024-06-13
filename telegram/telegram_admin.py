@@ -1,41 +1,34 @@
-from sqlite3 import IntegrityError
-
+import aiohttp
 from aiogram.types import Message
 from aiogram.filters import Command
 
 from config.ConfigValues import ConfigValues
 from decorators import in_admins, command_handler, send_message
-from telegram.database import Connection
 
 
 @command_handler(Command('add_on_blacklist'))
 @in_admins
 async def add_on_blacklist(message: Message):
-
-	try:
-		username = message.get_args().replace('@', '')
-		await Connection.connection.execute(
-			"INSERT INTO blacklist VALUES ((SELECT user_id FROM users WHERE username = $1), $2)",
-			username,
-			username)
-
-	except IntegrityError:
-		await send_message(message.chat.id, ConfigValues.on_invalid_args)
-		return
-
-	await send_message(message.chat.id, ConfigValues.successful_add_to_blacklist.replace('{username}', username))
+	user_id = int(message.get_args())
+	async with aiohttp.ClientSession() as session:
+		async with session.post(
+				f"{ConfigValues.server_http_protocol}://{ConfigValues.server_ip}/blacklist/add_to_blacklist",
+				params={"user_id": user_id},
+				headers={"Content-type": "application/json",
+						 "Authorization": ConfigValues.server_authkey}):
+			await send_message(message.chat.id, ConfigValues.successful_add_to_blacklist.replace('{username}', user_id))
 
 
 @command_handler(Command('remove_from_blacklist'))
 @in_admins
 async def remove_from_blacklist(message: Message):
+	user_id = int(message.get_args())
 
-	try:
-		user_id = int(message.get_args())
-	except ValueError:
-		await send_message(message.chat.id, ConfigValues.on_invalid_args)
-		return
+	async with aiohttp.ClientSession() as session:
+		async with session.post(
+				f"{ConfigValues.server_http_protocol}://{ConfigValues.server_ip}/blacklist/remove_from_blacklist",
+				params={"user_id": user_id},
+				headers={"Content-type": "application/json",
+						 "Authorization": ConfigValues.server_authkey}):
+			await send_message(message.chat.id, ConfigValues.successful_remove_from_blacklist)
 
-	await Connection().connection.execute("DELETE FROM blacklist WHERE user_id = ?", (user_id, ))
-
-	await send_message(message.chat.id, ConfigValues.successful_remove_from_blacklist)

@@ -49,7 +49,7 @@ def get_destination(user_id: int, file_name) -> str:
     return file_destination
 
 
-async def new_data(user_id: int):
+async def new_data_deprecated(user_id: int):
     data = await bot.get_chat_member(chat_id=user_id, user_id=user_id)
     user_nickname = data.user.first_name
     if data.user.last_name:

@@ -5,7 +5,9 @@ from time import time
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.renderers import JSONRenderer
+from rest_framework.generics import RetrieveAPIView
 from adrf.decorators import api_view
+from utils import in_database
 from ipware import get_client_ip
 from asgiref import sync
 import jwt
@@ -14,7 +16,8 @@ from .serializers import (
     StartGameSerializer,
     CheckInGameSerializer,
     NewAuthorizeTokenSerializer,
-    AuthorizeAttemptSerializer)
+    AuthorizeAttemptSerializer,
+    DashboardSerializer)
 
 from .responses import (
     StartGameResponse,
@@ -22,7 +25,7 @@ from .responses import (
     NewAuthorizeTokenResponse,
     AuthorizeAttemptResponse)
 
-from .api_authorization import authorization
+from utils import authorization
 
 from chessboards.chess_core.core import get
 from chessboards.chess_core.Game import games, Game
@@ -87,13 +90,15 @@ async def authorization_attempt(request: Request):
     username = decoded_token["username"]
     nickname = decoded_token["nickname"]
 
-    user = UserModel(user_id=user_id, games=0, points=0, username=username, nickname=nickname)
-    user.ip_address = ip
-    await user.asave()
-
     request.session["user_id"] = user_id
 
-    return Response(JSONRenderer().render(AuthorizeAttemptSerializer(AuthorizeAttemptResponse(True)).data))
+    if not in_database(user_id):
+
+        user = UserModel(user_id=user_id, games=0, points=0, username=username, nickname=nickname)
+        user.ip_address = ip  # deprecated
+        await user.asave()
+
+        return Response(JSONRenderer().render(AuthorizeAttemptSerializer(AuthorizeAttemptResponse(True)).data))
 
 
 @api_view(['POST'])
@@ -123,3 +128,43 @@ async def download_avatar(request: Request):
             destination.write(chunk)
 
     return Response({"status": 200})
+
+
+@api_view(['GET'])
+@authorization
+async def in_database_api(request: Request):
+    user_id = request.query_params.get("user_id")
+
+    if in_database(user_id):
+        return Response({"in_database": True})
+
+    return Response({"in_database": False})
+
+
+@api_view(['GET'])
+@authorization
+async def dashboard(request: Request):
+
+    amount = int(request.query_params.get("amount"))
+    if not amount:
+        users = UserModel.objects.all().order_by("points")
+    else:
+        users = UserModel.objects.all()[:amount].order_by("points")
+
+    return Response(DashboardSerializer(users, many=True))
+
+
+class UserInfo(RetrieveAPIView):
+    class Serializer:
+        class Meta:
+            model = UserModel
+            fields = ["points"]
+
+    queryset = UserModel.objects.all()
+    serializer_class = Serializer
+    lookup_field = "user_id"
+
+
+
+
+

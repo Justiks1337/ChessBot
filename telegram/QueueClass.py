@@ -5,7 +5,6 @@ from aiohttp import ClientSession
 
 from config.ConfigValues import ConfigValues
 from decorators import send_message
-from telegram.database import Connection
 
 
 class Queue(PyQueue):
@@ -77,13 +76,6 @@ class Queue(PyQueue):
 
 	def check_in_queue(self, user_id):
 		return user_id not in self.queue, ConfigValues.if_in_queue
-
-	@staticmethod
-	async def check_games_amount_deprecated(user_id):
-
-		games = await Connection().connection.fetchrow("SELECT games FROM users WHERE user_id = $1::bigint", user_id, )
-
-		assert games[0], ConfigValues.if_games_not_enough
 
 	@staticmethod
 	async def check_in_game(user_id):

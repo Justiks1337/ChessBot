@@ -1,37 +1,34 @@
+import aiohttp
 from aiogram.types import Message
 from aiogram.exceptions import TelegramForbiddenError
 from aiogram.filters import Command
 
 from config.ConfigValues import ConfigValues
 from decorators import command_handler, send_message
-from telegram.database import Connection
 
 
 @command_handler(Command('top'))
 async def get_top(message: Message):
     """send message with dashboard"""
 
-    amount = message.get_args()
+    count = message.get_args()
 
-    if not amount:
+    amount = 0
+
+    if not count:
         amount = 10
+    elif isinstance(count, int):
+        amount = int(count)
+    elif count == "all":
+        amount = 0
 
-    try:
-
-        int(amount)
-        top = await Connection().connection.fetch(
-            f"SELECT user_id, points, username, nickname FROM users ORDER BY points DESC LIMIT {amount}")
-
-    except ValueError:
-
-        if amount == "all":
-            top = await Connection().connection.fetch(
-                "SELECT user_id, points, username, nickname FROM users ORDER BY points DESC")
-            amount = len(top)
-
-        else:
-            await send_message(message.chat.id, ConfigValues.on_invalid_args)
-            return
+    async with aiohttp.ClientSession() as session:
+        async with session.post(
+                f"{ConfigValues.server_http_protocol}://{ConfigValues.server_ip}/api/v1/dashboard",
+                params={"count": count},
+                headers={"Content-type": "application/json",
+                         "Authorization": ConfigValues.server_authkey}) as response:
+            top = await response.json()
 
     msg: str = ConfigValues.dashboard_title.replace('{amount}', str(amount))
 
@@ -39,7 +36,7 @@ async def get_top(message: Message):
     for player in top:
         try:
 
-            if not player[2]:
+            if not player.get("username"):
                 player_name = player[3]
             else:
                 player_name = player[2]
@@ -48,8 +45,8 @@ async def get_top(message: Message):
 
             msg = msg + ConfigValues.dashboard_object.replace(
                 '{position}', str(position)).replace(
-                '{player_name}', f'<a href="tg://user?id={player[0]}">{player_name}</a>').replace(
-                '{points_amount}', str(player[1]))
+                '{player_name}', f'<a href="tg://user?id={player.get("user_id")}">{player_name}</a>').replace(
+                '{points_amount}', str(player.get("points")))
 
         except TelegramForbiddenError:
             continue

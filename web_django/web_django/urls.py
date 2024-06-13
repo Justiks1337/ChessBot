@@ -24,7 +24,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('playgrounds/', include('chessboards.urls')),
     path('api/v1/', include('api.urls')),
-    path('authorization/', include('authorization.urls'))
+    path('authorization/', include('authorization.urls')),
+    path('blacklist/', include('blacklist.urls'))
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 handler404 = handler404
