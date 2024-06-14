@@ -11,11 +11,12 @@ async def profile(message: Message):
     """Отправляет в чат статистику пользователя"""
 
     async with aiohttp.ClientSession() as session:
-        async with session.post(
+        async with session.get(
                 f"{ConfigValues.server_http_protocol}://{ConfigValues.server_ip}/api/v1/profile/{message.from_user.id}/",
                 headers={"Content-type": "application/json",
                          "Authorization": ConfigValues.server_authkey}) as response:
             stats_values = await response.json()
+            print(stats_values)
 
     await send_message(
         message.chat.id,

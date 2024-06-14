@@ -3,10 +3,11 @@ from aiogram.filters import Command
 
 from QueueClass import main_queue as queue
 from config.ConfigValues import ConfigValues
-from decorators import command_handler, send_message
+from decorators import command_handler, send_message, authorize
 
 
 @command_handler(Command('play'))
+@authorize
 async def queue_join(message: Message):
 	"""Добавляет пользователя в очередь"""
 
@@ -14,6 +15,7 @@ async def queue_join(message: Message):
 
 
 @command_handler(Command('leave'))
+@authorize
 async def queue_leave(message: Message):
 	"""Удаляет пользователя из очереди"""
 

@@ -53,7 +53,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'adrf',
     'channels',
-    'chessboards'
+    'chessboards',
+    'blacklist'
 ]
 
 MIDDLEWARE = [

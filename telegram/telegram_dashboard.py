@@ -11,21 +11,21 @@ from decorators import command_handler, send_message
 async def get_top(message: Message):
     """send message with dashboard"""
 
-    count = message.get_args()
+    count = message.text.split()[-1]
 
     amount = 0
 
     if not count:
         amount = 10
-    elif isinstance(count, int):
+    elif count.isdigit():
         amount = int(count)
     elif count == "all":
         amount = 0
 
     async with aiohttp.ClientSession() as session:
-        async with session.post(
+        async with session.get(
                 f"{ConfigValues.server_http_protocol}://{ConfigValues.server_ip}/api/v1/dashboard",
-                params={"count": count},
+                params={"count": amount},
                 headers={"Content-type": "application/json",
                          "Authorization": ConfigValues.server_authkey}) as response:
             top = await response.json()
@@ -36,10 +36,7 @@ async def get_top(message: Message):
     for player in top:
         try:
 
-            if not player.get("username"):
-                player_name = player[3]
-            else:
-                player_name = player[2]
+            player_name = player.get("nickname")
 
             position += 1
 

@@ -6,8 +6,9 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.renderers import JSONRenderer
 from rest_framework.generics import RetrieveAPIView
+from rest_framework.serializers import ModelSerializer
 from adrf.decorators import api_view
-from utils import in_database
+from api.utils import in_database
 from asgiref import sync
 import jwt
 
@@ -24,7 +25,7 @@ from .responses import (
     NewAuthorizeTokenResponse,
     AuthorizeAttemptResponse)
 
-from utils import authorization
+from api.utils import authorization
 
 from chessboards.chess_core.core import get
 from chessboards.chess_core.Game import games, Game
@@ -60,8 +61,8 @@ async def check_in_game(request: Request):
 @authorization
 async def new_authorize_token(request: Request):
     user_id = await sync.sync_to_async(request.query_params.get)("user_id")
-    username = await sync.sync_to_async(request.query_params.get)("user_id")
-    nickname = await sync.sync_to_async(request.query_params.get)("user_id")
+    username = await sync.sync_to_async(request.query_params.get)("username")
+    nickname = await sync.sync_to_async(request.query_params.get)("nickname")
 
     token = jwt.encode({"user_id": user_id,
                         "username": username,
@@ -81,7 +82,7 @@ async def authorization_attempt(request: Request):
     if not decoded_token.get("user_id"):
         return Response(JSONRenderer().render(AuthorizeAttemptSerializer(AuthorizeAttemptResponse(False, message="Invalid token")).data))
 
-    if not decoded_token.get("created_at"):
+    if decoded_token.get("created_at") + 300 < time():
         return Response(JSONRenderer().render(AuthorizeAttemptSerializer(AuthorizeAttemptResponse(False, message="Token expired")).data))
 
     user_id = decoded_token["user_id"]
@@ -90,12 +91,11 @@ async def authorization_attempt(request: Request):
 
     request.session["user_id"] = user_id
 
-    if not in_database(user_id):
-
-        user = UserModel(user_id=user_id, points=0, username=username, nickname=nickname)
+    if not await in_database(user_id):
+        user = await UserModel.objects.acreate(user_id=user_id, points=0, username=username, nickname=nickname)
         await user.asave()
 
-        return Response(JSONRenderer().render(AuthorizeAttemptSerializer(AuthorizeAttemptResponse(True)).data))
+    return Response(JSONRenderer().render(AuthorizeAttemptSerializer(AuthorizeAttemptResponse(True)).data))
 
 
 @api_view(['POST'])
@@ -132,7 +132,7 @@ async def download_avatar(request: Request):
 async def in_database_api(request: Request):
     user_id = request.query_params.get("user_id")
 
-    if in_database(user_id):
+    if await in_database(user_id):
         return Response({"in_database": True})
 
     return Response({"in_database": False})
@@ -142,17 +142,19 @@ async def in_database_api(request: Request):
 @authorization
 async def dashboard(request: Request):
 
-    amount = int(request.query_params.get("amount"))
-    if not amount:
-        users = UserModel.objects.all().order_by("points")
+    count = int(request.query_params.get("count"))
+    if not count:
+        users = UserModel.objects.all().order_by("-points")
     else:
-        users = UserModel.objects.all()[:amount].order_by("points")
+        users = UserModel.objects.all().order_by("-points")[:count]
 
-    return Response(DashboardSerializer(users, many=True))
+    json = [{"user_id": user.user_id, "points": user.points, "nickname": user.nickname} async for user in users]
+
+    return Response(json)
 
 
 class UserInfo(RetrieveAPIView):
-    class Serializer:
+    class Serializer(ModelSerializer):
         class Meta:
             model = UserModel
             fields = ["points"]
@@ -160,8 +162,3 @@ class UserInfo(RetrieveAPIView):
     queryset = UserModel.objects.all()
     serializer_class = Serializer
     lookup_field = "user_id"
-
-
-
-
-

@@ -27,3 +27,16 @@ class AuthorizeAttemptResponse:
 
         self.success = success
         self.message = message
+
+
+class DashboardResponse:
+    def __init__(self,
+                 user_id, points, username, nickname):
+        self.user_id = user_id
+        self.points = points
+        self.username = username
+        self.nickname = nickname
+
+
+
+

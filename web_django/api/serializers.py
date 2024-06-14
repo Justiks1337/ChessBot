@@ -1,4 +1,4 @@
-from rest_framework.serializers import Serializer, CharField, BooleanField, FileField
+from rest_framework.serializers import Serializer, CharField, BooleanField, FileField, ModelSerializer
 from chessboards.models import UserModel
 
 
@@ -23,7 +23,7 @@ class AuthorizeAttemptSerializer(Serializer):
     success = BooleanField()
 
 
-class DashboardSerializer(Serializer):
+class DashboardSerializer(ModelSerializer):
     class Meta:
         model = UserModel
         fields = ["user_id", "points", "username", "nickname"]

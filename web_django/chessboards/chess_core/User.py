@@ -29,7 +29,6 @@ class User:
 
 	async def fill_attributes(self):
 		"""fill attributes from database"""
-
 		self.model_user = await UserModel.objects.aget(user_id=self.user_id)
 
 		self.points = self.model_user.points

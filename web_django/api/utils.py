@@ -9,7 +9,7 @@ from chessboards.models import UserModel
 async def in_database(user_id: int) -> bool:
 
     try:
-        await UserModel.objects.aget(user_id=await user_id)
+        await UserModel.objects.aget(user_id=user_id)
         return True
 
     except UserModel.DoesNotExist:

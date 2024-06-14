@@ -14,8 +14,9 @@ async def add_on_blacklist(message: Message):
 		async with session.post(
 				f"{ConfigValues.server_http_protocol}://{ConfigValues.server_ip}/blacklist/add_to_blacklist",
 				params={"user_id": user_id},
-				headers={"Content-type": "application/json",
-						 "Authorization": ConfigValues.server_authkey}):
+				headers={
+					"content-type": "application/json",
+					"Authorization": ConfigValues.server_authkey}):
 			await send_message(message.chat.id, ConfigValues.successful_add_to_blacklist.replace('{username}', user_id))
 
 
