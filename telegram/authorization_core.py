@@ -14,6 +14,15 @@ async def download_user_avatar(user_id: int):
     :arg user_id - user id
     """
 
+    async with aiohttp.ClientSession() as session:
+        async with session.get(f"{ConfigValues.server_ip}://{ConfigValues.server_ip}/in_database",
+                               params={"user_id": user_id},
+                               headers={"Content-type": "application/json",
+                                        "Authorization": ConfigValues.server_authkey}) as response:
+            json = await response.json()
+            if json.get("in_database"):
+                return
+
     user_profile_photo = await bot.get_user_profile_photos(user_id)
 
     if len(user_profile_photo.photos) > 0:
