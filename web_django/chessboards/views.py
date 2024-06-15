@@ -15,7 +15,7 @@ async def game_view(request: HttpRequest, **kwargs):
 	user_id = await sync_to_async(request.session.get)("user_id")
 
 	if not game_object or not user_id:
-		return await sync_to_async(render)(request, 'error_page/index.html', {'error_number': '404'})
+		return await sync_to_async(render)(request, 'error_page/index.html', {'error_code': '404'})
 
 	user_id = int(user_id)
 

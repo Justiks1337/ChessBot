@@ -1,3 +1,4 @@
+import datetime
 import os
 from asyncio import get_running_loop
 from time import time
@@ -16,8 +17,7 @@ from .serializers import (
     StartGameSerializer,
     CheckInGameSerializer,
     NewAuthorizeTokenSerializer,
-    AuthorizeAttemptSerializer,
-    DashboardSerializer)
+    AuthorizeAttemptSerializer)
 
 from .responses import (
     StartGameResponse,
@@ -67,7 +67,7 @@ async def new_authorize_token(request: Request):
     token = jwt.encode({"user_id": user_id,
                         "username": username,
                         "nickname": nickname,
-                        "created_at": time()},
+                        "exp": time() + int(os.getenv("JWT_LIVETIME"))},
                        os.getenv("SERVER_AUTHKEY"))
 
     return Response(NewAuthorizeTokenSerializer(NewAuthorizeTokenResponse(True, token)).data)

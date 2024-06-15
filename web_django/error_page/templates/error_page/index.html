@@ -13,8 +13,8 @@
     <div id="popup">
         {% load static %}
         <img src="{%static 'images/error.png'%}" class="error_img">
-        <h1>ПРОИЗОШЛА НЕОЖИДАННАЯ ОШИБКА</h1>
-        <h1>КОД ОШИБКИ:{{error_number}}</h1>
+        <h1>{{error}}</h1>
+        <h1>КОД ОШИБКИ:{{error_code}}</h1>
     </div>
 
 {% endblock %}

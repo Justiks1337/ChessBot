@@ -1,7 +1,10 @@
 import os
 import aiohttp
+from aiogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
+from aiohttp.client import ClientSession
 
 from config.ConfigValues import ConfigValues
+from decorators import send_message
 from telegram import bot
 
 
@@ -45,4 +48,29 @@ def get_destination(user_id: int, file_name) -> str:
     file_destination = str(user_id) + file_format
 
     return file_destination
+
+
+async def send_auth_message(message: Message):
+    user_id = message.from_user.id
+
+    async with ClientSession() as session:
+        async with session.post(
+                f"{ConfigValues.server_http_protocol}://{ConfigValues.server_ip}/api/v1/new_token",
+                params={"user_id": user_id,
+                        "username": message.from_user.username,
+                        "nickname": message.from_user.full_name},
+                headers={"content-type": "application/json",
+                         "Authorization": ConfigValues.server_authkey}) as response:
+            json = dict(await response.json())
+            if json['success']:
+
+                button = InlineKeyboardButton(
+                    text="Авторизуйся!",
+                    url=f"{ConfigValues.proxy_http_protocol}://{ConfigValues.proxy_ip}/?token={json['token']}")
+                markup = InlineKeyboardMarkup(inline_keyboard=[[button]])
+
+                await message.reply(ConfigValues.authorization_message, reply_markup=markup)
+                return
+
+            await send_message(message.chat.id, ConfigValues.on_authorization_error)
 
