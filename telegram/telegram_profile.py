@@ -16,7 +16,6 @@ async def profile(message: Message):
                 headers={"Content-type": "application/json",
                          "Authorization": ConfigValues.server_authkey}) as response:
             stats_values = await response.json()
-            print(stats_values)
 
     await send_message(
         message.chat.id,

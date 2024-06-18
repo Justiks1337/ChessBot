@@ -15,7 +15,7 @@ async def download_user_avatar(user_id: int):
     """
 
     async with aiohttp.ClientSession() as session:
-        async with session.get(f"{ConfigValues.server_ip}://{ConfigValues.server_ip}/in_database",
+        async with session.get(f"{ConfigValues.server_http_protocol}://{ConfigValues.server_ip}/api/v1/in_database",
                                params={"user_id": user_id},
                                headers={"Content-type": "application/json",
                                         "Authorization": ConfigValues.server_authkey}) as response:
@@ -51,7 +51,6 @@ def get_file_format(file_name: str) -> str:
 
 
 def get_destination(user_id: int, file_name) -> str:
-    print(file_name)
     file_format = get_file_format(file_name)
 
     file_destination = str(user_id) + file_format
@@ -62,12 +61,18 @@ def get_destination(user_id: int, file_name) -> str:
 async def send_auth_message(message: Message):
     user_id = message.from_user.id
 
+    username = message.from_user.username
+    nickname = message.from_user.full_name
+
+    if not username:
+        username = nickname
+
     async with ClientSession() as session:
         async with session.post(
                 f"{ConfigValues.server_http_protocol}://{ConfigValues.server_ip}/api/v1/new_token",
                 params={"user_id": user_id,
-                        "username": message.from_user.username,
-                        "nickname": message.from_user.full_name},
+                        "username": username,
+                        "nickname": nickname},
                 headers={"content-type": "application/json",
                          "Authorization": ConfigValues.server_authkey}) as response:
             json = dict(await response.json())

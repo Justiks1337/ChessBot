@@ -11,7 +11,8 @@ services:
             - daphne
         ports:
             - 80:80
-
+        volumes:
+            - avatars:/static/avatars/
 
     database:
         build:
@@ -22,8 +23,8 @@ services:
             POSTGRES_DB: "chess_database"
             POSTGRES_USER: "chess"
             POSTGRES_PASSWORD: "12345678"
-        ports:
-            - 5432:5432
+        expose:
+            - 5432
 
     daphne:
         build:
@@ -37,6 +38,8 @@ services:
         restart: always
         expose:
            - 8000
+        volumes:
+            - avatars:/static/avatars/
 
 
     telegram:
@@ -54,3 +57,7 @@ services:
 networks:
     database_network:
         driver: bridge
+
+volumes:
+     avatars:
+        external: true

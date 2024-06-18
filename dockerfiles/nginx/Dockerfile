@@ -1,3 +1,3 @@
 FROM nginx:latest
-COPY ./nginx.conf /etc/nginx/
-COPY ./web_django/static static
+COPY ./nginx/nginx.conf /etc/nginx/
+COPY ./nginx/static static
