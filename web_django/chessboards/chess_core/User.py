@@ -41,7 +41,7 @@ class User:
 			self.avatar_path = file_name[0][file_name[0].index('avatars/'):]
 			return
 
-		self.avatar_path = "avatars/unknown_user.png"
+		self.avatar_path = "images/unknown_user.png"
 
 	async def move(self, start_cell: str, end_cell: str):
 		"""move in board and flip timer"""
