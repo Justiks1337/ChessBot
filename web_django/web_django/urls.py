@@ -25,7 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('playgrounds/', include('chessboards.urls')),
     path('api/v1/', include('api.urls')),
-    path('deprecated_authorization/', include('deprecated_authorization.urls')),
+    path('authorization/', include('authorization.urls')),
     path('blacklist/', include('blacklist.urls'))
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

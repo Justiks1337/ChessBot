@@ -81,7 +81,6 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            'deprecated_authorization/templates',
             'authorization/templates',
             'error_page/templates',
             'chessboards/templates',
