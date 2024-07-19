@@ -18,7 +18,6 @@ services:
         build:
             context: .
             dockerfile: ./dockerfiles/postgres/Dockerfile
-        container_name: 'database'
         environment:
             POSTGRES_DB: "chess_database"
             POSTGRES_USER: "chess"
@@ -30,7 +29,6 @@ services:
         build:
             context: .
             dockerfile: ./dockerfiles/web/Dockerfile
-        container_name: 'daphne'
         tty: true
         command: python3 -u -m daphne web_django.asgi:application -b daphne -p 8000
         depends_on:
@@ -46,7 +44,6 @@ services:
         build:
             context: .
             dockerfile: ./dockerfiles/telegram/Dockerfile
-        container_name: 'telegram'
         command: python3 -u telegram/main.py
         depends_on:
             - database

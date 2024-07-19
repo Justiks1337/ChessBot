@@ -787,7 +787,7 @@ table.iksweb tbody tr{
 
             /* board */
 #chessBoard {
-                background: url("/static/images/45.gif") !important;
+               /* background: url("/static/images/45.gif") !important; */
                 background-size: 25% !important;;
                 background-repeat: repeat !important;
                 overflow: hidden;
