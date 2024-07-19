@@ -46,7 +46,7 @@ async def start_game(request: Request):
 
 @api_view(['POST'])
 async def check_in_game(request: Request):
-    user_id = request.query_params.get('user_id')
+    user_id = int(request.query_params.get('user_id'))
 
     user = await get(games, 'players', user_id=user_id)
 

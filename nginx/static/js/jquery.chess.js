@@ -46,7 +46,7 @@ DEALINGS IN THE SOFTWARE.
                 type: 'matrix',
                 position: null
             }, options);
-            
+
             if (window.color === false){
                 $settings.y = $settings.y.reverse();
                 let elem = document.getElementById("chessBoard");
