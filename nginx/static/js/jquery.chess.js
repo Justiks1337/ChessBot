@@ -49,6 +49,13 @@ DEALINGS IN THE SOFTWARE.
 
             if (window.color === false){
                 $settings.y = $settings.y.reverse();
+                let elem = document.getElementById("chessBoard");
+                elem.style.background = 'url("/static/images/45_reversed.gif")';
+            }
+
+            else {
+                let elem = document.getElementById("chessBoard");
+                elem.style.background = 'url("/static/images/45.gif")';
             }
 
             var path_to_1x1 = $("#static_img").textContent;

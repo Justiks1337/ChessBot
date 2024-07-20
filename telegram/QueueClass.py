@@ -85,6 +85,7 @@ class Queue(PyQueue):
                         "content-type": "application/json",
                         "Authorization": ConfigValues.server_authkey}) as response:
                 json = await response.json()
+                print(json)
                 assert not json['in_game'], ConfigValues.in_game_error
 
 
